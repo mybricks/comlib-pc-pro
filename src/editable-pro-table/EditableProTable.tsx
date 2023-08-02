@@ -375,7 +375,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
               <div
                 key={JSON.stringify(record[`${item.dataIndex}`])}
                 onClick={() => {
-                  if (env.edit || data.clickChangeToedit) return;
+                  if (env.edit || !data.clickChangeToedit) return;
                   action?.startEditable?.(record?.[rowKey]);
                 }}
               >
@@ -414,7 +414,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             return (
               <div
                 onClick={() => {
-                  if (env.edit || data.clickChangeToedit) return;
+                  if (env.edit || !data.clickChangeToedit) return;
                   action?.startEditable?.(record?.[rowKey]);
                 }}
               >
@@ -429,6 +429,8 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             const { record } = config;
             return (
               <Select
+                allowClear={true}
+                style={{ width: '100%' }}
                 placeholder={'请选择'}
                 mode={item.multiple ? 'multiple' : undefined}
                 showSearch={item.showSearch}
@@ -443,7 +445,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             return (
               <div
                 onClick={() => {
-                  if (env.edit || data.clickChangeToedit) return;
+                  if (env.edit || !data.clickChangeToedit) return;
                   action?.startEditable?.(record?.[rowKey]);
                 }}
               >
@@ -481,7 +483,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             return (
               <div
                 onClick={() => {
-                  if (env.edit || data.clickChangeToedit) return;
+                  if (env.edit || !data.clickChangeToedit) return;
                   action?.startEditable?.(record?.[rowKey]);
                 }}
               >
@@ -512,7 +514,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             return (
               <div
                 onClick={() => {
-                  if (env.edit || data.clickChangeToedit) return;
+                  if (env.edit || !data.clickChangeToedit) return;
                   action?.startEditable?.(record?.[rowKey]);
                 }}
               >
@@ -537,7 +539,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             return (
               <div
                 onClick={() => {
-                  if (env.edit || data.clickChangeToedit) return;
+                  if (env.edit || !data.clickChangeToedit) return;
                   action?.startEditable?.(record?.[rowKey]);
                 }}
               >
@@ -564,7 +566,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             return (
               <div
                 onClick={() => {
-                  if (env.edit || data.clickChangeToedit) return;
+                  if (env.edit || !data.clickChangeToedit) return;
                   action?.startEditable?.(record?.[rowKey]);
                 }}
               >
@@ -591,7 +593,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             return (
               <div
                 onClick={() => {
-                  if (env.edit || data.clickChangeToedit) return;
+                  if (env.edit || !data.clickChangeToedit) return;
                   action?.startEditable?.(record?.[rowKey]);
                 }}
               >
@@ -616,7 +618,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             return (
               <div
                 onClick={() => {
-                  if (env.edit || data.clickChangeToedit) return;
+                  if (env.edit || !data.clickChangeToedit) return;
                   action?.startEditable?.(record?.[rowKey]);
                 }}
               >
@@ -648,7 +650,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             return (
               <div
                 onClick={() => {
-                  if (env.edit || data.clickChangeToedit) return;
+                  if (env.edit || !data.clickChangeToedit) return;
                   action?.startEditable?.(record?.[rowKey]);
                 }}
               >
