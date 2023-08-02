@@ -99,7 +99,7 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
 
         if (secondParent) {
           secondParent.conditions = secondParent.conditions?.filter(
-            (con) => con !== parentCondition.fieldId
+            (con) => con.fieldId !== parentCondition.fieldId
           );
         }
       }
