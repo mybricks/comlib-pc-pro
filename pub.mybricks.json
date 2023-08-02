@@ -3,9 +3,26 @@
   "componentType": "PC",
   "fileId": 7765,
   "commitInfo": "update",
-  "comAry": [
-    "./src/json-form/com.json"
-  ],
+  "comAry": {
+    "test": [
+      {
+        "title": "数据",
+        "comAry": [
+          "./src/editable-pro-table/com.json",
+          "./src/json-form/com.json"
+        ]
+      }
+    ],
+    "publish": [
+      {
+        "title": "数据",
+        "comAry": [
+          "./src/json-form/com.json",
+          "./src/editable-pro-table/com.json"
+        ]
+      }
+    ]
+  },
   "externals": [
     {
       "name": "@ant-design/icons",

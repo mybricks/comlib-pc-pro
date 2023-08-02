@@ -1,0 +1,39 @@
+.fz-editable-table {
+  > * {
+    pointer-events: auto !important;
+
+    * {
+      pointer-events: auto !important;
+    }
+  }
+
+  :global {
+    .ant-input-number {
+      width: 100%;
+    }
+
+    .ant-picker {
+      width: 100%;
+    }
+
+    .ant-card-body {
+      padding: 0px;
+    }
+
+    .ant-select-tree-node-content-wrapper {
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      white-space: nowrap !important;
+    }
+  }
+
+  thead {
+    pointer-events: auto !important;
+  }
+}
+
+:global {
+  .ant-tooltip-inner {
+    white-space: pre-wrap;
+  }
+}

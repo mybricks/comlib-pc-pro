@@ -1,0 +1,183 @@
+import { ProColumns } from '@ant-design/pro-table';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
+
+export const INPUTS = {
+  SetDataSource: 'value',
+  Submit: 'submit',
+  SetColConfig: 'colsCfg',
+  SetOpConfig: 'operationConfig',
+
+  AddRow: 'addRow',
+  DelRow: 'delRow',
+  MoveDown: 'moveDown',
+  MoveUp: 'moveUp',
+
+  GetRowSelect: 'rowSelect',
+  SetRowSelect: 'setRowSelect',
+
+  SlotRowValue: 'slotRowValue',
+  SlotColValue: 'slotColValue',
+  RowIndex: 'rowIndex',
+};
+
+export const OUTPUTS = {
+  Submit: 'submit',
+  GetRowSelect: 'rowSelect',
+
+  SaveCallback: 'saveCallback',
+  DelCallback: 'delCallback',
+
+  ChangeEvent: 'changeEvent',
+
+  EditTableData: 'editTableData'
+};
+
+export enum TypeEnum {
+  Text = 'text',
+  Number = 'digit',
+  Select = 'select',
+  Switch = 'switch',
+  Date = 'date',
+  DateRange = 'dateRange',
+  Option = 'option',
+  Slot = 'slot',
+  TreeSelect = 'treeSelect',
+  Checkbox = 'checkbox',
+  Cascader = 'cascader'
+}
+
+export const TypeEnumMap = {
+  [TypeEnum.Text]: '输入框',
+  [TypeEnum.Number]: '数字输入框',
+  [TypeEnum.Select]: '下拉框',
+  [TypeEnum.TreeSelect]: '树选择',
+  [TypeEnum.Switch]: '开关',
+  [TypeEnum.Date]: '日期',
+  [TypeEnum.Slot]: '自定义插槽',
+  [TypeEnum.DateRange]: '日期范围选择',
+  [TypeEnum.Checkbox]: '多选框',
+  [TypeEnum.Cascader]: '级联选择'
+};
+
+export type ColumnItem = ProColumns<any> & {
+  readonly?: boolean;
+  disableScript?: string;
+  showAddChildBtn?: boolean;
+  required?: boolean;
+  openText?: string;
+  closeText?: string;
+  defaultChecked?: boolean;
+  useTooltip?: boolean;
+  showTime?: boolean;
+  slotId?: string;
+  slotEditId?: string;
+
+  multiple?: boolean;
+  showSearch?: boolean;
+
+  _key?: string;
+
+  dataSchema?: any;
+};
+export interface Data {
+  headerTitle: string;
+  columns: ColumnItem[];
+  size?: SizeType;
+  hasLoading: boolean;
+  creatorButtonText: string;
+
+  hideAllOperation?: boolean;
+  hideAddBtn?: boolean;
+  hideModifyBtn?: boolean;
+  hideDeleteBtn?: boolean;
+  hideAllAddChildBtn?: boolean;
+  addChildBtnLabel?: string;
+  addChildBtnScript?: string;
+
+  hideSaveBtn?: boolean;
+  hideDeleteBtnInEdit?: boolean;
+  hideCancelBtn?: boolean;
+
+  useAutoSave?: boolean;
+  useOperationDynamic?: boolean;
+  readonlyWhenHasChildren?: boolean;
+
+  useRowSelection?: boolean;
+  useDelDataSource?: boolean;
+  useMoveDataSource?: boolean;
+
+  useSetSelectedRowKeys?: boolean;
+  selectionRowKey?: string;
+
+  submitIOs?: any[];
+
+  useSaveCallback?: boolean;
+  useDelCallback?: boolean;
+
+  useChangeEvent?: boolean;
+
+  clickChangeToedit?: boolean;
+}
+
+export type DataSourceType = {
+  _key: React.Key;
+  _add?: boolean;
+  [key: string]: any;
+};
+
+export const defaultData: DataSourceType[] = [
+  {
+    _key: 624748504,
+    title: '活动名称一',
+    desc: '这个活动真好玩',
+    state: 'open',
+    createdAt: '2020-05-26T09:42:56Z',
+    update_at: '2020-05-26T09:42:56Z'
+  }
+];
+
+export const getDefaultColumns: () => ProColumns<any>[] = () => [
+  {
+    title: '活动名称',
+    dataIndex: 'title',
+    valueType: 'text',
+    align: 'left',
+    width: 200,
+    fixed: undefined,
+    key: 'title',
+    fieldProps: {}
+  },
+  {
+    title: '描述',
+    dataIndex: 'desc',
+    valueType: 'text',
+    align: 'left',
+    width: 200,
+    fixed: undefined,
+    key: 'desc',
+    fieldProps: {}
+  },
+  {
+    title: '活动时间',
+    dataIndex: 'createdAt',
+    valueType: 'date',
+    align: 'left',
+    width: 200,
+    fixed: undefined,
+    key: 'createdAt',
+    fieldProps: {}
+  },
+  {
+    title: '操作',
+    valueType: 'option',
+    align: 'left',
+    fixed: undefined,
+    width: 200,
+    fieldProps: {}
+  }
+];
+
+export const getColumnItem = (data: Data, focusArea, datasetKey = 'tableThIdx'): ColumnItem => {
+  const key = focusArea.dataset[datasetKey];
+  return data.columns[key] || {};
+};
