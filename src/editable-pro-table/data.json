@@ -1,0 +1,8 @@
+{
+  "headerTitle": "可编辑表格",
+  "columns": [],
+  "hasLoading": false,
+  "creatorButtonText": "添加一行数据",
+  "size": "middle",
+  "clickChangeToedit": false
+}
