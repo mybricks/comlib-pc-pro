@@ -9,7 +9,8 @@
         "title": "数据",
         "comAry": [
           "./src/editable-pro-table/com.json",
-          "./src/json-form/com.json"
+          "./src/json-form/com.json",
+          "./src/logic-form/com.json"
         ]
       }
     ],
@@ -18,6 +19,7 @@
         "title": "数据",
         "comAry": [
           "./src/json-form/com.json",
+          "./src/logic-form/com.json",
           "./src/editable-pro-table/com.json"
         ]
       }
