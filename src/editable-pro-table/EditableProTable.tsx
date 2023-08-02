@@ -13,6 +13,7 @@ import {
   InputNumber
 } from 'antd';
 import { TableRowSelection } from 'antd/lib/table/interface';
+import type { ActionType } from '@ant-design/pro-components';
 import debounce from 'lodash/debounce';
 import {
   INPUTS,
@@ -53,6 +54,7 @@ const swapArr = (arr: any[], idx1: number, idx2: number) => {
 const { RangePicker } = DatePicker;
 export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeParams<Data>) {
   const wrapRef = useRef();
+  const actionRef = useRef<ActionType>();
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([]);
   const [dataSource, setDataSource] = useState<DataSourceType[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
@@ -69,6 +71,9 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
       }
       setDataSource(defaultData);
     } else {
+      if (!data.fixedHeader && data.scroll) {
+        data.scroll.y = undefined;
+      }
       inputs[INPUTS.SetColConfig]((val) => {
         setColsCfg(val);
       });
@@ -164,10 +169,9 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
       });
       inputs[INPUTS.AddRow] &&
         inputs[INPUTS.AddRow]((val: any) => {
-          if (val) {
-            const newDataSource = formatDataSource([...dataSource, { _key: uuid() }], data.columns);
-            setDataSource(newDataSource);
-          }
+          actionRef.current?.addEditRecord?.({
+            _key: uuid()
+          });
         });
       data.useDelDataSource &&
         inputs[INPUTS.DelRow] &&
@@ -337,6 +341,9 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             }
 
             rowIndex = dataSource.findIndex((item: any) => item?._key === record?._key);
+            if (rowIndex === -1) {
+              rowIndex = dataSource.length;
+            }
 
             return { slotRowValue, slotColValue, rowIndex };
           };
@@ -632,7 +639,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             const { entity } = schema as any;
             const { record } = config;
             let defaultChecked: boolean;
-            if (typeof entity?.[String(item?.dataIndex)] === 'boolean') {
+            if (typeof !!entity?.[String(item?.dataIndex)] === 'boolean') {
               defaultChecked = entity?.[String(item?.dataIndex)];
             } else {
               defaultChecked = item.fieldProps?.['defaultChecked'];
@@ -654,7 +661,13 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                   action?.startEditable?.(record?.[rowKey]);
                 }}
               >
-                {value}
+                <Switch
+                  {...item.fieldProps}
+                  checked={value}
+                  onClick={() => {
+                    return;
+                  }}
+                />
               </div>
             );
           };
@@ -698,8 +711,10 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             setDataSource(value);
           }}
           scroll={{
-            x: '100%'
+            x: '100%',
+            y: data?.scroll?.y ? data?.scroll?.y : void 0
           }}
+          actionRef={actionRef}
           size={data.size || 'middle'}
           rowSelection={data.useRowSelection && rowSelection}
           tableAlertRender={false}

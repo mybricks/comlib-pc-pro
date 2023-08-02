@@ -7,6 +7,17 @@ function uuid(pre = 'u_', len = 6) {
   return pre + rtn;
 }
 
+function unitConversion(value: string) {
+  if (/^\d+(?:%)$/.test(value)) {
+    return value
+  } else if (/^(?:calc)/.test(value)) {
+    return value
+  } else {
+    return /^\d+(?:px)?$/.test(value) ? parseInt(value, 10) + 'px' : void 0
+  }
+}
+
 export {
-  uuid
+  uuid,
+  unitConversion
 }

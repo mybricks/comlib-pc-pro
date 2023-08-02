@@ -1,5 +1,6 @@
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { Data } from '../constants';
+import { unitConversion } from '../../utils';
 
 export default {
   title: '样式配置',
@@ -20,6 +21,34 @@ export default {
           data.size = value;
         }
       }
-    }
+    },
+    {
+      title: '固定表头',
+      type: 'Switch',
+      description: '设置表头固定，只滚动数据行。必须同时设置【每一列的宽度】',
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data.fixedHeader;
+        },
+        set({ data }: EditorResult<Data>, value: boolean) {
+          data.fixedHeader = value;
+        }
+      }
+    },
+    {
+      title: '设置固定表头可滚动高度',
+      type: 'Text',
+      ifVisible({ data }: EditorResult<Data>) {
+        return data.fixedHeader;
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data.scroll?.y;
+        },
+        set({ data }: EditorResult<Data>, value) {
+          data.scroll.y = unitConversion(value);
+        }
+      }
+    },
   ]
 };
