@@ -286,7 +286,6 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
                       ? moment(condition.value)
                       : condition.value
                   }
-                  name={[...parentNames, index, 'value']}
                 >
                   {getFormItem(curOperator, condition)}
                 </Form.Item>
