@@ -3,7 +3,7 @@
   "namespace": "mybricks.pro-pc.editable-pro-table",
   "author": "ZhuPengqiang",
   "author_name": "朱鹏强",
-  "version": "1.0.32",
+  "version": "1.0.0",
   "description": "",
   "icon": "./icon.svg",
   "data": "./data.json",
