@@ -26,5 +26,15 @@ export default function ({
   const submit = output.get('submit');
   submit.setSchema(schema)
 
+  // 表头滚动
+  if (data.fixedHeader === undefined) {
+    data.fixedHeader = false;
+  }
+  if (data.scroll === undefined) {
+    data.scroll = {
+      y: ""
+    };
+  }
+
   return true;
 }

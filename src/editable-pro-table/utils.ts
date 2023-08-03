@@ -243,7 +243,7 @@ export const formatColumn = (
           if (item.formItemProps.initialValue === undefined) {
             item.formItemProps.initialValue = defaultChecked || false;
           }
-          item.fieldProps.defaultChecked = defaultChecked || false;
+          // item.fieldProps.defaultChecked = defaultChecked || false;
           item.fieldProps.checkedChildren = openText === undefined ? '打开' : openText;
           item.fieldProps.unCheckedChildren = closeText === undefined ?  '关闭' : closeText;
           break;

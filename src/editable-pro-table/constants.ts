@@ -117,6 +117,14 @@ export interface Data {
   useChangeEvent?: boolean;
 
   clickChangeToedit?: boolean;
+
+
+  fixedHeader: boolean; // 固定表头
+  scroll: Scroll; // 滚动
+}
+
+interface Scroll {
+  y: number | string | undefined;
 }
 
 export type DataSourceType = {
