@@ -36,5 +36,9 @@ export default function ({
     };
   }
 
+  if (!data.editType) {
+    data.editType = "multiple";
+  }
+
   return true;
 }

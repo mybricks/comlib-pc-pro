@@ -78,6 +78,19 @@ export default [
             data.hideAddBtn = !!val;
           }
         }
+      },
+      {
+        title: '单行编辑',
+        type: 'switch',
+        description: '开启后，可编辑表格只能同时编辑一行',
+        value: {
+          get({ data }: EditorResult<Data>) {
+            return data.editType === 'single';
+          },
+          set({ data }: EditorResult<Data>, val: boolean) {
+            data.editType = val ? 'single' : 'multiple';
+          }
+        }
       }
     ]
   },

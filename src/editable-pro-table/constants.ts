@@ -121,6 +121,8 @@ export interface Data {
 
   fixedHeader: boolean; // 固定表头
   scroll: Scroll; // 滚动
+
+  editType: "single" | "multiple", // 可编辑表格的类型，单行编辑或者多行编辑
 }
 
 interface Scroll {
