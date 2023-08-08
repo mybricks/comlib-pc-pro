@@ -728,7 +728,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             }
           }}
           editable={{
-            type: 'multiple',
+            type: data.editType || 'multiple',
             editableKeys,
             onChange: setEditableRowKeys,
             onSave: (key, value) => {
