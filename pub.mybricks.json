@@ -3,6 +3,7 @@
   "componentType": "PC",
   "fileId": 7765,
   "commitInfo": "update",
+  "namespace": "mybricks.pro-pc",
   "comAry": [
     "./src/editable-pro-table/com.json",
     "./src/json-form/com.json",
