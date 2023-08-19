@@ -698,7 +698,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
               ? false
               : {
                   parentKey: uuid(),
-                  newRecordType: data.useAutoSave ? 'dataSource' : undefined,
+                  // newRecordType: data.useAutoSave ? 'dataSource' : undefined,
                   creatorButtonText: data.creatorButtonText,
                   record: () => ({ _key: uuid(), [rowKey]: uuid(), _add: true }),
                   disabled: !!env?.edit
