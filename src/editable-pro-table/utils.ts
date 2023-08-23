@@ -176,6 +176,7 @@ export const formatColumn = (
   return data.columns
     .map((colItem, idx) => {
       const {
+        valueEnum,
         required,
         showAddChildBtn,
         closeText,
@@ -239,6 +240,12 @@ export const formatColumn = (
               .join();
           }
           break;
+        case TypeEnum.Checkbox:
+        case TypeEnum.Select:
+          if (valueEnum) {
+            (item.fieldProps as any).options = valueEnum;
+          }
+            break;
         case TypeEnum.Switch:
           if (item.formItemProps.initialValue === undefined) {
             item.formItemProps.initialValue = defaultChecked || false;
