@@ -35,11 +35,11 @@ import {
 } from './utils';
 import styles from './style.less';
 // @ts-ignore
-import css from '@ant-design/pro-table/dist/table.min.css';
+// import css from '@ant-design/pro-table/dist/table.min.css';
 import { getTemplateRenderScript } from '../utils/runExpCodeScript';
 
-const hackTreeShaking = (v) => v;
-hackTreeShaking(css);
+// const hackTreeShaking = (v) => v;
+// hackTreeShaking(css);
 // @ts-ignore
 const EditableProTable = React.lazy(() => import('./importTable'));
 
@@ -53,7 +53,7 @@ const swapArr = (arr: any[], idx1: number, idx2: number) => {
 };
 const { RangePicker } = DatePicker;
 export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeParams<Data>) {
-  const wrapRef = useRef();
+  const wrapRef = useRef<HTMLDivElement>(null);
   const actionRef = useRef<ActionType>();
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([]);
   const [dataSource, setDataSource] = useState<DataSourceType[]>([]);
@@ -358,12 +358,20 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
               isEditable ||
               (item?.slotEditId && slots[item.slotEditId] && slots[item.slotEditId].size === 0)
             ) {
-              return item.slotId && slots[item.slotId] && slots[item.slotId].render(renderValue);
+              return (
+                <>
+                  {(item.slotId && slots[item.slotId] && slots[item.slotId].render(renderValue)) ||
+                    null}
+                </>
+              );
             }
             return (
-              item?.slotEditId &&
-              slots[item.slotEditId] &&
-              slots[item.slotEditId].render(renderValue)
+              <>
+                {(item?.slotEditId &&
+                  slots[item.slotEditId] &&
+                  slots[item.slotEditId].render(renderValue)) ||
+                  null}
+              </>
             );
           };
 
@@ -441,7 +449,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                 placeholder={'请选择'}
                 mode={item.multiple ? 'multiple' : undefined}
                 showSearch={item.showSearch}
-                {...item.fieldProps}
+                {...(item.fieldProps as any)}
                 disabled={runDisableScript(disableScript, record || entity)}
               />
             );
@@ -470,7 +478,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                 placeholder={'请选择'}
                 multiple={item.multiple}
                 showSearch={item.showSearch}
-                {...item.fieldProps}
+                {...(item.fieldProps as any)}
                 disabled={runDisableScript(disableScript, record || entity)}
               />
             );
@@ -508,9 +516,9 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                 placeholder={'请选择'}
                 multiple={item.multiple}
                 showSearch={item.showSearch}
-                getPopupContainer={() => wrapRef.current}
+                getPopupContainer={() => wrapRef.current as HTMLDivElement}
                 treeNodeFilterProp="label"
-                {...item.fieldProps}
+                {...(item.fieldProps as any)}
                 disabled={runDisableScript(disableScript, record || entity)}
               />
             );
@@ -590,7 +598,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             const { record } = config;
             return (
               <Input
-                {...item.fieldProps}
+                {...(item.fieldProps as any)}
                 disabled={runDisableScript(disableScript, record || entity)}
               />
             );
@@ -615,7 +623,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             const { record } = config;
             return (
               <InputNumber
-                {...item.fieldProps}
+                {...(item.fieldProps as any)}
                 disabled={runDisableScript(disableScript, record || entity)}
               />
             );
@@ -646,7 +654,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             }
             return (
               <Switch
-                {...item.fieldProps}
+                {...(item.fieldProps as any)}
                 defaultChecked={defaultChecked}
                 disabled={runDisableScript(disableScript, record || entity)}
               />
@@ -662,7 +670,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                 }}
               >
                 <Switch
-                  {...item.fieldProps}
+                  {...(item.fieldProps as any)}
                   checked={value}
                   onClick={() => {
                     return;
@@ -697,7 +705,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             data.hideAddBtn
               ? false
               : {
-                  parentKey: uuid(),
+                  // parentKey: uuid(),
                   // newRecordType: data.useAutoSave ? 'dataSource' : undefined,
                   creatorButtonText: data.creatorButtonText,
                   record: () => ({ _key: uuid(), [rowKey]: uuid(), _add: true }),
