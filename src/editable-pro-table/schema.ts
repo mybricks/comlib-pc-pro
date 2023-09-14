@@ -223,7 +223,8 @@ export function getOptionSchema() {
     { key: 'hideDeleteBtn', title: '只读态-隐藏删除按钮' },
     { key: 'hideDeleteBtnInEdit', title: '编辑态-隐藏删除啊扭' },
     { key: 'hideSaveBtn', title: '编辑态-隐藏保存按扭' },
-    { key: 'hideCancelBtn', title: '编辑态-隐藏取消按扭' }
+    { key: 'hideCancelBtn', title: '编辑态-隐藏取消按扭' },
+    { key: 'clickChangeToedit', title: '点击切换编辑态'},
   ];
   options.forEach(({ key, title }) => {
     properties[key] = { title, type: 'boolean' };
