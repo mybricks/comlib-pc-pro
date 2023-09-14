@@ -98,7 +98,8 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             'hideDeleteBtn',
             'hideDeleteBtnInEdit',
             'hideSaveBtn',
-            'hideCancelBtn'
+            'hideCancelBtn',
+            'clickChangeToedit'
           ];
           dataKey.forEach((key) => {
             if (val && typeof val[key] === 'boolean') {
@@ -417,9 +418,10 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             const { record } = config;
             return (
               <DatePicker
+                disabled={runDisableScript(disableScript, record || entity)}
                 placeholder={'请选择'}
                 showTime={item.showTime}
-                disabled={runDisableScript(disableScript, record || entity)}
+                {...(item.fieldProps as any)}
               />
             );
           };
@@ -449,8 +451,8 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                 placeholder={'请选择'}
                 mode={item.multiple ? 'multiple' : undefined}
                 showSearch={item.showSearch}
-                {...(item.fieldProps as any)}
                 disabled={runDisableScript(disableScript, record || entity)}
+                {...(item.fieldProps as any)}
               />
             );
           };
@@ -478,8 +480,8 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                 placeholder={'请选择'}
                 multiple={item.multiple}
                 showSearch={item.showSearch}
-                {...(item.fieldProps as any)}
                 disabled={runDisableScript(disableScript, record || entity)}
+                {...(item.fieldProps as any)}
               />
             );
           };
@@ -518,8 +520,8 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                 showSearch={item.showSearch}
                 getPopupContainer={() => wrapRef.current as HTMLDivElement}
                 treeNodeFilterProp="label"
-                {...(item.fieldProps as any)}
                 disabled={runDisableScript(disableScript, record || entity)}
+                {...(item.fieldProps as any)}
               />
             );
           };
@@ -544,8 +546,8 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             const { record } = config;
             return (
               <Checkbox.Group
-                {...(item.fieldProps as any)}
                 disabled={runDisableScript(disableScript, record || entity)}
+                {...(item.fieldProps as any)}
               />
             );
           };
@@ -572,6 +574,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                 placeholder={['开始日期', '结束日期']}
                 showTime={item.showTime}
                 disabled={runDisableScript(disableScript, record || entity)}
+                {...(item.fieldProps as any)}
               />
             );
           };
@@ -598,8 +601,8 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             const { record } = config;
             return (
               <Input
-                {...(item.fieldProps as any)}
                 disabled={runDisableScript(disableScript, record || entity)}
+                {...(item.fieldProps as any)}
               />
             );
           };
@@ -623,8 +626,8 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             const { record } = config;
             return (
               <InputNumber
-                {...(item.fieldProps as any)}
                 disabled={runDisableScript(disableScript, record || entity)}
+                {...(item.fieldProps as any)}
               />
             );
           };
@@ -654,9 +657,9 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             }
             return (
               <Switch
-                {...(item.fieldProps as any)}
                 defaultChecked={defaultChecked}
                 disabled={runDisableScript(disableScript, record || entity)}
+                {...(item.fieldProps as any)}
               />
             );
           };
@@ -705,12 +708,10 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             data.hideAddBtn
               ? false
               : {
-                  // parentKey: uuid(),
-                  // newRecordType: data.useAutoSave ? 'dataSource' : undefined,
+                  newRecordType: data.useAutoSave ? 'dataSource' : 'cache',
                   creatorButtonText: data.creatorButtonText,
                   record: () => ({ _key: uuid(), [rowKey]: uuid(), _add: true }),
                   disabled: !!env?.edit
-                  /** TODO: 编辑态禁止添加行数据 */
                 }
           }
           value={dataSource}

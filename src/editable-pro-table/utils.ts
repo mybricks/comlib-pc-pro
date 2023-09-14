@@ -18,12 +18,7 @@ export function getCol(data: Data, focusArea, key) {
   const item = data.columns[idx];
   return item[key];
 }
-export function checkType(
-  data: Data,
-  focusArea,
-  includes?: any[],
-  excludes?: any[]
-) {
+export function checkType(data: Data, focusArea, includes?: any[], excludes?: any[]) {
   const idx = getThIdx(focusArea);
   let isAllow = true;
   const item = data.columns[idx];
@@ -86,16 +81,9 @@ export const addChildByKey = (
     .filter(Boolean) as DataSourceType[];
 };
 // 格式化数据
-export const formatDataSource = (
-  ds: DataSourceType[],
-  columns: ColumnItem[]
-) => {
+export const formatDataSource = (ds: DataSourceType[], columns: ColumnItem[]) => {
   const dateDataIndex = columns
-    .filter(
-      (item) =>
-        item.valueType === TypeEnum.Date ||
-        item.valueType === TypeEnum.DateRange
-    )
+    .filter((item) => item.valueType === TypeEnum.Date || item.valueType === TypeEnum.DateRange)
     .map((item) => ({
       key: item.dataIndex as string,
       format: item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD'
@@ -118,10 +106,7 @@ export const formatDataSource = (
   return ds;
 };
 // 获取数据下的所有key
-export const getAllDsKey = (
-  ds: DataSourceType[],
-  rowKey: string = '_key'
-): string[] => {
+export const getAllDsKey = (ds: DataSourceType[], rowKey: string = '_key'): string[] => {
   const keys: Array<any> = [];
   if (Array.isArray(ds)) {
     ds.forEach((item) => {
@@ -149,30 +134,16 @@ export const formatSubmitDataSource = (ds: DataSourceType[]) => {
   });
 };
 
-const getColumnConfig = (
-  colsCfg,
-  item: ProColumns<any, any>
-): ProColumns<any> => {
+const getColumnConfig = (colsCfg: { [x: string]: any; }, item: ProColumns<any, any>): ProColumns<any> => {
   const colCfg = (colsCfg ? colsCfg[item.key as React.Key] : {}) || {};
-  if (
-    [TypeEnum.Select, TypeEnum.Checkbox, TypeEnum.Cascader].includes(
-      item.valueType
-    ) &&
-    colCfg.options
-  ) {
-    (item.fieldProps as any).options = colCfg.options;
-  }
+  (item.fieldProps as any) = colCfg;
   if (item.valueType === TypeEnum.TreeSelect && colCfg.options) {
     (item.fieldProps as any).treeData = colCfg.options;
   }
   return item;
 };
 // 格式化Column
-export const formatColumn = (
-  data: Data,
-  env: Env,
-  colsCfg: any
-): ColumnItem[] => {
+export const formatColumn = (data: Data, env: Env, colsCfg: any): ColumnItem[] => {
   return data.columns
     .map((colItem, idx) => {
       const {
@@ -201,8 +172,7 @@ export const formatColumn = (
       //   record?._readonly === true ? false : true;
       if (readonly) {
         //新增项 不支持只读
-        item.editable = (_: any, record: DataSourceType) =>
-          record?._add ? true : false;
+        item.editable = (_: any, record: DataSourceType) => (record?._add ? true : false);
       }
       item.fieldProps = {
         ...item.fieldProps
@@ -224,7 +194,7 @@ export const formatColumn = (
 
       switch (item.valueType) {
         case TypeEnum.Date:
-          item.fieldProps.showTime = item.showTime;
+          (item.fieldProps as any).showTime = item.showTime;
           break;
         case TypeEnum.Option:
           if (data.hideAllOperation) {
@@ -232,10 +202,7 @@ export const formatColumn = (
           }
           // Todo hack 方法
           if (env.edit) {
-            item.key = [
-              !data.hideModifyBtn && 'editable',
-              !data.hideDeleteBtn && 'delete'
-            ]
+            item.key = [!data.hideModifyBtn && 'editable', !data.hideDeleteBtn && 'delete']
               .filter((item) => item)
               .join();
           }
@@ -245,14 +212,14 @@ export const formatColumn = (
           if (valueEnum) {
             (item.fieldProps as any).options = valueEnum;
           }
-            break;
+          break;
         case TypeEnum.Switch:
           if (item.formItemProps.initialValue === undefined) {
             item.formItemProps.initialValue = defaultChecked || false;
           }
-          // item.fieldProps.defaultChecked = defaultChecked || false;
-          item.fieldProps.checkedChildren = openText === undefined ? '打开' : openText;
-          item.fieldProps.unCheckedChildren = closeText === undefined ?  '关闭' : closeText;
+          (item.fieldProps as any).defaultChecked = defaultChecked || false;
+          (item.fieldProps as any).checkedChildren = openText === undefined ? '打开' : openText;
+          (item.fieldProps as any).unCheckedChildren = closeText === undefined ? '关闭' : closeText;
           break;
         default:
           break;
@@ -268,7 +235,7 @@ export const formatColumn = (
 };
 // 根据data生成提示项
 export const getSuggestions = (data: Data) => {
-  const res: Array<{ label: any, insertText: string, detail: string }> = [];
+  const res: Array<{ label: any; insertText: string; detail: string }> = [];
   data.columns.forEach((col) => {
     if (col.valueType !== TypeEnum.Option && !res.find((item) => col.dataIndex === item.label)) {
       res.push({
@@ -279,7 +246,7 @@ export const getSuggestions = (data: Data) => {
     }
   });
   return res;
-}
+};
 export const run = (script: string) => {
   return runScript(script, {});
 };
