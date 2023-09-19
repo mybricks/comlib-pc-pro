@@ -41,7 +41,8 @@ import { getTemplateRenderScript } from '../utils/runExpCodeScript';
 // const hackTreeShaking = (v) => v;
 // hackTreeShaking(css);
 // @ts-ignore
-const EditableProTable = React.lazy(() => import('./importTable'));
+import { EditableProTable } from '@ant-design/pro-table';
+// const EditableProTable = React.lazy(() => import('./importTable'));
 
 const swapArr = (arr: any[], idx1: number, idx2: number) => {
   if (arr[idx1] && arr[idx2]) {
@@ -171,7 +172,9 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
       inputs[INPUTS.AddRow] &&
         inputs[INPUTS.AddRow]((val: any) => {
           actionRef.current?.addEditRecord?.({
-            _key: uuid()
+            _key: uuid(),
+            [rowKey]: uuid(),
+            _add: true
           });
         });
       data.useDelDataSource &&

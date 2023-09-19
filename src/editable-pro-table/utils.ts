@@ -136,7 +136,7 @@ export const formatSubmitDataSource = (ds: DataSourceType[]) => {
 
 const getColumnConfig = (colsCfg: { [x: string]: any; }, item: ProColumns<any, any>): ProColumns<any> => {
   const colCfg = (colsCfg ? colsCfg[item.key as React.Key] : {}) || {};
-  (item.fieldProps as any) = colCfg;
+  (item.fieldProps as any) = { ...item.fieldProps, ...colCfg};
   if (item.valueType === TypeEnum.TreeSelect && colCfg.options) {
     (item.fieldProps as any).treeData = colCfg.options;
   }
