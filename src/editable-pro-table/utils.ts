@@ -202,7 +202,7 @@ export const formatColumn = (data: Data, env: Env, colsCfg: any): ColumnItem[] =
           }
           // Todo hack 方法
           if (env.edit) {
-            item.key = [!data.hideModifyBtn && 'editable', !data.hideDeleteBtn && 'delete']
+            item.key = [!data.hideModifyBtn && 'editable', !data.hideDeleteBtn && 'delete', !data.hideNewBtn && 'add']
               .filter((item) => item)
               .join();
           }
