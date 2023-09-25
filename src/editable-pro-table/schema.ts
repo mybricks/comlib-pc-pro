@@ -221,6 +221,7 @@ export function getOptionSchema() {
     { key: 'hideAllOperation', title: '隐藏所有操作' },
     { key: 'hideAddBtn', title: '隐藏新增按钮' },
     { key: 'hideDeleteBtn', title: '只读态-隐藏删除按钮' },
+    { key: 'hideNewBtn', title: '只读态-隐藏新增按钮' },
     { key: 'hideDeleteBtnInEdit', title: '编辑态-隐藏删除啊扭' },
     { key: 'hideSaveBtn', title: '编辑态-隐藏保存按扭' },
     { key: 'hideCancelBtn', title: '编辑态-隐藏取消按扭' },

@@ -40,6 +40,21 @@ export default (data: Data) => ({
           }
         },
         {
+          title: '编辑按钮文案',
+          type: 'text',
+          ifVisible({ data }: EditorResult<Data>) {
+            return !data.hideModifyBtn;
+          },
+          value: {
+            get({ data }: EditorResult<Data>) {
+              return data?.editText;
+            },
+            set({ data }: EditorResult<Data>, val: string) {
+              data.editText = val;
+            }
+          }
+        },
+        {
           title: '隐藏删除按钮',
           type: 'switch',
           value: {
@@ -48,6 +63,19 @@ export default (data: Data) => ({
             },
             set({ data }: EditorResult<Data>, val: boolean) {
               data.hideDeleteBtn = !!val;
+            }
+          }
+        },
+        {
+          title: '隐藏添加按钮',
+          type: 'switch',
+          description: `开启后，会隐藏所有表格行操作列的新增按钮`,
+          value: {
+            get({ data }: EditorResult<Data>) {
+              return data.hideNewBtn;
+            },
+            set({ data }: EditorResult<Data>, val: boolean) {
+              data.hideNewBtn = !!val;
             }
           }
         },
@@ -129,6 +157,21 @@ export default (data: Data) => ({
           }
         },
         {
+          title: '保存按钮文案',
+          type: 'text',
+          ifVisible({ data }: EditorResult<Data>) {
+            return !data.hideSaveBtn;
+          },
+          value: {
+            get({ data }: EditorResult<Data>) {
+              return data?.saveText;
+            },
+            set({ data }: EditorResult<Data>, val: string) {
+              data.saveText = val;
+            }
+          }
+        },
+        {
           title: '隐藏删除按钮',
           type: 'switch',
           value: {
@@ -137,6 +180,21 @@ export default (data: Data) => ({
             },
             set({ data }: EditorResult<Data>, val: boolean) {
               data.hideDeleteBtnInEdit = !!val;
+            }
+          }
+        },
+        {
+          title: '删除按钮文案',
+          type: 'text',
+          ifVisible({ data }: EditorResult<Data>) {
+            return !data.hideDeleteBtnInEdit;
+          },
+          value: {
+            get({ data }: EditorResult<Data>) {
+              return data?.deleteText;
+            },
+            set({ data }: EditorResult<Data>, val: string) {
+              data.deleteText = val;
             }
           }
         },
@@ -151,7 +209,22 @@ export default (data: Data) => ({
               data.hideCancelBtn = !!val;
             }
           }
-        }
+        },
+        {
+          title: '取消按钮文案',
+          type: 'text',
+          ifVisible({ data }: EditorResult<Data>) {
+            return !data.hideCancelBtn;
+          },
+          value: {
+            get({ data }: EditorResult<Data>) {
+              return data?.cancelText;
+            },
+            set({ data }: EditorResult<Data>, val: string) {
+              data.cancelText = val;
+            }
+          }
+        },
       ]
     },
     {

@@ -97,6 +97,7 @@ export interface Data {
   hideSaveBtn?: boolean;
   hideDeleteBtnInEdit?: boolean;
   hideCancelBtn?: boolean;
+  hideNewBtn?: boolean;
 
   useAutoSave?: boolean;
   useOperationDynamic?: boolean;
@@ -123,6 +124,11 @@ export interface Data {
   scroll: Scroll; // 滚动
 
   editType: "single" | "multiple", // 可编辑表格的类型，单行编辑或者多行编辑
+
+  saveText: string; // 保存按钮文案
+  deleteText: string; // 删除按钮文案
+  cancelText: string; // 取消按钮文案
+  editText: string; // 编辑按钮文案
 }
 
 interface Scroll {

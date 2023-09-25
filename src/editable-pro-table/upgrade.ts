@@ -40,5 +40,21 @@ export default function ({
     data.editType = "multiple";
   }
 
+  if (!data?.saveText) {
+    data.saveText = "保存";
+  }
+
+  if (!data?.deleteText) {
+    data.deleteText = "删除";
+  }
+
+  if (!data?.cancelText) {
+    data.cancelText = "取消";
+  }
+
+  if (!data?.editText) {
+    data.editText = "编辑";
+  }
+
   return true;
 }

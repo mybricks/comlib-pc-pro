@@ -97,6 +97,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             'hideAddBtn',
             'hideModifyBtn',
             'hideDeleteBtn',
+            'hideNewBtn',
             'hideDeleteBtnInEdit',
             'hideSaveBtn',
             'hideCancelBtn',
@@ -292,7 +293,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                     action?.startEditable?.(record?.[rowKey]);
                   }}
                 >
-                  编辑
+                  {data?.editText}
                 </a>
               ),
               !data.hideDeleteBtn && (
@@ -306,7 +307,22 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                     }
                   }}
                 >
-                  删除
+                  {data?.deleteText}
+                </a>
+              ),
+              !data.hideNewBtn && (
+                <a
+                  key="add"
+                  onClick={() => {
+                    if (env.edit) return;
+                    actionRef.current?.addEditRecord?.({
+                      _key: uuid(),
+                      [rowKey]: uuid(),
+                      _add: true
+                    });
+                  }}
+                >
+                  新增
                 </a>
               ),
               !data.hideAllAddChildBtn && (!!env.edit || item.showAddChildBtn) && (
@@ -720,7 +736,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
           value={dataSource}
           columns={getColumns(dataSource)}
           onChange={(value) => {
-            setDataSource(value);
+            setDataSource(value as DataSourceType[]);
           }}
           scroll={{
             x: '100%',
@@ -732,7 +748,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
           tableAlertRender={false}
           expandable={{
             expandedRowKeys,
-            onExpand: (expanded: boolean, record: RecordType) => {
+            onExpand: (expanded: boolean, record: DataSourceType) => {
               const newExpandedRowKeys = expanded
                 ? [...expandedRowKeys, record?.[rowKey]]
                 : expandedRowKeys.filter((key) => key !== record?.[rowKey]);
@@ -749,6 +765,8 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
               }
               return Promise.resolve();
             },
+            saveText: data?.saveText,
+            cancelText: data?.cancelText,
             onDelete: (key, value) => {
               if (data.useDelCallback) {
                 outputs[OUTPUTS.DelCallback](value);

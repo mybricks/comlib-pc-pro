@@ -8,5 +8,9 @@
   "fixedHeader": false,
   "scroll": {
     "y": ""
-  }
+  },
+  "saveText": "保存",
+  "deleteText": "删除",
+  "cancelText": "取消",
+  "editText": "编辑"
 }
