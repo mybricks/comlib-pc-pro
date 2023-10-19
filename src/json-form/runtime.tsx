@@ -2,7 +2,8 @@ import React, { useRef, useLayoutEffect, useCallback, useState } from 'react';
 import type {
   ProFormColumnsType,
   ProFormInstance,
-  ProFormLayoutType
+  ProFormLayoutType,
+  SubmitterProps
 } from '@ant-design/pro-components';
 import { BetaSchemaForm } from '@ant-design/pro-components';
 import { Empty } from 'antd';
@@ -10,6 +11,7 @@ import styles from './styles.less';
 
 export interface Data {
   layoutType: ProFormLayoutType;
+  submitter: false | SubmitterProps;
 }
 
 type DataItem = {
@@ -52,6 +54,7 @@ export default function (props: RuntimeParams<Data>) {
       {columns?.length > 0 ? (
         <BetaSchemaForm<DataItem>
           formRef={formRef}
+          submitter={data.submitter}
           layoutType={data.layoutType}
           autoFocusFirstInput={false}
           columns={columns}
