@@ -1,4 +1,4 @@
-import { Data, TypeEnum } from '../../constants';
+import { Data, TypeEnum, getColumnItem } from '../../constants';
 import { checkType, getCol, getThIdx, setCol } from '../../utils';
 
 export default {
@@ -40,6 +40,25 @@ export default {
         },
         set({ data, focusArea }: EditorResult<Data>, value: string) {
           setCol(data, focusArea, 'align', value);
+        }
+      }
+    },
+    {
+      title: '内容省略展示',
+      type: 'Switch',
+      description: '内容超出宽度后文本是否自动省略、不换行、以省略号结尾',
+      ifVisible({ data, focusArea }: EditorResult<Data>) {
+        return !checkType(data, focusArea, [TypeEnum.Option, TypeEnum.Slot, TypeEnum.Checkbox, TypeEnum.Switch]);
+      },
+      value: {
+        get({ data, focusArea }: EditorResult<Data>) {
+          if (!focusArea) return;
+          const item = getColumnItem(data, focusArea);
+          return item.ellipsis;
+        },
+        set({ data, focusArea }: EditorResult<Data>, value: boolean) {
+          if (!focusArea) return;
+          setCol(data, focusArea, 'ellipsis', value);
         }
       }
     },

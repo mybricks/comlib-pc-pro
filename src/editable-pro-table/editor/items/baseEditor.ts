@@ -121,6 +121,6 @@ export default {
           setDataSchema({ data, output, input, slot });
         }
       }
-    }
+    },
   ]
 };

@@ -10,8 +10,10 @@ import {
   Tag,
   Input,
   Switch,
-  InputNumber
+  InputNumber,
+  Tooltip
 } from 'antd';
+
 import { TableRowSelection } from 'antd/lib/table/interface';
 import type { ActionType } from '@ant-design/pro-components';
 import debounce from 'lodash/debounce';
@@ -263,6 +265,22 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
     return undefined;
   };
 
+  const columnsRender = useCallback((value, action, record, ellipsis) => {
+    const startEditable = () => {
+      if (env.edit || !data.clickChangeToedit) return;
+      action?.startEditable?.(record?.[rowKey]);
+    };
+    return ellipsis ? (
+      <Tooltip placement="topLeft" title={value}>
+        <span className={styles.ellipsisWrap} onClick={startEditable}>
+          {value}
+        </span>
+      </Tooltip>
+    ) : (
+      <span onClick={startEditable}>{value}</span>
+    );
+  }, []);
+
   const getColumns = (dataSource: DataSourceType[]) => {
     const col = formatColumn(data, env, colsCfg);
     return col.map((item, colIdx) => {
@@ -446,17 +464,11 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
           };
           item.render = (_, record, idx, action) => {
             const format = item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD';
-            const value = record[`${item.dataIndex}`];
-            return (
-              <div
-                onClick={() => {
-                  if (env.edit || !data.clickChangeToedit) return;
-                  action?.startEditable?.(record?.[rowKey]);
-                }}
-              >
-                {value ? moment(value).format(format) : '-'}
-              </div>
-            );
+            const value = record[`${item.dataIndex}`]
+              ? moment(record[`${item.dataIndex}`]).format(format)
+              : '-';
+
+            return columnsRender(value, action, record, item.ellipsis);
           };
           break;
         case TypeEnum.Select:
@@ -476,18 +488,9 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             );
           };
           item.render = (_, record, idx, action) => {
-            const value = record[`${item.dataIndex}`];
             const options = (item.fieldProps as any).options;
-            return (
-              <div
-                onClick={() => {
-                  if (env.edit || !data.clickChangeToedit) return;
-                  action?.startEditable?.(record?.[rowKey]);
-                }}
-              >
-                {renderTagList(getValueByOptions(value, options))}
-              </div>
-            );
+            const value = renderTagList(getValueByOptions(record[`${item.dataIndex}`], options));
+            return columnsRender(value, action, record, item.ellipsis);
           };
           break;
         case TypeEnum.Cascader:
@@ -516,16 +519,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                   : strList.join('/')
               );
             }
-            return (
-              <div
-                onClick={() => {
-                  if (env.edit || !data.clickChangeToedit) return;
-                  action?.startEditable?.(record?.[rowKey]);
-                }}
-              >
-                {returnDom}
-              </div>
-            );
+            return columnsRender(returnDom, action, record, item.ellipsis);
           };
           break;
         case TypeEnum.TreeSelect as any:
@@ -545,18 +539,9 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             );
           };
           item.render = (_, record, idx, action) => {
-            const value = record[`${item.dataIndex}`];
             const options = (item.fieldProps as any).treeData;
-            return (
-              <div
-                onClick={() => {
-                  if (env.edit || !data.clickChangeToedit) return;
-                  action?.startEditable?.(record?.[rowKey]);
-                }}
-              >
-                {renderTagList(getValueByOptions(value, options))}
-              </div>
-            );
+            const value = renderTagList(getValueByOptions(record[`${item.dataIndex}`], options));
+            return columnsRender(value, action, record, item.ellipsis);
           };
           break;
         case TypeEnum.Checkbox:
@@ -598,20 +583,11 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             );
           };
           item.render = (_, record, idx, action) => {
-            const value = record[`${item.dataIndex}`];
+            const value = Array.isArray(record[`${item.dataIndex}`])
+              ? record[`${item.dataIndex}`].map((time) => moment(time).format(format)).join(' 至 ')
+              : '-';
             const format = item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD';
-            return (
-              <div
-                onClick={() => {
-                  if (env.edit || !data.clickChangeToedit) return;
-                  action?.startEditable?.(record?.[rowKey]);
-                }}
-              >
-                {Array.isArray(value)
-                  ? value.map((time) => moment(time).format(format)).join(' 至 ')
-                  : '-'}
-              </div>
-            );
+            return columnsRender(value, action, record, item.ellipsis);
           };
           break;
         case TypeEnum.Text:
@@ -627,16 +603,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
           };
           item.render = (_, record, idx, action) => {
             const value = record[`${item.dataIndex}`];
-            return (
-              <div
-                onClick={() => {
-                  if (env.edit || !data.clickChangeToedit) return;
-                  action?.startEditable?.(record?.[rowKey]);
-                }}
-              >
-                {value}
-              </div>
-            );
+            return columnsRender(value, action, record, item.ellipsis);
           };
           break;
         case TypeEnum.Number:
@@ -652,16 +619,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
           };
           item.render = (_, record, idx, action) => {
             const value = record[`${item.dataIndex}`];
-            return (
-              <div
-                onClick={() => {
-                  if (env.edit || !data.clickChangeToedit) return;
-                  action?.startEditable?.(record?.[rowKey]);
-                }}
-              >
-                {value}
-              </div>
-            );
+            return columnsRender(value, action, record, item.ellipsis);
           };
           break;
         case TypeEnum.Switch:
