@@ -78,6 +78,8 @@ export type ColumnItem = ProColumns<any> & {
   _key?: string;
 
   dataSchema?: any;
+  // 省略展示
+  ellipsis?: any;
 };
 export interface Data {
   headerTitle: string;
