@@ -174,11 +174,16 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
       });
       inputs[INPUTS.AddRow] &&
         inputs[INPUTS.AddRow]((val: any) => {
-          actionRef.current?.addEditRecord?.({
-            _key: uuid(),
-            [rowKey]: uuid(),
-            _add: true
-          });
+          actionRef.current?.addEditRecord?.(
+            {
+              _key: uuid(),
+              [rowKey]: uuid(),
+              _add: true
+            },
+            {
+              newRecordType: 'dataSource'
+            }
+          );
         });
       data.useDelDataSource &&
         inputs[INPUTS.DelRow] &&
