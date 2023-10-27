@@ -682,7 +682,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
     }
   };
   return (
-    <div className={styles['fz-editable-table']} ref={wrapRef}>
+    <div className={env?.edit && styles['fz-editable-table']} ref={wrapRef}>
       <Suspense fallback={<Spin tip="Loading..." />}>
         <EditableProTable<DataSourceType>
           rowKey={rowKey}
