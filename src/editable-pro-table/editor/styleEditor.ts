@@ -1,6 +1,7 @@
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { Data } from '../constants';
 import { unitConversion } from '../../utils';
+import { emptyStyleEditor } from './empty';
 
 export default {
   title: '样式配置',
@@ -50,5 +51,6 @@ export default {
         }
       }
     },
+    ...emptyStyleEditor
   ]
 };

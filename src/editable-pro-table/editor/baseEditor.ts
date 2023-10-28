@@ -2,6 +2,7 @@ import type { ProColumns } from '@ant-design/pro-table';
 import { uuid } from '../../utils';
 import { Data, INPUTS } from '../constants';
 import { setDataSchema, getColumnsDataSchema } from '../schema';
+import { emptyEditor } from './empty';
 
 export default {
   title: '基础配置',
@@ -37,5 +38,6 @@ export default {
         }
       }
     },
+    ...emptyEditor
   ]
 };

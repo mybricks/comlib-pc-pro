@@ -9,17 +9,18 @@ export default {
   '@init': ({ data, input, output, slot }: EditorResult<Data>) => {
     setDataSchema({ data, input, output, slot });
   },
-  ':root': ({}: EditorResult<Data>, cate1, cate2, cate3) => {
-    cate1.title = '常规';
-    cate1.items = [baseEditor];
+  ':root': {
+    items: ({}: EditorResult<Data>, cate1, cate2) => {
+      cate1.title = '常规';
+      cate1.items = [baseEditor];
 
-    cate2.title = '样式';
-    cate2.items = [styleEditor];
+      cate2.title = '高级';
+      cate2.items = [...operationEditor];
 
-    cate3.title = '高级';
-    cate3.items = [...operationEditor];
+      return { title: '可编辑表格' };
+    },
 
-    return { title: '可编辑表格' };
+    style: [...styleEditor.items]
   },
   ...itemsEditor
 };

@@ -131,6 +131,11 @@ export interface Data {
   deleteText: string; // 删除按钮文案
   cancelText: string; // 取消按钮文案
   editText: string; // 编辑按钮文案
+
+  // 空数据配置
+  isEmpty: boolean;
+  image: string;
+  description: string;
 }
 
 interface Scroll {
