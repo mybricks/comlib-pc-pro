@@ -65,17 +65,18 @@ export default {
       indexEditor
     ];
 
-    cate2.title = '样式';
-    cate2.items = [styleEditor, TitleTipEditor];
-
-    cate3.title = '高级';
-    cate3.items = [
+    cate2.title = '高级';
+    cate2.items = [
       proEditor(data),
       operationRowEditor(data),
       switchEditor,
       dateEditor,
       selectEditor
     ];
+
+    cate3.title = '样式';
+    cate3.items = [styleEditor, TitleTipEditor];
+
     return {
       title: '列'
     };

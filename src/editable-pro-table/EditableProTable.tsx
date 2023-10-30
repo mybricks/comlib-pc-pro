@@ -11,7 +11,9 @@ import {
   Input,
   Switch,
   InputNumber,
-  Tooltip
+  Tooltip,
+  ConfigProvider,
+  Image
 } from 'antd';
 
 import { TableRowSelection } from 'antd/lib/table/interface';
@@ -672,6 +674,16 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
     });
   };
 
+  const customizeRenderEmpty = useCallback(
+    () => (
+      <div className={`emptyNormal ${styles.emptyNormal}`}>
+        <Image src={data.image} className={`emptyImage ${styles.emptyImage}`} preview={false} />
+        <p className={`emptyDescription ${styles.emptyDescription}`}>{data.description}</p>
+      </div>
+    ),
+    []
+  );
+
   // 勾选配置
   const rowSelection: TableRowSelection<any> = {
     selectedRowKeys,
@@ -682,78 +694,80 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
     }
   };
   return (
-    <div className={styles['fz-editable-table']} ref={wrapRef}>
+    <div className={env?.edit && styles['fz-editable-table']} ref={wrapRef}>
       <Suspense fallback={<Spin tip="Loading..." />}>
-        <EditableProTable<DataSourceType>
-          rowKey={rowKey}
-          recordCreatorProps={
-            data.hideAddBtn
-              ? false
-              : {
-                  newRecordType: data.useAutoSave ? 'dataSource' : 'cache',
-                  creatorButtonText: data.creatorButtonText,
-                  record: () => ({ _key: uuid(), [rowKey]: uuid(), _add: true }),
-                  disabled: !!env?.edit
+        <ConfigProvider renderEmpty={data.isEmpty ? customizeRenderEmpty : void 0}>
+          <EditableProTable<DataSourceType>
+            rowKey={rowKey}
+            recordCreatorProps={
+              data.hideAddBtn
+                ? false
+                : {
+                    newRecordType: data.useAutoSave ? 'dataSource' : 'cache',
+                    creatorButtonText: data.creatorButtonText,
+                    record: () => ({ _key: uuid(), [rowKey]: uuid(), _add: true }),
+                    disabled: !!env?.edit
+                  }
+            }
+            value={dataSource}
+            columns={getColumns(dataSource)}
+            onChange={(value) => {
+              setDataSource(value as DataSourceType[]);
+            }}
+            scroll={{
+              x: '100%',
+              y: data?.scroll?.y ? data?.scroll?.y : void 0
+            }}
+            actionRef={actionRef}
+            size={data.size || 'middle'}
+            rowSelection={data.useRowSelection && rowSelection}
+            tableAlertRender={false}
+            expandable={{
+              expandedRowKeys,
+              onExpand: (expanded: boolean, record: DataSourceType) => {
+                const newExpandedRowKeys = expanded
+                  ? [...expandedRowKeys, record?.[rowKey]]
+                  : expandedRowKeys.filter((key) => key !== record?.[rowKey]);
+                setExpandedRowKeys(newExpandedRowKeys);
+              }
+            }}
+            editable={{
+              type: data.editType || 'multiple',
+              editableKeys,
+              onChange: setEditableRowKeys,
+              onSave: (key, value) => {
+                if (data.useSaveCallback) {
+                  outputs[OUTPUTS.SaveCallback](value);
                 }
-          }
-          value={dataSource}
-          columns={getColumns(dataSource)}
-          onChange={(value) => {
-            setDataSource(value as DataSourceType[]);
-          }}
-          scroll={{
-            x: '100%',
-            y: data?.scroll?.y ? data?.scroll?.y : void 0
-          }}
-          actionRef={actionRef}
-          size={data.size || 'middle'}
-          rowSelection={data.useRowSelection && rowSelection}
-          tableAlertRender={false}
-          expandable={{
-            expandedRowKeys,
-            onExpand: (expanded: boolean, record: DataSourceType) => {
-              const newExpandedRowKeys = expanded
-                ? [...expandedRowKeys, record?.[rowKey]]
-                : expandedRowKeys.filter((key) => key !== record?.[rowKey]);
-              setExpandedRowKeys(newExpandedRowKeys);
-            }
-          }}
-          editable={{
-            type: data.editType || 'multiple',
-            editableKeys,
-            onChange: setEditableRowKeys,
-            onSave: (key, value) => {
-              if (data.useSaveCallback) {
-                outputs[OUTPUTS.SaveCallback](value);
+                return Promise.resolve();
+              },
+              saveText: data?.saveText,
+              cancelText: data?.cancelText,
+              onDelete: (key, value) => {
+                if (data.useDelCallback) {
+                  outputs[OUTPUTS.DelCallback](value);
+                }
+                return Promise.resolve();
+              },
+              actionRender: (row, config, defaultDoms) => {
+                return [
+                  !data.hideSaveBtn && defaultDoms.save,
+                  !data.hideDeleteBtnInEdit && defaultDoms.delete,
+                  !data.hideCancelBtn && defaultDoms.cancel
+                ].filter((item) => !!item);
+              },
+              onValuesChange: (record, recordList: DataSourceType[]) => {
+                if (data.useAutoSave) {
+                  setDataSource(
+                    recordList
+                      .filter((item) => !!item?._key)
+                      .map((item, index) => ({ ...item, index }))
+                  );
+                }
               }
-              return Promise.resolve();
-            },
-            saveText: data?.saveText,
-            cancelText: data?.cancelText,
-            onDelete: (key, value) => {
-              if (data.useDelCallback) {
-                outputs[OUTPUTS.DelCallback](value);
-              }
-              return Promise.resolve();
-            },
-            actionRender: (row, config, defaultDoms) => {
-              return [
-                !data.hideSaveBtn && defaultDoms.save,
-                !data.hideDeleteBtnInEdit && defaultDoms.delete,
-                !data.hideCancelBtn && defaultDoms.cancel
-              ].filter((item) => !!item);
-            },
-            onValuesChange: (record, recordList: DataSourceType[]) => {
-              if (data.useAutoSave) {
-                setDataSource(
-                  recordList
-                    .filter((item) => !!item?._key)
-                    .map((item, index) => ({ ...item, index }))
-                );
-              }
-            }
-          }}
-        />
+            }}
+          />
+        </ConfigProvider>
       </Suspense>
     </div>
   );
