@@ -231,6 +231,11 @@ export const formatColumn = (data: Data, env: Env, colsCfg: any): ColumnItem[] =
           'data-table-th-idx': idx
         };
       };
+      item.onCell = (): any => {
+        return {
+          'data-table-column-id': idx
+        };
+      };
       return getColumnConfig(colsCfg, item);
     })
     .filter((item) => !!item);
@@ -252,3 +257,5 @@ export const getSuggestions = (data: Data) => {
 export const run = (script: string) => {
   return runScript(script, {});
 };
+
+export const getFilterSelectorWithId = (id: string) => `:not(#${id} *[data-isslot="1"] *)`;

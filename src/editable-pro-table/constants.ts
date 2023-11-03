@@ -80,6 +80,8 @@ export type ColumnItem = ProColumns<any> & {
   dataSchema?: any;
   // 省略展示
   ellipsis?: any;
+
+  optionFilterProp?: string; // 搜索规则 默认 value
 };
 export interface Data {
   headerTitle: string;
@@ -136,6 +138,8 @@ export interface Data {
   isEmpty: boolean;
   image: string;
   description: string;
+
+  bordered: boolean; // 边框
 }
 
 interface Scroll {

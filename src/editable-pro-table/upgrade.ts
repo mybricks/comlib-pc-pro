@@ -66,5 +66,9 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
     data.isEmpty = false;
   }
 
+  if (data?.bordered === undefined) {
+    data.bordered = false;
+  }
+
   return true;
 }

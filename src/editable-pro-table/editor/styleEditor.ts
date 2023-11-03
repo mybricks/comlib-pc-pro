@@ -2,6 +2,7 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { Data } from '../constants';
 import { unitConversion } from '../../utils';
 import { emptyStyleEditor } from './empty';
+import newStyleEditor from './newStyleEditor';
 
 export default {
   title: '样式配置',
@@ -20,6 +21,18 @@ export default {
         },
         set({ data }: EditorResult<Data>, value: SizeType) {
           data.size = value;
+        }
+      }
+    },
+    {
+      title: '显示边框',
+      type: 'Switch',
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return !!data.bordered;
+        },
+        set({ data }: EditorResult<Data>, value: boolean) {
+          data.bordered = value;
         }
       }
     },
@@ -51,6 +64,7 @@ export default {
         }
       }
     },
-    ...emptyStyleEditor
+    ...emptyStyleEditor,
+    ...newStyleEditor
   ]
 };
