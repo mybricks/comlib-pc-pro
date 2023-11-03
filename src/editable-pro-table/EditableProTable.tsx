@@ -313,6 +313,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
               !data.hideModifyBtn && editable && (
                 <a
                   key="editable"
+                  className="editable"
                   onClick={() => {
                     if (env.edit) return;
                     action?.startEditable?.(record?.[rowKey]);
@@ -324,6 +325,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
               !data.hideDeleteBtn && (
                 <a
                   key="delete"
+                  className="delete"
                   onClick={() => {
                     if (env.edit) return;
                     setDataSource(deleteItemByKey(dataSource, record?.[rowKey], rowKey));
@@ -338,6 +340,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
               !data.hideNewBtn && (
                 <a
                   key="add"
+                  className="add"
                   onClick={() => {
                     if (env.edit) return;
                     actionRef.current?.addEditRecord?.({
@@ -353,6 +356,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
               !data.hideAllAddChildBtn && (!!env.edit || item.showAddChildBtn) && (
                 <a
                   key="addChild"
+                  className="addChild"
                   onClick={() => {
                     if (env.edit) return;
                     const newExpandedRowKeys = [...expandedRowKeys, record?.[rowKey]].filter(
@@ -699,6 +703,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
         <ConfigProvider renderEmpty={data.isEmpty ? customizeRenderEmpty : void 0}>
           <EditableProTable<DataSourceType>
             rowKey={rowKey}
+            bordered={data.bordered}
             recordCreatorProps={
               data.hideAddBtn
                 ? false

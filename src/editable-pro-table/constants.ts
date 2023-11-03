@@ -136,6 +136,8 @@ export interface Data {
   isEmpty: boolean;
   image: string;
   description: string;
+
+  bordered: boolean; // 边框
 }
 
 interface Scroll {
