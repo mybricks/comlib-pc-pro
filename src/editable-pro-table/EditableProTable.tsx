@@ -493,6 +493,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                 placeholder={'请选择'}
                 mode={item.multiple ? 'multiple' : undefined}
                 showSearch={item.showSearch}
+                optionFilterProp={item.optionFilterProp}
                 disabled={runDisableScript(disableScript, record || entity)}
                 {...(item.fieldProps as any)}
               />
@@ -513,6 +514,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                 placeholder={'请选择'}
                 multiple={item.multiple}
                 showSearch={item.showSearch}
+                optionFilterProp={item.optionFilterProp}
                 disabled={runDisableScript(disableScript, record || entity)}
                 {...(item.fieldProps as any)}
               />
@@ -542,6 +544,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                 placeholder={'请选择'}
                 multiple={item.multiple}
                 showSearch={item.showSearch}
+                optionFilterProp={item.optionFilterProp}
                 getPopupContainer={() => wrapRef.current as HTMLDivElement}
                 treeNodeFilterProp="label"
                 disabled={runDisableScript(disableScript, record || entity)}
