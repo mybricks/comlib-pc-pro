@@ -1,5 +1,5 @@
 import { Data, TypeEnum } from '../../constants';
-import { checkType, getFilterSelector } from '../../utils';
+import { checkType, getFilterSelectorWithId } from '../../utils';
 
 const createButtonEditor = ({ title, catelog, ifVisible, target, domTarget = '' }) => {
   return {
@@ -18,7 +18,6 @@ const createButtonEditor = ({ title, catelog, ifVisible, target, domTarget = '' 
 
 export default [
   {
-    title: '操作列样式',
     items: [
       {
         title: '表头',
@@ -30,7 +29,7 @@ export default [
         ],
         target: ({ focusArea, id }: EditorResult<Data>) => {
           const { tableThIdx } = focusArea.dataset;
-          const selector = `table thead tr th[data-table-th-idx="${tableThIdx}"]${getFilterSelector(
+          const selector = `table thead tr th[data-table-th-idx="${tableThIdx}"]${getFilterSelectorWithId(
             id
           )}`;
           return selector;
@@ -46,7 +45,7 @@ export default [
         ],
         target: ({ focusArea, id }: EditorResult<Data>) => {
           const { tableThIdx } = focusArea.dataset;
-          const selector = `table tbody tr td[data-table-column-id="${tableThIdx}"]${getFilterSelector(
+          const selector = `table tbody tr td[data-table-column-id="${tableThIdx}"]${getFilterSelectorWithId(
             id
           )}`;
           return selector;

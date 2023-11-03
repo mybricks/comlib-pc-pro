@@ -1,5 +1,5 @@
 import { Data } from '../constants';
-import { getFilterSelector } from '../utils';
+import { getFilterSelectorWithId } from '../utils';
 
 const createEditor = ({ title, catelog, target }) => {
   return {
@@ -24,18 +24,18 @@ export default [
       createEditor({
         title: '表头',
         catelog: '默认',
-        target: ({ id }) => `table thead tr th${getFilterSelector(id)}`
+        target: ({ id }) => `table thead tr th${getFilterSelectorWithId(id)}`
       }),
       createEditor({
         title: '表格内容',
         catelog: '默认',
-        target: ({ id }) => `table tbody tr td${getFilterSelector(id)}`
+        target: ({ id }) => `table tbody tr td${getFilterSelectorWithId(id)}`
       }),
       createEditor({
         title: '行Hover',
         catelog: 'Hover',
         target: ({ id }) =>
-          `table tbody>tr>td.ant-table-cell-row-hover[data-table-column-id]${getFilterSelector(id)}`
+          `table tbody>tr>td.ant-table-cell-row-hover[data-table-column-id]${getFilterSelectorWithId(id)}`
       })
     ]
   }
