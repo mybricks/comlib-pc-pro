@@ -756,9 +756,9 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
               },
               actionRender: (row, config, defaultDoms) => {
                 return [
-                  !data.hideSaveBtn && defaultDoms.save,
-                  !data.hideDeleteBtnInEdit && defaultDoms.delete,
-                  !data.hideCancelBtn && defaultDoms.cancel
+                  !data.hideSaveBtn && <span className="save">{defaultDoms.save}</span>,
+                  !data.hideDeleteBtnInEdit && <span className="delete">{defaultDoms.delete}</span>,
+                  !data.hideCancelBtn && <span className="cancel">{defaultDoms.cancel}</span>
                 ].filter((item) => !!item);
               },
               onValuesChange: (record, recordList: DataSourceType[]) => {

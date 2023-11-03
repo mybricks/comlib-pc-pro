@@ -61,7 +61,7 @@ export default [
         target: `.ant-space-item > .editable`
       }),
       createButtonEditor({
-        title: '删除按钮',
+        title: '删除按钮-只读态',
         catelog: '默认',
         ifVisible({ data, focusArea }: EditorResult<Data>) {
           return checkType(data, focusArea, [TypeEnum.Option]) && !data.hideDeleteBtn;
@@ -85,6 +85,30 @@ export default [
         target: `.ant-space-item > .addChild`
       }),
       createButtonEditor({
+        title: '删除按钮-编辑态',
+        catelog: '默认',
+        ifVisible({ data, focusArea }: EditorResult<Data>) {
+          return checkType(data, focusArea, [TypeEnum.Option]) && !data.hideDeleteBtnInEdit;
+        },
+        target: `.ant-space-item > span.delete a`
+      }),
+      createButtonEditor({
+        title: '保存按钮',
+        catelog: '默认',
+        ifVisible({ data, focusArea }: EditorResult<Data>) {
+          return checkType(data, focusArea, [TypeEnum.Option]) && !data.hideDeleteBtnInEdit;
+        },
+        target: `.ant-space-item > span.save a`
+      }),
+      createButtonEditor({
+        title: '取消按钮',
+        catelog: '默认',
+        ifVisible({ data, focusArea }: EditorResult<Data>) {
+          return checkType(data, focusArea, [TypeEnum.Option]) && !data.hideCancelBtn;
+        },
+        target: `.ant-space-item > span.cancel a`
+      }),
+      createButtonEditor({
         title: '编辑按钮',
         catelog: 'Hover',
         ifVisible({ data, focusArea }: EditorResult<Data>) {
@@ -94,7 +118,7 @@ export default [
         domTarget: '.ant-space-item > .editable'
       }),
       createButtonEditor({
-        title: '删除按钮',
+        title: '删除按钮-只读态',
         catelog: 'Hover',
         ifVisible({ data, focusArea }: EditorResult<Data>) {
           return checkType(data, focusArea, [TypeEnum.Option]) && !data.hideDeleteBtn;
@@ -119,7 +143,34 @@ export default [
         },
         target: `.ant-space-item > .addChild:hover`,
         domTarget: '.ant-space-item > .addChild'
-      })
+      }),
+      createButtonEditor({
+        title: '删除按钮-编辑态',
+        catelog: 'Hover',
+        ifVisible({ data, focusArea }: EditorResult<Data>) {
+          return checkType(data, focusArea, [TypeEnum.Option]) && !data.hideDeleteBtnInEdit;
+        },
+        target: `.ant-space-item > span.delete a:hover`,
+        domTarget: '.ant-space-item > span.delete a'
+      }),
+      createButtonEditor({
+        title: '保存按钮',
+        catelog: 'Hover',
+        ifVisible({ data, focusArea }: EditorResult<Data>) {
+          return checkType(data, focusArea, [TypeEnum.Option]) && !data.hideDeleteBtnInEdit;
+        },
+        target: `.ant-space-item > span.save a:hover`,
+        domTarget: '.ant-space-item > span.save a'
+      }),
+      createButtonEditor({
+        title: '取消按钮',
+        catelog: 'Hover',
+        ifVisible({ data, focusArea }: EditorResult<Data>) {
+          return checkType(data, focusArea, [TypeEnum.Option]) && !data.hideCancelBtn;
+        },
+        target: `.ant-space-item > span.cancel a:hover`,
+        domTarget: '.ant-space-item > span.cancel a'
+      }),
     ]
   }
 ];
