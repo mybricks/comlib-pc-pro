@@ -232,6 +232,16 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
     }
   }, [dataSource]);
 
+  useEffect(() => {
+    const target = wrapRef.current?.querySelector?.('div.ant-table-body') as HTMLDivElement;
+    if (!target?.style) return;
+    if (data.fixedHeader && !!data.fixedHeight) {
+      target.style.minHeight = typeof data.scroll.y === 'string' ? data.scroll.y : '';
+    } else {
+      target.style.minHeight = '';
+    }
+  }, [data.fixedHeight, data.fixedHeader, data.scroll.y]);
+
   const findLabelByOptions = (value, options) => {
     let res;
     (options || []).forEach((item) => {

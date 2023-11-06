@@ -64,6 +64,21 @@ export default {
         }
       }
     },
+    {
+      title: '固定可滚动区域高度',
+      type: 'Switch',
+      ifVisible({ data }: EditorResult<Data>) {
+        return data.fixedHeader;
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data.fixedHeight;
+        },
+        set({ data, input }: EditorResult<Data>, val: boolean) {
+          data.fixedHeight = val;
+        }
+      }
+    },
     ...emptyStyleEditor,
     ...newStyleEditor
   ]
