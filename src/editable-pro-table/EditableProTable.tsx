@@ -429,7 +429,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             const { record } = config;
             return (
               <SlotItem
-                record={entity}
+                record={record}
                 isEditable={runDisableScript(disableScript, record || entity)}
               />
             );
