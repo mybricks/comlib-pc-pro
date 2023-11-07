@@ -57,7 +57,15 @@ const swapArr = (arr: any[], idx1: number, idx2: number) => {
   return arr;
 };
 const { RangePicker } = DatePicker;
-export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeParams<Data>) {
+export default function ({
+  data,
+  slots,
+  inputs,
+  outputs,
+  env,
+  logger,
+  title
+}: RuntimeParams<Data>) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const actionRef = useRef<ActionType>();
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([]);
@@ -126,6 +134,18 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             }
           });
           setSelectedRowKeys(newSelectedRowKeys);
+        });
+      }
+
+      // 动态设置表头
+      if (data.dynamicColumns && inputs[INPUTS.DynamicColumns]) {
+        inputs[INPUTS.DynamicColumns]((val) => {
+          if (Array.isArray(val)) {
+            const optionColumn = data.columns.find((col) => col.valueType === TypeEnum.Option);
+            data.columns = [...val, optionColumn];
+          } else {
+            logger.warn(`${title}:【设置表头】 输入不是数组`);
+          }
         });
       }
 
