@@ -70,5 +70,9 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
     data.bordered = false;
   }
 
+  if(data.fixedHeight === undefined) {
+    data.fixedHeight = false;
+  }
+
   return true;
 }
