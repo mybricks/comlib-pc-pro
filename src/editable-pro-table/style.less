@@ -1,4 +1,4 @@
-.fz-editable-table {
+.fz-editable-table-event {
   > * {
     pointer-events: auto !important;
 
@@ -6,7 +6,9 @@
       pointer-events: auto !important;
     }
   }
+}
 
+.fz-editable-table {
   :global {
     .ant-input-number {
       width: 100%;
@@ -30,11 +32,11 @@
   thead {
     pointer-events: auto !important;
   }
-}
 
-:global {
-  .ant-tooltip-inner {
-    white-space: pre-wrap;
+  :global {
+    .ant-tooltip-inner {
+      white-space: pre-wrap;
+    }
   }
 }
 

@@ -731,12 +731,24 @@ export default function ({
     }
   };
   return (
-    <div className={env?.edit && styles['fz-editable-table']} ref={wrapRef}>
+    <div
+      className={`${styles['fz-editable-table']} ${
+        env?.edit ? styles['fz-editable-table-event'] : ''
+      }`}
+      ref={wrapRef}
+    >
       <Suspense fallback={<Spin tip="Loading..." />}>
         <ConfigProvider renderEmpty={data.isEmpty ? customizeRenderEmpty : void 0}>
           <EditableProTable<DataSourceType>
             rowKey={rowKey}
             bordered={data.bordered}
+            onRow={(record) => {
+              return {
+                onClick: () => {
+                  console.log(record, '123');
+                }
+              };
+            }}
             recordCreatorProps={
               data.hideAddBtn
                 ? false
@@ -781,6 +793,7 @@ export default function ({
               },
               saveText: data?.saveText,
               cancelText: data?.cancelText,
+
               onDelete: (key, value) => {
                 if (data.useDelCallback) {
                   outputs[OUTPUTS.DelCallback](value);
