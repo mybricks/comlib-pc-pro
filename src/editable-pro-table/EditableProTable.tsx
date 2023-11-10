@@ -302,19 +302,13 @@ export default function ({
     return undefined;
   };
 
-  const columnsRender = useCallback((value, action, record, ellipsis) => {
-    const startEditable = () => {
-      if (env.edit || !data.clickChangeToedit) return;
-      action?.startEditable?.(record?.[rowKey]);
-    };
+  const columnsRender = useCallback((value, ellipsis) => {
     return ellipsis ? (
       <Tooltip placement="topLeft" title={value}>
-        <span className={styles.ellipsisWrap} onClick={startEditable}>
-          {value}
-        </span>
+        <span className={styles.ellipsisWrap}>{value}</span>
       </Tooltip>
     ) : (
-      <span onClick={startEditable}>{value}</span>
+      <span>{value}</span>
     );
   }, []);
 
@@ -344,9 +338,10 @@ export default function ({
                 <a
                   key="editable"
                   className="editable"
-                  onClick={() => {
+                  onClick={(e) => {
                     if (env.edit) return;
                     action?.startEditable?.(record?.[rowKey]);
+                    e.stopPropagation();
                   }}
                 >
                   {data?.editText}
@@ -356,12 +351,13 @@ export default function ({
                 <a
                   key="delete"
                   className="delete"
-                  onClick={() => {
+                  onClick={(e) => {
                     if (env.edit) return;
                     setDataSource(deleteItemByKey(dataSource, record?.[rowKey], rowKey));
                     if (data.useDelCallback) {
                       outputs[OUTPUTS.DelCallback](record);
                     }
+                    e.stopPropagation();
                   }}
                 >
                   {data?.deleteText}
@@ -371,13 +367,14 @@ export default function ({
                 <a
                   key="add"
                   className="add"
-                  onClick={() => {
+                  onClick={(e) => {
                     if (env.edit) return;
                     actionRef.current?.addEditRecord?.({
                       _key: uuid(),
                       [rowKey]: uuid(),
                       _add: true
                     });
+                    e.stopPropagation();
                   }}
                 >
                   新增
@@ -387,13 +384,14 @@ export default function ({
                 <a
                   key="addChild"
                   className="addChild"
-                  onClick={() => {
+                  onClick={(e) => {
                     if (env.edit) return;
                     const newExpandedRowKeys = [...expandedRowKeys, record?.[rowKey]].filter(
                       (item, inx, self) => item && self.indexOf(item) === inx
                     );
                     setExpandedRowKeys(newExpandedRowKeys);
                     setDataSource(addChildByKey(dataSource, record?.[rowKey], rowKey));
+                    e.stopPropagation();
                   }}
                 >
                   {data.addChildBtnLabel}
@@ -466,13 +464,7 @@ export default function ({
           };
           item.render = (_, record, idx, action) => {
             return (
-              <div
-                key={JSON.stringify(record[`${item.dataIndex}`])}
-                onClick={() => {
-                  if (env.edit || !data.clickChangeToedit) return;
-                  action?.startEditable?.(record?.[rowKey]);
-                }}
-              >
+              <div key={JSON.stringify(record[`${item.dataIndex}`])}>
                 {item.slotId &&
                   slots[item.slotId] &&
                   slots[item.slotId].render({
@@ -509,7 +501,7 @@ export default function ({
               ? moment(record[`${item.dataIndex}`]).format(format)
               : '-';
 
-            return columnsRender(value, action, record, item.ellipsis);
+            return columnsRender(value, item.ellipsis);
           };
           break;
         case TypeEnum.Select:
@@ -532,7 +524,7 @@ export default function ({
           item.render = (_, record, idx, action) => {
             const options = (item.fieldProps as any).options;
             const value = renderTagList(getValueByOptions(record[`${item.dataIndex}`], options));
-            return columnsRender(value, action, record, item.ellipsis);
+            return columnsRender(value, item.ellipsis);
           };
           break;
         case TypeEnum.Cascader:
@@ -562,7 +554,7 @@ export default function ({
                   : strList.join('/')
               );
             }
-            return columnsRender(returnDom, action, record, item.ellipsis);
+            return columnsRender(returnDom, item.ellipsis);
           };
           break;
         case TypeEnum.TreeSelect as any:
@@ -585,7 +577,7 @@ export default function ({
           item.render = (_, record, idx, action) => {
             const options = (item.fieldProps as any).treeData;
             const value = renderTagList(getValueByOptions(record[`${item.dataIndex}`], options));
-            return columnsRender(value, action, record, item.ellipsis);
+            return columnsRender(value, item.ellipsis);
           };
           break;
         case TypeEnum.Checkbox:
@@ -602,12 +594,7 @@ export default function ({
           item.render = (_, record, idx, action) => {
             const value = record[`${item.dataIndex}`];
             return (
-              <div
-                onClick={() => {
-                  if (env.edit || !data.clickChangeToedit) return;
-                  action?.startEditable?.(record?.[rowKey]);
-                }}
-              >
+              <div>
                 <Checkbox.Group {...(item.fieldProps as any)} disabled={true} value={value} />
               </div>
             );
@@ -631,7 +618,7 @@ export default function ({
               ? record[`${item.dataIndex}`].map((time) => moment(time).format(format)).join(' 至 ')
               : '-';
             const format = item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD';
-            return columnsRender(value, action, record, item.ellipsis);
+            return columnsRender(value, item.ellipsis);
           };
           break;
         case TypeEnum.Text:
@@ -647,7 +634,7 @@ export default function ({
           };
           item.render = (_, record, idx, action) => {
             const value = record[`${item.dataIndex}`];
-            return columnsRender(value, action, record, item.ellipsis);
+            return columnsRender(value, item.ellipsis);
           };
           break;
         case TypeEnum.Number:
@@ -663,7 +650,7 @@ export default function ({
           };
           item.render = (_, record, idx, action) => {
             const value = record[`${item.dataIndex}`];
-            return columnsRender(value, action, record, item.ellipsis);
+            return columnsRender(value, item.ellipsis);
           };
           break;
         case TypeEnum.Switch:
@@ -687,12 +674,7 @@ export default function ({
           item.render = (_, record, idx, action) => {
             const value = record[`${item.dataIndex}`];
             return (
-              <div
-                onClick={() => {
-                  if (env.edit || !data.clickChangeToedit) return;
-                  action?.startEditable?.(record?.[rowKey]);
-                }}
-              >
+              <div>
                 <Switch
                   {...(item.fieldProps as any)}
                   checked={value}
@@ -731,12 +713,25 @@ export default function ({
     }
   };
   return (
-    <div className={env?.edit && styles['fz-editable-table']} ref={wrapRef}>
+    <div
+      className={`${styles['fz-editable-table']} ${
+        env?.edit ? styles['fz-editable-table-event'] : ''
+      }`}
+      ref={wrapRef}
+    >
       <Suspense fallback={<Spin tip="Loading..." />}>
         <ConfigProvider renderEmpty={data.isEmpty ? customizeRenderEmpty : void 0}>
           <EditableProTable<DataSourceType>
             rowKey={rowKey}
             bordered={data.bordered}
+            onRow={(record) => {
+              return {
+                onClick: () => {
+                  if (env.edit || !data.clickChangeToedit) return;
+                  actionRef?.current?.startEditable?.(record?.[rowKey]);
+                }
+              };
+            }}
             recordCreatorProps={
               data.hideAddBtn
                 ? false
@@ -781,6 +776,7 @@ export default function ({
               },
               saveText: data?.saveText,
               cancelText: data?.cancelText,
+
               onDelete: (key, value) => {
                 if (data.useDelCallback) {
                   outputs[OUTPUTS.DelCallback](value);
