@@ -728,6 +728,9 @@ export default function ({
               return {
                 onClick: () => {
                   if (env.edit || !data.clickChangeToedit) return;
+                  if (actionRef?.current?.editableKeys?.includes(record?.[rowKey])) {
+                    return;
+                  }
                   actionRef?.current?.startEditable?.(record?.[rowKey]);
                 }
               };
