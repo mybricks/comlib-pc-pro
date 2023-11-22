@@ -458,7 +458,7 @@ export default function ({
             const { record } = config;
             return (
               <SlotItem
-                record={entity}
+                record={record}
                 isEditable={runDisableScript(disableScript, record || entity)}
               />
             );
