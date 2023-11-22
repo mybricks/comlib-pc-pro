@@ -47,6 +47,7 @@ import { getTemplateRenderScript } from '../utils/runExpCodeScript';
 // @ts-ignore
 import { EditableProTable } from '@ant-design/pro-table';
 // const EditableProTable = React.lazy(() => import('./importTable'));
+import './antd.variable.without.theme.min.css';
 
 const swapArr = (arr: any[], idx1: number, idx2: number) => {
   if (arr[idx1] && arr[idx2]) {
@@ -57,7 +58,15 @@ const swapArr = (arr: any[], idx1: number, idx2: number) => {
   return arr;
 };
 const { RangePicker } = DatePicker;
-export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeParams<Data>) {
+export default function ({
+  data,
+  slots,
+  inputs,
+  outputs,
+  env,
+  logger,
+  title
+}: RuntimeParams<Data>) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const actionRef = useRef<ActionType>();
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([]);
@@ -126,6 +135,18 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
             }
           });
           setSelectedRowKeys(newSelectedRowKeys);
+        });
+      }
+
+      // 动态设置表头
+      if (data.dynamicColumns && inputs[INPUTS.DynamicColumns]) {
+        inputs[INPUTS.DynamicColumns]((val) => {
+          if (Array.isArray(val)) {
+            const optionColumn = data.columns.find((col) => col.valueType === TypeEnum.Option);
+            data.columns = [...val, optionColumn];
+          } else {
+            logger.warn(`${title}:【设置表头】 输入不是数组`);
+          }
         });
       }
 
@@ -232,6 +253,16 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
     }
   }, [dataSource]);
 
+  useEffect(() => {
+    const target = wrapRef.current?.querySelector?.('div.ant-table-body') as HTMLDivElement;
+    if (!target?.style) return;
+    if (data.fixedHeader && !!data.fixedHeight) {
+      target.style.minHeight = typeof data.scroll.y === 'string' ? data.scroll.y : '';
+    } else {
+      target.style.minHeight = '';
+    }
+  }, [data.fixedHeight, data.fixedHeader, data.scroll.y]);
+
   const findLabelByOptions = (value, options) => {
     let res;
     (options || []).forEach((item) => {
@@ -272,19 +303,13 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
     return undefined;
   };
 
-  const columnsRender = useCallback((value, action, record, ellipsis) => {
-    const startEditable = () => {
-      if (env.edit || !data.clickChangeToedit) return;
-      action?.startEditable?.(record?.[rowKey]);
-    };
+  const columnsRender = useCallback((value, ellipsis) => {
     return ellipsis ? (
       <Tooltip placement="topLeft" title={value}>
-        <span className={styles.ellipsisWrap} onClick={startEditable}>
-          {value}
-        </span>
+        <span className={styles.ellipsisWrap}>{value}</span>
       </Tooltip>
     ) : (
-      <span onClick={startEditable}>{value}</span>
+      <span>{value}</span>
     );
   }, []);
 
@@ -314,9 +339,10 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                 <a
                   key="editable"
                   className="editable"
-                  onClick={() => {
+                  onClick={(e) => {
                     if (env.edit) return;
                     action?.startEditable?.(record?.[rowKey]);
+                    e.stopPropagation();
                   }}
                 >
                   {data?.editText}
@@ -326,12 +352,13 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                 <a
                   key="delete"
                   className="delete"
-                  onClick={() => {
+                  onClick={(e) => {
                     if (env.edit) return;
                     setDataSource(deleteItemByKey(dataSource, record?.[rowKey], rowKey));
                     if (data.useDelCallback) {
                       outputs[OUTPUTS.DelCallback](record);
                     }
+                    e.stopPropagation();
                   }}
                 >
                   {data?.deleteText}
@@ -341,13 +368,14 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                 <a
                   key="add"
                   className="add"
-                  onClick={() => {
+                  onClick={(e) => {
                     if (env.edit) return;
                     actionRef.current?.addEditRecord?.({
                       _key: uuid(),
                       [rowKey]: uuid(),
                       _add: true
                     });
+                    e.stopPropagation();
                   }}
                 >
                   新增
@@ -357,13 +385,14 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                 <a
                   key="addChild"
                   className="addChild"
-                  onClick={() => {
+                  onClick={(e) => {
                     if (env.edit) return;
                     const newExpandedRowKeys = [...expandedRowKeys, record?.[rowKey]].filter(
                       (item, inx, self) => item && self.indexOf(item) === inx
                     );
                     setExpandedRowKeys(newExpandedRowKeys);
                     setDataSource(addChildByKey(dataSource, record?.[rowKey], rowKey));
+                    e.stopPropagation();
                   }}
                 >
                   {data.addChildBtnLabel}
@@ -436,13 +465,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
           };
           item.render = (_, record, idx, action) => {
             return (
-              <div
-                key={JSON.stringify(record[`${item.dataIndex}`])}
-                onClick={() => {
-                  if (env.edit || !data.clickChangeToedit) return;
-                  action?.startEditable?.(record?.[rowKey]);
-                }}
-              >
+              <div key={JSON.stringify(record[`${item.dataIndex}`])}>
                 {item.slotId &&
                   slots[item.slotId] &&
                   slots[item.slotId].render({
@@ -479,7 +502,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
               ? moment(record[`${item.dataIndex}`]).format(format)
               : '-';
 
-            return columnsRender(value, action, record, item.ellipsis);
+            return columnsRender(value, item.ellipsis);
           };
           break;
         case TypeEnum.Select:
@@ -502,7 +525,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
           item.render = (_, record, idx, action) => {
             const options = (item.fieldProps as any).options;
             const value = renderTagList(getValueByOptions(record[`${item.dataIndex}`], options));
-            return columnsRender(value, action, record, item.ellipsis);
+            return columnsRender(value, item.ellipsis);
           };
           break;
         case TypeEnum.Cascader:
@@ -532,7 +555,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
                   : strList.join('/')
               );
             }
-            return columnsRender(returnDom, action, record, item.ellipsis);
+            return columnsRender(returnDom, item.ellipsis);
           };
           break;
         case TypeEnum.TreeSelect as any:
@@ -555,7 +578,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
           item.render = (_, record, idx, action) => {
             const options = (item.fieldProps as any).treeData;
             const value = renderTagList(getValueByOptions(record[`${item.dataIndex}`], options));
-            return columnsRender(value, action, record, item.ellipsis);
+            return columnsRender(value, item.ellipsis);
           };
           break;
         case TypeEnum.Checkbox:
@@ -572,12 +595,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
           item.render = (_, record, idx, action) => {
             const value = record[`${item.dataIndex}`];
             return (
-              <div
-                onClick={() => {
-                  if (env.edit || !data.clickChangeToedit) return;
-                  action?.startEditable?.(record?.[rowKey]);
-                }}
-              >
+              <div>
                 <Checkbox.Group {...(item.fieldProps as any)} disabled={true} value={value} />
               </div>
             );
@@ -601,7 +619,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
               ? record[`${item.dataIndex}`].map((time) => moment(time).format(format)).join(' 至 ')
               : '-';
             const format = item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD';
-            return columnsRender(value, action, record, item.ellipsis);
+            return columnsRender(value, item.ellipsis);
           };
           break;
         case TypeEnum.Text:
@@ -617,7 +635,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
           };
           item.render = (_, record, idx, action) => {
             const value = record[`${item.dataIndex}`];
-            return columnsRender(value, action, record, item.ellipsis);
+            return columnsRender(value, item.ellipsis);
           };
           break;
         case TypeEnum.Number:
@@ -633,7 +651,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
           };
           item.render = (_, record, idx, action) => {
             const value = record[`${item.dataIndex}`];
-            return columnsRender(value, action, record, item.ellipsis);
+            return columnsRender(value, item.ellipsis);
           };
           break;
         case TypeEnum.Switch:
@@ -657,12 +675,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
           item.render = (_, record, idx, action) => {
             const value = record[`${item.dataIndex}`];
             return (
-              <div
-                onClick={() => {
-                  if (env.edit || !data.clickChangeToedit) return;
-                  action?.startEditable?.(record?.[rowKey]);
-                }}
-              >
+              <div>
                 <Switch
                   {...(item.fieldProps as any)}
                   checked={value}
@@ -701,12 +714,28 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
     }
   };
   return (
-    <div className={env?.edit && styles['fz-editable-table']} ref={wrapRef}>
+    <div
+      className={`${styles['fz-editable-table']} ${
+        env?.edit ? styles['fz-editable-table-event'] : ''
+      }`}
+      ref={wrapRef}
+    >
       <Suspense fallback={<Spin tip="Loading..." />}>
         <ConfigProvider renderEmpty={data.isEmpty ? customizeRenderEmpty : void 0}>
           <EditableProTable<DataSourceType>
             rowKey={rowKey}
             bordered={data.bordered}
+            onRow={(record) => {
+              return {
+                onClick: () => {
+                  if (env.edit || !data.clickChangeToedit) return;
+                  if (actionRef?.current?.editableKeys?.includes(record?.[rowKey])) {
+                    return;
+                  }
+                  actionRef?.current?.startEditable?.(record?.[rowKey]);
+                }
+              };
+            }}
             recordCreatorProps={
               data.hideAddBtn
                 ? false
@@ -751,6 +780,7 @@ export default function ({ data, slots, inputs, outputs, env, logger }: RuntimeP
               },
               saveText: data?.saveText,
               cancelText: data?.cancelText,
+
               onDelete: (key, value) => {
                 if (data.useDelCallback) {
                   outputs[OUTPUTS.DelCallback](value);

@@ -18,6 +18,8 @@ export const INPUTS = {
   SlotRowValue: 'slotRowValue',
   SlotColValue: 'slotColValue',
   RowIndex: 'rowIndex',
+
+  DynamicColumns: 'dynamicColumns'
 };
 
 export const OUTPUTS = {
@@ -57,6 +59,117 @@ export const TypeEnumMap = {
   [TypeEnum.DateRange]: '日期范围选择',
   [TypeEnum.Checkbox]: '多选框',
   [TypeEnum.Cascader]: '级联选择'
+};
+
+export const ColumnsSchema = {
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      title: {
+        type: 'string'
+      },
+      dataIndex: {
+        type: 'string'
+      },
+      valueType: {
+        type: 'enum',
+        items: [
+          {
+            type: 'string',
+            value: 'text',
+          },
+          {
+            type: 'string',
+            value: 'digit',
+          },
+          {
+            type: 'string',
+            value: 'select',
+          },
+          {
+            type: 'string',
+            value: 'treeSelect',
+          },
+          {
+            type: 'string',
+            value: 'cascader',
+          },
+          {
+            type: 'string',
+            value: 'switch',
+          },
+          {
+            type: 'string',
+            value: 'checkbox',
+          },
+          {
+            type: 'string',
+            value: 'date',
+          },
+          {
+            type: 'string',
+            value: 'dateRange',
+          },
+        ],
+      },
+      width: {
+        type: 'number'
+      },
+      align: {
+        type: 'enum',
+        items: [
+          {
+            type: 'string',
+            value: 'left',
+          },
+          {
+            type: 'string',
+            value: 'center',
+          },
+          {
+            type: 'string',
+            value: 'right',
+          },
+        ],
+      },
+      required: {
+        type: 'string'
+      },
+      readonly: {
+        type: 'boolean'
+      },
+      disableScript: {
+        type: 'string'
+      },
+      ellipsis: {
+        type: 'boolean'
+      },
+      useTooltip: {
+        type: 'boolean'
+      },
+      tooltip: {
+        type: 'string'
+      },
+      // valueEnum: {
+      //   type: 'array',
+      //   items: {
+      //     type: 'object',
+      //     properties: {
+      //       label: {
+      //         type: 'string'
+      //       },
+      //       value: {
+      //         type: 'string'
+      //       },
+      //     }
+      //   },
+      // },
+      // fieldProps: {
+      //   type: 'object',
+      // },
+    }
+  }
 };
 
 export type ColumnItem = ProColumns<any> & {
@@ -126,6 +239,7 @@ export interface Data {
 
   fixedHeader: boolean; // 固定表头
   scroll: Scroll; // 滚动
+  fixedHeight?: boolean | undefined;
 
   editType: "single" | "multiple", // 可编辑表格的类型，单行编辑或者多行编辑
 
@@ -140,6 +254,9 @@ export interface Data {
   description: string;
 
   bordered: boolean; // 边框
+
+  // 是否支持动态表头
+  dynamicColumns: boolean
 }
 
 interface Scroll {
