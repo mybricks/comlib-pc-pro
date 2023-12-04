@@ -27,5 +27,6 @@
         "https://assets.mybricks.world/pkg/antd-4.21.6/antd.min.js"
       ]
     }
-  ]
+  ],
+  "tags": "react"
 }
