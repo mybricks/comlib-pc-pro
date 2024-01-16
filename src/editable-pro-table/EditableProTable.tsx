@@ -197,8 +197,10 @@ export default function ({
       });
       inputs[INPUTS.AddRow] &&
         inputs[INPUTS.AddRow]((val: any) => {
+          const intiValue = Object.prototype.toString.call(val) === '[object Object]' ? val : {};
           actionRef.current?.addEditRecord?.(
             {
+              ...intiValue,
               _key: uuid(),
               [rowKey]: uuid(),
               _add: true
