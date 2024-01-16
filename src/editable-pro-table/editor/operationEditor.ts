@@ -145,14 +145,11 @@ export default [
         }
       },
       {
-        title: '勾选标识',
+        title: '标识',
         type: 'text',
         description: '行唯一标识字段，默认为_key',
         options: {
           placeholder: '行唯一标识字段，默认为_key'
-        },
-        ifVisible({ data }: EditorResult<Data>) {
-          return data.useRowSelection;
         },
         value: {
           get({ data }: EditorResult<Data>) {

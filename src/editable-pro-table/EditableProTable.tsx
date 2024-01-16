@@ -76,7 +76,7 @@ export default function ({
   // 表格列配置
   const [colsCfg, setColsCfg] = useState<any>({});
 
-  const rowKey = data.useRowSelection && data.selectionRowKey ? data.selectionRowKey : '_key';
+  const rowKey = data.selectionRowKey || '_key';
 
   useEffect(() => {
     if (env.edit) {
@@ -159,7 +159,7 @@ export default function ({
               if (value !== undefined) {
                 data.columns.map((column) => {
                   if (column?.slotEditId === slot) {
-                    column?.[value?._key](value?.[column?.dataIndex as any]);
+                    column?.[value?.[rowKey]](value?.[column?.dataIndex as any]);
                   }
                 });
               }
@@ -201,7 +201,6 @@ export default function ({
           actionRef.current?.addEditRecord?.(
             {
               ...intiValue,
-              _key: uuid(),
               [rowKey]: uuid(),
               _add: true
             },
@@ -373,7 +372,6 @@ export default function ({
                   onClick={(e) => {
                     if (env.edit) return;
                     actionRef.current?.addEditRecord?.({
-                      _key: uuid(),
                       [rowKey]: uuid(),
                       _add: true
                     });
@@ -408,7 +406,7 @@ export default function ({
           const extractValues = (record: { [x: string]: any; index: number }) => {
             const slotRowValue = {};
             let slotColValue = null;
-            let rowIndex = record?._key || 0;
+            let rowIndex = record?.[rowKey] || 0;
 
             for (let key in record) {
               if (key !== 'index') {
@@ -420,7 +418,7 @@ export default function ({
               }
             }
 
-            rowIndex = dataSource.findIndex((item: any) => item?._key === record?._key);
+            rowIndex = dataSource.findIndex((item: any) => item?.[rowKey] === record?.[rowKey]);
             if (rowIndex === -1) {
               rowIndex = dataSource.length;
             }
@@ -429,10 +427,11 @@ export default function ({
           };
           const SlotItem = (props) => {
             const { record, isEditable, onChange } = props;
-            if (!data.columns[colIdx][record?._key]) data.columns[colIdx][record?._key] = onChange;
+            if (!data.columns[colIdx][record?.[rowKey]])
+              data.columns[colIdx][record?.[rowKey]] = onChange;
             const renderValue = {
               inputValues: extractValues(record),
-              key: `${record?._key}`
+              key: `${record?.[rowKey]}`
             };
             if (
               isEditable ||
@@ -472,14 +471,14 @@ export default function ({
                   slots[item.slotId] &&
                   slots[item.slotId].render({
                     inputValues: extractValues(record),
-                    key: `${record?._key}-slotId`
+                    key: `${record?.[rowKey]}-slotId`
                   })}
                 {env.edit &&
                   item?.slotEditId &&
                   slots[item.slotEditId] &&
                   slots[item.slotEditId].render({
                     inputValues: extractValues(record),
-                    key: `${record?._key}-slotEditId`
+                    key: `${record?.[rowKey]}-slotEditId`
                   })}
               </div>
             );
@@ -744,7 +743,7 @@ export default function ({
                 : {
                     newRecordType: data.useAutoSave ? 'dataSource' : 'cache',
                     creatorButtonText: data.creatorButtonText,
-                    record: () => ({ _key: uuid(), [rowKey]: uuid(), _add: true }),
+                    record: () => ({ [rowKey]: uuid(), _add: true }),
                     disabled: !!env?.edit
                   }
             }
@@ -800,7 +799,7 @@ export default function ({
                 if (data.useAutoSave) {
                   setDataSource(
                     recordList
-                      .filter((item) => !!item?._key)
+                      .filter((item) => !!item?.[rowKey])
                       .map((item, index) => ({ ...item, index }))
                   );
                 }
