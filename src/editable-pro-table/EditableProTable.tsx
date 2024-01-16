@@ -267,7 +267,7 @@ export default function ({
 
   const findLabelByOptions = (value, options) => {
     let res;
-    (options || []).forEach((item) => {
+    (Array.isArray(options) ? options : []).forEach((item) => {
       if (res !== undefined) {
         return;
       } else if (item.value === value) {
