@@ -217,6 +217,8 @@ export interface Data {
   hideNewBtn?: boolean;
 
   useAutoSave?: boolean;
+  /**@description 实时保存防抖时间 1.0.24 */
+  debounceAutoSaveTime?: number;
   useOperationDynamic?: boolean;
   readonlyWhenHasChildren?: boolean;
 

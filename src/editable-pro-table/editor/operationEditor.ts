@@ -42,6 +42,23 @@ export default [
         }
       },
       {
+        title: '实时保存防抖',
+        description: '实时保存操作的防抖时间，默认为0，表示不使用防抖',
+        type: 'InputNumber',
+        options: [{ title: '防抖时间', min: 0, max: 10000, width: 100 }],
+        ifVisible({ data }: EditorResult<Data>) {
+          return !!data.useAutoSave;
+        },
+        value: {
+          get({ data }: EditorResult<Data>) {
+            return [data.debounceAutoSaveTime];
+          },
+          set({ data }: EditorResult<Data>, val: number[]) {
+            data.debounceAutoSaveTime = val[0];
+          }
+        }
+      },
+      {
         title: '点击切换编辑态',
         description: '点击单元格切换到编辑态',
         type: 'switch',

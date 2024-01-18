@@ -197,11 +197,13 @@ export default function ({
       });
       inputs[INPUTS.AddRow] &&
         inputs[INPUTS.AddRow]((val: any) => {
+          const intiValue = Object.prototype.toString.call(val) === '[object Object]' ? val : {};
           actionRef.current?.addEditRecord?.(
             {
               _key: uuid(),
               [rowKey]: uuid(),
-              _add: true
+              _add: true,
+              ...intiValue
             },
             {
               newRecordType: 'dataSource'
@@ -796,11 +798,13 @@ export default function ({
               },
               onValuesChange: (record, recordList: DataSourceType[]) => {
                 if (data.useAutoSave) {
-                  setDataSource(
-                    recordList
-                      .filter((item) => !!item?._key)
-                      .map((item, index) => ({ ...item, index }))
-                  );
+                  const cb = () =>
+                    setDataSource(
+                      recordList
+                        .filter((item) => !!item?._key)
+                        .map((item, index) => ({ ...item, index }))
+                    );
+                  data.debounceAutoSaveTime ? debounce(cb, data.debounceAutoSaveTime) : cb();
                 }
               }
             }}
