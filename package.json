@@ -1,6 +1,6 @@
 {
   "name": "@mybricks/comlib-pc-pro",
-  "version": "1.0.61",
+  "version": "1.0.62",
   "description": "PC扩展组件库",
   "scripts": {
     "start": "mybricks dev",
