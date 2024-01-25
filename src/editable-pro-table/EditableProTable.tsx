@@ -158,9 +158,7 @@ export default function ({
             slotOutput((value: any) => {
               if (value !== undefined) {
                 data.columns.map((column) => {
-                  if (column?.slotEditId === slot) {
-                    column?.[value?._key](value?.[column?.dataIndex as any]);
-                  }
+                  column?.[value?._key]?.(value?.[column?.dataIndex as any]);
                 });
               }
             });
