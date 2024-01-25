@@ -428,14 +428,15 @@ export default function ({
             return { slotRowValue, slotColValue, rowIndex };
           };
           const SlotItem = (props) => {
-            const { record, isEditable, onChange } = props;
+            const { record, disabled, onChange } = props;
             if (!data.columns[colIdx][record?._key]) data.columns[colIdx][record?._key] = onChange;
             const renderValue = {
               inputValues: extractValues(record),
               key: `${record?._key}`
             };
+            // 禁用或者编辑态插槽没有组件，则显示只读态插槽
             if (
-              isEditable ||
+              disabled ||
               (item?.slotEditId && slots[item.slotEditId] && slots[item.slotEditId].size === 0)
             ) {
               return (
@@ -460,8 +461,8 @@ export default function ({
             const { record } = config;
             return (
               <SlotItem
-                record={record}
-                isEditable={runDisableScript(disableScript, record || entity)}
+                record={entity}
+                disabled={runDisableScript(disableScript, record || entity)}
               />
             );
           };
