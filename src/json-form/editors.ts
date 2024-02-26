@@ -5,7 +5,7 @@ export default {
     {
       title: '布局类型',
       type: 'Select',
-      options () {
+      options() {
         return [
           { label: '基本表单', value: 'Form' },
           { label: '查询表单', value: 'QueryFilter' }
@@ -17,6 +17,21 @@ export default {
         },
         set({ data, id, name }: EditorResult<Data>, value: Data["layoutType"]) {
           data.layoutType = value;
+        }
+      }
+    },
+    {
+      title: '栅格模式',
+      type: 'Switch',
+      ifVisible({ data }: EditorResult<Data>) {
+        return !['QueryFilter', 'LightFilter'].includes(data.layoutType || 'Form');
+      },
+      value: {
+        get({ data, }: EditorResult<Data>) {
+          return data.grid;
+        },
+        set({ data, }: EditorResult<Data>, value: boolean) {
+          data.grid = value;
         }
       }
     },

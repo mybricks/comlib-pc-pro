@@ -11,6 +11,7 @@ import styles from './styles.less';
 
 export interface Data {
   layoutType: ProFormLayoutType;
+  grid: boolean;
   submitter: false | SubmitterProps;
 }
 
@@ -58,6 +59,7 @@ export default function (props: RuntimeParams<Data>) {
           layoutType={data.layoutType}
           autoFocusFirstInput={false}
           columns={columns}
+          grid={!['QueryFilter', 'LightFilter'].includes(data.layoutType || 'Form') && data.grid}
           onFinish={async (values) => {
             onFinish(values);
           }}
