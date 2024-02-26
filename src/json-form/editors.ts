@@ -21,7 +21,7 @@ export default {
       }
     },
     {
-      title: '栅格模式',
+      title: '一行多列(grid模式)',
       type: 'Switch',
       ifVisible({ data }: EditorResult<Data>) {
         return !['QueryFilter', 'LightFilter'].includes(data.layoutType || 'Form');
@@ -59,6 +59,13 @@ export default {
       type: '_Event',
       options: {
         outputId: 'onReset'
+      }
+    },
+    {
+      title: '数据变化',
+      type: '_Event',
+      options: {
+        outputId: 'onValuesChange'
       }
     },
   ]

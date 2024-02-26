@@ -60,6 +60,21 @@
       "schema": {
         "type": "any"
       }
+    },
+    {
+      "id": "onValuesChange",
+      "title": "数据变化",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "changedValues": {
+            "type": "object"
+          },
+          "allValues": {
+            "type": "object"
+          }
+        }
+      }
     }
   ]
 }

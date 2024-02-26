@@ -50,6 +50,10 @@ export default function (props: RuntimeParams<Data>) {
     outputs['onReset']();
   }, []);
 
+  const onValuesChange = useCallback((changedValues, allValues) => {
+    outputs['onValuesChange']({ changedValues, allValues });
+  }, []);
+
   return (
     <>
       {columns?.length > 0 ? (
@@ -66,6 +70,7 @@ export default function (props: RuntimeParams<Data>) {
           onReset={() => {
             onReset();
           }}
+          onValuesChange={onValuesChange}
         ></BetaSchemaForm>
       ) : (
         <div className={styles.empty}>
