@@ -11,6 +11,7 @@ import styles from './styles.less';
 
 export interface Data {
   layoutType: ProFormLayoutType;
+  grid: boolean;
   submitter: false | SubmitterProps;
 }
 
@@ -49,6 +50,10 @@ export default function (props: RuntimeParams<Data>) {
     outputs['onReset']();
   }, []);
 
+  const onValuesChange = useCallback((changedValues, allValues) => {
+    outputs['onValuesChange']({ changedValues, allValues });
+  }, []);
+
   return (
     <>
       {columns?.length > 0 ? (
@@ -58,12 +63,14 @@ export default function (props: RuntimeParams<Data>) {
           layoutType={data.layoutType}
           autoFocusFirstInput={false}
           columns={columns}
+          grid={!['QueryFilter', 'LightFilter'].includes(data.layoutType || 'Form') && data.grid}
           onFinish={async (values) => {
             onFinish(values);
           }}
           onReset={() => {
             onReset();
           }}
+          onValuesChange={onValuesChange}
         ></BetaSchemaForm>
       ) : (
         <div className={styles.empty}>

@@ -1,7 +1,7 @@
 {
   "title": "JSON表单",
   "namespace": "mybricks.pro-pc.json-form",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "JSON表单",
   "author": "MyBricks",
   "author_name": "MyBricks",
@@ -59,6 +59,21 @@
       "title": "重置表单输出",
       "schema": {
         "type": "any"
+      }
+    },
+    {
+      "id": "onValuesChange",
+      "title": "数据变化",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "changedValues": {
+            "type": "object"
+          },
+          "allValues": {
+            "type": "object"
+          }
+        }
       }
     }
   ]
