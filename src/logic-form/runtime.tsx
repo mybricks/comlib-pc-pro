@@ -1,5 +1,16 @@
 import React, { useRef, useLayoutEffect, useCallback, useState } from 'react';
-import { DatePicker, Dropdown, Form, Input, Menu, Select } from 'antd';
+import {
+  DatePicker,
+  DatePickerProps,
+  Dropdown,
+  Form,
+  FormItemProps,
+  Input,
+  InputProps,
+  Menu,
+  Select,
+  SelectProps
+} from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { FieldDBType, SQLOperator, SQLWhereJoiner } from './constant';
@@ -26,6 +37,10 @@ interface Field {
   name: string;
   id: string;
   type: string;
+  /**@description v1.0.1 表单项属性 */
+  fieldProps?: InputProps | SelectProps | DatePickerProps;
+  /**@description v1.0.1 表单项属性 */
+  formProps?: FormItemProps;
 }
 
 const BaseCondition = {
@@ -126,14 +141,18 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
 
   const getFormItem = useCallback(
     (operator, condition) => {
+      const field = fieldList.find((f) => f.id === condition.fieldId);
+      const fieldProps = field?.fieldProps || ({} as any);
       if (operator?.notNeedValue) {
         return <span style={{ width: '130px', height: '24px' }} />;
       } else if ([SQLOperator.IN, SQLOperator.NOT_IN].includes(operator?.value)) {
         return (
           <Select
-            value={condition.value}
+            allowClear
             placeholder="请输入内容"
             mode="tags"
+            {...fieldProps}
+            value={condition.value}
             onChange={(value) => {
               condition.value = value;
 
@@ -144,8 +163,10 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
       } else {
         let node = (
           <Input
+            allowClear
             placeholder="请输入内容"
             className={styles.valueInput}
+            {...fieldProps}
             value={condition.value}
             onChange={(e) => {
               condition.value = e.target.value;
@@ -153,14 +174,15 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
             }}
           />
         );
-        const field = fieldList.find((f) => f.id === condition.fieldId);
 
         if (field?.type === FieldDBType.DATE) {
           node = (
             <DatePicker
+              allowClear
               showTime
-              value={moment(condition.value)}
               placeholder="请选择时间"
+              {...fieldProps}
+              value={moment(condition.value)}
               onChange={(value) => {
                 condition.value = value?.valueOf?.() || value;
 
@@ -184,7 +206,7 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
             const originField = fieldList.find((f) => f.id === condition.fieldId);
             const operators = getFieldConditionAry(originField?.type || FieldDBType.STRING);
             const curOperator = operators.find((op) => op.value === condition.operator);
-
+            const formProps = originField?.formProps || ({} as any);
             return condition.conditions ? (
               <div key={condition.fieldId} className={styles.conditionGroup}>
                 {renderConditions(
@@ -223,8 +245,10 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
                   className={styles.fieldFormItem}
                   initialValue={condition.fieldId}
                   name={[...parentNames, index, 'fieldId']}
+                  required
                 >
                   <Select
+                    allowClear
                     value={condition.fieldId}
                     placeholder="请选择字段"
                     onChange={(value) => {
@@ -259,7 +283,7 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
                       const curOperator = operators.find((op) => op.value === value);
 
                       if (curOperator?.notNeedValue) {
-                        condition.value = '';
+                        condition.value = undefined;
                       }
 
                       onTriggerChange();
