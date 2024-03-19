@@ -39,7 +39,7 @@ interface Field {
   type: string;
   /**@description v1.0.1 输入框属性 */
   fieldProps?: InputProps | SelectProps | DatePickerProps;
-  /**@description v1.0.1 表单项属性 */
+  /**@description v1.0.1 表单项属性 TODO: 暂未生效 */
   formProps?: FormItemProps;
 }
 
