@@ -13,7 +13,7 @@ export interface Condition {
   /** 字段 ID */
   fieldId?: string;
   /** 字段名 */
-  fieldName: string;
+  fieldName?: string;
   /** 操作符 */
   operator?: string;
   /** 条件语句值 */
@@ -38,10 +38,7 @@ const BaseCondition = {
 const getEmptyCondition = () => {
   return {
     id: uuid(),
-    fieldName: '',
-    fieldId: '',
-    operator: SQLOperator.EQUAL,
-    value: ''
+    operator: SQLOperator.EQUAL
   };
 };
 export default function (props: RuntimeParams<Record<string, unknown>>) {
@@ -229,6 +226,7 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
                 >
                   <Select
                     value={condition.fieldId}
+                    placeholder="请选择字段"
                     onChange={(value) => {
                       const curField = fieldList.find((f) => f.id === value);
 
@@ -239,9 +237,6 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
                       onTriggerChange();
                     }}
                   >
-                    <Select.Option key="" value="">
-                      请选择字段
-                    </Select.Option>
                     {fieldList.map((field) => {
                       return (
                         <Select.Option key={field.id} value={field.id}>
@@ -286,6 +281,7 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
                       ? moment(condition.value)
                       : condition.value
                   }
+                  {...formProps}
                 >
                   {getFormItem(curOperator, condition)}
                 </Form.Item>
