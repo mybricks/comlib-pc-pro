@@ -3,5 +3,5 @@ import { FieldDBType } from "./constant";
 
 export const getFieldConditionAry = (dbType: string, customOperators)
 	: Array<{ label: string; value: string; notNeedValue?: boolean; useTags?: boolean }> => {
-	return customOperators?.[dbType] || [];
+	return customOperators?.[dbType] || customOperators?.[FieldDBType.STRING];
 };
