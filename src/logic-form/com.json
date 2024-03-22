@@ -1,7 +1,7 @@
 {
   "title": "逻辑表单",
   "namespace": "mybricks.pro-pc.logic-form",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "逻辑表单",
   "author": "MyBricks",
   "author_name": "MyBricks",
@@ -9,6 +9,7 @@
   "data": "./data.json",
   "runtime": "./runtime.tsx",
   "editors": "./editors.ts",
+  "upgrade": "./upgrade.ts",
   "inputs": [
     {
       "id": "setLogicConditions",
@@ -90,6 +91,79 @@
       "desc": "设置逻辑表单可选字段及类型"
     },
     {
+      "id": "setOperatorsMap",
+      "title": "设置运算符",
+      "rels": [
+        "setOperatorsMapDone"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "string": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "notNeedValue": {
+                  "type": "boolean"
+                },
+                "multiple": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "number": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "notNeedValue": {
+                  "type": "boolean"
+                },
+                "multiple": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "date": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "notNeedValue": {
+                  "type": "boolean"
+                },
+                "useTags": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      },
+      "desc": "自定义不同数据类型的运算符选项, 默认string类型"
+    },
+    {
       "id": "submit",
       "title": "提交表单",
       "rels": [
@@ -106,6 +180,75 @@
       "title": "提交数据输出",
       "schema": {
         "type": "object"
+      }
+    },
+    {
+      "id": "setOperatorsMapDone",
+      "title": "设置运算符完成",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "string": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "notNeedValue": {
+                  "type": "boolean"
+                },
+                "multiple": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "number": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "notNeedValue": {
+                  "type": "boolean"
+                },
+                "multiple": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "date": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "notNeedValue": {
+                  "type": "boolean"
+                },
+                "useTags": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
       }
     }
   ]
