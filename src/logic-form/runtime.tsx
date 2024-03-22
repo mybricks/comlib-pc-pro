@@ -13,7 +13,7 @@ import {
 } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import moment from 'moment';
-import { FieldDBType, SQLOperator, SQLWhereJoiner } from './constant';
+import { FieldDBType, SQLOperator, SQLWhereJoiner, defaultOperators } from './constant';
 import { getFieldConditionAry } from './util';
 import { uuid } from '../utils';
 
@@ -52,8 +52,7 @@ const BaseCondition = {
 };
 const getEmptyCondition = () => {
   return {
-    id: uuid(),
-    operator: SQLOperator.EQUAL
+    id: uuid()
   };
 };
 export default function (props: RuntimeParams<Record<string, unknown>>) {
@@ -61,8 +60,8 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
   const [form] = Form.useForm();
   const [logicConditions, setLogicConditions] = useState<Condition>(BaseCondition);
   const [fieldList, setFieldList] = useState<Field[]>([]);
+  const [operatorsMap, setOperatorsMap] = useState(defaultOperators);
   const logicConditionsRef = useRef<Condition>({ ...BaseCondition });
-
   useLayoutEffect(() => {
     inputs['submit']((val, outputRels) => {
       form.validateFields().then((v) => {
@@ -77,6 +76,11 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
 
     inputs['setFields']((val) => {
       setFieldList(val);
+    });
+
+    inputs['setOperatorsMap']?.((val, outputRels) => {
+      setOperatorsMap(val);
+      outputRels['setOperatorsMapDone'](val);
     });
   }, []);
 
@@ -145,7 +149,7 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
       const fieldProps = field?.fieldProps || ({} as any);
       if (operator?.notNeedValue) {
         return <span style={{ width: '130px', height: '24px' }} />;
-      } else if ([SQLOperator.IN, SQLOperator.NOT_IN].includes(operator?.value)) {
+      } else if (operator?.useTags) {
         return (
           <Select
             allowClear
@@ -204,7 +208,10 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
         conditions
           .map((condition, index) => {
             const originField = fieldList.find((f) => f.id === condition.fieldId);
-            const operators = getFieldConditionAry(originField?.type || FieldDBType.STRING);
+            const operators = getFieldConditionAry(
+              originField?.type || FieldDBType.STRING,
+              operatorsMap
+            );
             const curOperator = operators.find((op) => op.value === condition.operator);
             const formProps = originField?.formProps || ({} as any);
             return condition.conditions ? (
@@ -352,7 +359,7 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
           .filter(Boolean) || []
       );
     },
-    [fieldList]
+    [fieldList, operatorsMap]
   );
 
   return (
