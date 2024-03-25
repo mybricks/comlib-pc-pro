@@ -459,7 +459,7 @@ export default function ({
             const { record } = config;
             return (
               <SlotItem
-                record={entity}
+                record={{ ...entity, ...record }}
                 disabled={runDisableScript(disableScript, record || entity)}
               />
             );
