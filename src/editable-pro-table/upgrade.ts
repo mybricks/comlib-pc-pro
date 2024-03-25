@@ -14,13 +14,6 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
   for (let i = 0; i < newkey.length; i++) {
     childSchema[newkey[i]] = { type: 'string' };
   }
-  const schema = { type: 'object', propperties: childSchema };
-  //输入数据
-  const value = input.get('value');
-  value.setSchema(schema);
-  //输出数据
-  const submit = output.get('submit');
-  submit.setSchema(schema);
 
   // 表头滚动
   if (data.fixedHeader === undefined) {
