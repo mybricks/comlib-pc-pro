@@ -317,38 +317,40 @@ export default function (props: RuntimeParams<Data>) {
                   {getFormItem(curOperator, condition)}
                 </Form.Item>
                 <Form.Item className={styles.operatorBox}>
-                  {index ? (
-                    <span className={`${styles.icon} ${styles.hidden}`}>
-                      <PlusOutlined />
-                    </span>
-                  ) : (
-                    <Dropdown
-                      placement="bottomRight"
-                      overlay={
-                        <Menu>
-                          <Menu.Item
-                            key="condition"
-                            onClick={() => addCondition({ parentConditionChain })}
-                          >
-                            条件
-                          </Menu.Item>
-                          {(!data.useDeepestLevel ||
-                            parentConditionChain?.length < data.deepestLevel) && (
+                  {index === 0 ? (
+                    !data.useDeepestLevel || parentConditionChain?.length < data.deepestLevel ? (
+                      <Dropdown
+                        placement="bottomRight"
+                        overlay={
+                          <Menu>
+                            <Menu.Item
+                              key="condition"
+                              onClick={() => addCondition({ parentConditionChain })}
+                            >
+                              条件
+                            </Menu.Item>
                             <Menu.Item
                               key="group"
                               onClick={() => addCondition({ group: true, parentConditionChain })}
                             >
                               条件组
                             </Menu.Item>
-                          )}
-                        </Menu>
-                      }
-                    >
-                      <span className={styles.icon}>
+                          </Menu>
+                        }
+                      >
+                        <span className={styles.icon}>
+                          <PlusOutlined />
+                        </span>
+                      </Dropdown>
+                    ) : (
+                      <span
+                        className={`${styles.icon}`}
+                        onClick={() => addCondition({ parentConditionChain })}
+                      >
                         <PlusOutlined />
                       </span>
-                    </Dropdown>
-                  )}
+                    )
+                  ) : null}
                   <span
                     className={styles.icon}
                     onClick={() => removeCondition({ index, parentConditionChain })}
