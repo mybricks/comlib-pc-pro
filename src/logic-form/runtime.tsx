@@ -13,7 +13,7 @@ import {
 } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import moment from 'moment';
-import { FieldDBType, SQLOperator, SQLWhereJoiner, defaultOperators } from './constant';
+import { Data, FieldDBType, SQLOperator, SQLWhereJoiner, defaultOperators } from './constant';
 import { getFieldConditionAry } from './util';
 import { uuid } from '../utils';
 
@@ -55,8 +55,8 @@ const getEmptyCondition = () => {
     id: uuid()
   };
 };
-export default function (props: RuntimeParams<Record<string, unknown>>) {
-  const { env, inputs } = props;
+export default function (props: RuntimeParams<Data>) {
+  const { env, inputs, data } = props;
   const [form] = Form.useForm();
   const [logicConditions, setLogicConditions] = useState<Condition>(BaseCondition);
   const [fieldList, setFieldList] = useState<Field[]>([]);
@@ -332,12 +332,15 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
                           >
                             条件
                           </Menu.Item>
-                          <Menu.Item
-                            key="group"
-                            onClick={() => addCondition({ group: true, parentConditionChain })}
-                          >
-                            条件组
-                          </Menu.Item>
+                          {(!data.useDeepestLevel ||
+                            parentConditionChain?.length < data.deepestLevel) && (
+                            <Menu.Item
+                              key="group"
+                              onClick={() => addCondition({ group: true, parentConditionChain })}
+                            >
+                              条件组
+                            </Menu.Item>
+                          )}
                         </Menu>
                       }
                     >

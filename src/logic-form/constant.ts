@@ -69,3 +69,8 @@ export const defaultOperators = {
 		{ label: '不等于 NULL', value: 'IS NOT NULL', notNeedValue: true },
 	]
 }
+
+export interface Data {
+	useDeepestLevel: boolean;
+	deepestLevel: number;
+}

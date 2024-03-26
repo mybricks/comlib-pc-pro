@@ -1,4 +1,4 @@
-import { Data } from './runtime'
+import { Data } from './constant'
 
 export default function ({ data, input, output }: UpgradeParams<Data>): boolean {
   /**
@@ -79,6 +79,20 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
   input.get('setOperatorsMap').setRels(['setOperatorsMapDone'])
 
   //=========== v1.0.2 end ===============
+
+  /**
+   * @description v1.0.3 支持最深层级限制
+   */
+
+  if(data?.useDeepestLevel === undefined) {
+    data.useDeepestLevel = false;
+  }
+
+  if(data?.deepestLevel === undefined) {
+    data.deepestLevel = 5;
+  }
+
+  //=========== v1.0.3 end ===============
 
   return true;
 }
