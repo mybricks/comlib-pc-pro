@@ -70,7 +70,22 @@ export const defaultOperators = {
 	]
 }
 
+export const InputIds = {
+	Submit: 'submit',
+	SetLogicConditions: 'setLogicConditions',
+	SetFields: 'setFields',
+	SetOperatorsMap: 'setOperatorsMap',
+	AddGroup: 'addGroup'
+}
+
+export const OutputIds = {
+	OnFinishForRels: 'onFinishForRels',
+	AddGroupDone: 'addGroupDone',
+	SetOperatorsMapDone: 'setOperatorsMapDone',
+}
 export interface Data {
 	useDeepestLevel: boolean;
 	deepestLevel: number;
+	useDefaultEmpty: boolean;
+	showJoinerWhenOnlyOneCondition: boolean;
 }

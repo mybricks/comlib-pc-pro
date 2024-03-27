@@ -3,6 +3,32 @@ import { Data } from './constant';
 export default {
   ':root': [
     {
+      title: '条件数目为1时是否展示连接符',
+      type: 'Switch',
+      description: '关闭后, 当条件组的条件只有一条时，不展示连接符',
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data.showJoinerWhenOnlyOneCondition;
+        },
+        set({ data }: EditorResult<Data>, value: boolean) {
+          data.showJoinerWhenOnlyOneCondition = value;
+        }
+      }
+    },
+    {
+      title: '使用默认空白占位',
+      type: 'Switch',
+      description: '关闭后, 条件为空时，展示默认的占位符',
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data.useDefaultEmpty;
+        },
+        set({ data }: EditorResult<Data>, value: boolean) {
+          data.useDefaultEmpty = value;
+        }
+      }
+    },
+    {
       title: '最深层级限制',
       type: 'switch',
       description: '开启后, 有最深层级限制',

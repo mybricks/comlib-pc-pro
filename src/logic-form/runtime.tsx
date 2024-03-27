@@ -13,7 +13,15 @@ import {
 } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import moment from 'moment';
-import { Data, FieldDBType, SQLOperator, SQLWhereJoiner, defaultOperators } from './constant';
+import {
+  Data,
+  FieldDBType,
+  InputIds,
+  OutputIds,
+  SQLOperator,
+  SQLWhereJoiner,
+  defaultOperators
+} from './constant';
 import { getFieldConditionAry } from './util';
 import { uuid } from '../utils';
 
@@ -62,27 +70,27 @@ export default function (props: RuntimeParams<Data>) {
   const logicConditionsRef = useRef<Condition>({ ...BaseCondition });
 
   useLayoutEffect(() => {
-    inputs['submit']((val, outputRels) => {
+    inputs[InputIds.Submit]((val, outputRels) => {
       form.validateFields().then((v) => {
         outputRels['onFinishForRels'](logicConditionsRef.current);
       });
     });
 
-    inputs['setLogicConditions']((val) => {
+    inputs[InputIds.SetLogicConditions]((val) => {
       setLogicConditions(val);
       logicConditionsRef.current = val;
     });
 
-    inputs['setFields']((val) => {
+    inputs[InputIds.SetFields]((val) => {
       setFieldList(val);
     });
 
-    inputs['setOperatorsMap']?.((val, outputRels) => {
+    inputs[InputIds.SetOperatorsMap]?.((val, outputRels) => {
       setOperatorsMap(val);
       outputRels['setOperatorsMapDone'](val);
     });
 
-    inputs['addGroup']?.((val, outputRels) => {
+    inputs[InputIds.AddGroup]?.((val, outputRels) => {
       if (Array.isArray(logicConditionsRef.current?.conditions)) {
         logicConditionsRef.current.conditions.push({
           ...BaseCondition,
@@ -102,7 +110,7 @@ export default function (props: RuntimeParams<Data>) {
         };
       }
       onTriggerChange();
-      outputRels['addGroupDone'](val);
+      outputRels[OutputIds.AddGroupDone](val);
     });
   }, []);
 
@@ -232,7 +240,7 @@ export default function (props: RuntimeParams<Data>) {
 
   const Divider = useCallback(({ parentConditionChain, condition }) => {
     // TODO: 配置项 只有一个条件时，不显示运算符
-    if (condition.conditions?.length < 2) {
+    if (!data.showJoinerWhenOnlyOneCondition && condition.conditions?.length < 2) {
       return null;
     }
     return (
@@ -408,7 +416,7 @@ export default function (props: RuntimeParams<Data>) {
         <Form form={form}>
           {renderConditions(logicConditionsRef.current ? [logicConditionsRef.current] : [], [], [])}
         </Form>
-      ) : (
+      ) : data.useDefaultEmpty ? (
         <div className={styles.empty} onClick={onEmptyAdd}>
           暂无条件，点击
           <span className={styles.emptyAddIcon}>
@@ -416,7 +424,7 @@ export default function (props: RuntimeParams<Data>) {
           </span>
           新增条件
         </div>
-      )}
+      ) : null}
     </>
   );
 }

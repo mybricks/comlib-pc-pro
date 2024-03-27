@@ -1,4 +1,6 @@
 {
     "useDeepestLevel": false,
-    "deepestLevel": 5
+    "deepestLevel": 5,
+    "useDefaultEmpty": true,
+    "showJoinerWhenOnlyOneCondition": true
 }
