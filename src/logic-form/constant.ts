@@ -88,4 +88,5 @@ export interface Data {
 	deepestLevel: number;
 	useDefaultEmpty: boolean;
 	showJoinerWhenOnlyOneCondition: boolean;
+	showConditionOrder: boolean;
 }

@@ -1,4 +1,11 @@
-import React, { useRef, useLayoutEffect, useCallback, useState, useMemo } from 'react';
+import React, {
+  useRef,
+  useLayoutEffect,
+  useCallback,
+  useState,
+  useMemo,
+  ReactElement
+} from 'react';
 import {
   DatePicker,
   DatePickerProps,
@@ -54,7 +61,7 @@ interface Field {
 export default function (props: RuntimeParams<Data>) {
   const { env, inputs, data } = props;
   const [form] = Form.useForm();
-  const BaseCondition = useMemo(() => {
+  const getBaseCondition = useCallback(() => {
     return {
       id: uuid(),
       fieldId: uuid(),
@@ -64,10 +71,14 @@ export default function (props: RuntimeParams<Data>) {
     };
   }, []);
 
+  const marginEm = useMemo(() => {
+    return data.showConditionOrder ? 60 : 30;
+  }, []);
+
   const [fieldList, setFieldList] = useState<Field[]>([]);
   const [operatorsMap, setOperatorsMap] = useState(defaultOperators);
-  const [logicConditions, setLogicConditions] = useState<Condition>(BaseCondition);
-  const logicConditionsRef = useRef<Condition>({ ...BaseCondition });
+  const [logicConditions, setLogicConditions] = useState<Condition>(getBaseCondition());
+  const logicConditionsRef = useRef<Condition>({ ...getBaseCondition() });
 
   useLayoutEffect(() => {
     inputs[InputIds.Submit]((val, outputRels) => {
@@ -92,18 +103,19 @@ export default function (props: RuntimeParams<Data>) {
 
     inputs[InputIds.AddGroup]?.((val, outputRels) => {
       if (Array.isArray(logicConditionsRef.current?.conditions)) {
+        const length = logicConditionsRef.current.conditions.length;
         logicConditionsRef.current.conditions.push({
-          ...BaseCondition,
-          fieldId: uuid(),
+          ...getBaseCondition(),
+          fieldId: logicConditionsRef.current.fieldId + '-' + length,
           conditions: [{ ...getEmptyCondition() }]
         });
       } else {
         logicConditionsRef.current = {
-          ...BaseCondition,
+          ...getBaseCondition(),
           conditions: [
             {
-              ...BaseCondition,
-              fieldId: uuid(),
+              ...getBaseCondition(),
+              fieldId: '0-0',
               conditions: [{ ...getEmptyCondition() }]
             }
           ]
@@ -132,7 +144,7 @@ export default function (props: RuntimeParams<Data>) {
       logicConditionsRef.current.conditions = [{ ...getEmptyCondition() }];
     } else {
       logicConditionsRef.current = {
-        ...BaseCondition,
+        ...getBaseCondition(),
         conditions: [{ ...getEmptyCondition() }]
       };
     }
@@ -165,11 +177,12 @@ export default function (props: RuntimeParams<Data>) {
     const parentCondition = parentConditionChain[parentConditionChain.length - 1];
 
     if (parentCondition) {
+      const parentConditionLength = parentCondition.length;
       parentCondition.conditions.push(
         group
           ? {
-              ...BaseCondition,
-              fieldId: uuid(),
+              ...getBaseCondition(),
+              fieldId: parentCondition.fieldId + '-' + parentConditionLength,
               conditions: [{ ...getEmptyCondition() }]
             }
           : { ...getEmptyCondition() }
@@ -238,16 +251,23 @@ export default function (props: RuntimeParams<Data>) {
     [fieldList]
   );
 
-  const Divider = useCallback(({ parentConditionChain, condition }) => {
-    // TODO: 配置项 只有一个条件时，不显示运算符
-    if (!data.showJoinerWhenOnlyOneCondition && condition.conditions?.length < 2) {
-      return null;
+  const Order = useCallback(({ index }) => {
+    return <div className={styles.order}>{index + 1}</div>;
+  }, []);
+
+  const Divider = useCallback(({ parentConditionChain, condition, index }) => {
+    let orderJSX: any = null;
+    if (data.showConditionOrder && parentConditionChain.length) {
+      orderJSX = (
+        <div className={styles.orderBox}>
+          <Order index={index} />
+        </div>
+      );
     }
-    return (
-      <div
-        className={styles.dividerLine}
-        style={{ marginLeft: 30 * parentConditionChain.length + 'px' }}
-      >
+
+    let joinerJSX: any = null;
+    if (condition.conditions?.length > 1 || data.showJoinerWhenOnlyOneCondition) {
+      joinerJSX = (
         <div
           className={styles.whereJoiner}
           onClick={() => {
@@ -258,6 +278,16 @@ export default function (props: RuntimeParams<Data>) {
         >
           {condition.whereJoiner === SQLWhereJoiner.AND ? '且' : '或'}
         </div>
+      );
+    }
+
+    return (
+      <div
+        className={`${styles.dividerLine} ${joinerJSX ? '' : styles.hidden}`}
+        style={{ marginLeft: marginEm * parentConditionChain.length + 'px' }}
+      >
+        {orderJSX}
+        {joinerJSX}
       </div>
     );
   }, []);
@@ -274,6 +304,14 @@ export default function (props: RuntimeParams<Data>) {
             );
             const curOperator = operators.find((op) => op.value === condition.operator);
             const formProps = originField?.formProps || ({} as any);
+            let orderJSX: any = null;
+            if (data.showConditionOrder) {
+              orderJSX = (
+                <div className={styles.orderBox}>
+                  <Order index={index} />
+                </div>
+              );
+            }
             return condition.conditions ? (
               <div key={condition.fieldId} className={styles.conditionGroup}>
                 {renderConditions(
@@ -283,14 +321,19 @@ export default function (props: RuntimeParams<Data>) {
                     ? [...parentNames, String(index), 'conditions']
                     : ['conditions']
                 )}
-                <Divider parentConditionChain={parentConditionChain} condition={condition} />
+                <Divider
+                  parentConditionChain={parentConditionChain}
+                  condition={condition}
+                  index={index}
+                />
               </div>
             ) : (
               <div
                 key={index}
                 className={styles.condition}
-                style={{ marginLeft: 30 * parentConditionChain.length + 'px' }}
+                style={{ marginLeft: marginEm * parentConditionChain.length + 'px' }}
               >
+                {orderJSX}
                 <Form.Item
                   className={styles.fieldFormItem}
                   initialValue={condition.fieldId}

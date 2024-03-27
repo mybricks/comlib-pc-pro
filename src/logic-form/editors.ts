@@ -36,6 +36,19 @@ export default {
       }
     },
     {
+      title: '展示条件组序号',
+      type: 'Switch',
+      description: '开启后, 条件组会展示对应序号',
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data.showConditionOrder;
+        },
+        set({ data }: EditorResult<Data>, value: boolean) {
+          data.showConditionOrder = value;
+        }
+      }
+    },
+    {
       title: '最深层级限制',
       type: 'switch',
       description: '开启后, 有最深层级限制',

@@ -27,6 +27,16 @@
 .conditionGroup {
   position: relative;
 
+  .order {
+    width: 20px;
+    height: 20px;
+    color: rgb(255, 255, 255);
+    text-align: center;
+    line-height: 20px;
+    background: rgb(0, 96, 255);
+    border-radius: 100%;
+  }
+
   .dividerLine {
     position: absolute;
     top: 0;
@@ -51,6 +61,17 @@
       justify-content: center;
       cursor: pointer;
     }
+
+    .orderBox {
+      position: absolute;
+      top: 50%;
+      left: -30px;
+      transform: translateY(-50%) translateX(-9px);
+    }
+  }
+
+  .hidden {
+    background-color: transparent;
   }
 }
 
@@ -58,6 +79,12 @@
   position: relative;
   display: flex;
   align-items: center;
+
+  .orderBox {
+    position: absolute;
+    left: -30px;
+    top: 6px;
+  }
 
   .fieldFormItem {
     width: 200px;
