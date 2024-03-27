@@ -76,7 +76,7 @@ export default function (props: RuntimeParams<Data>) {
 
   const marginEm = useMemo(() => {
     return data.showConditionOrder ? 60 : 30;
-  }, []);
+  }, [data.showConditionOrder]);
 
   const [fieldList, setFieldList] = useState<Field[]>([]);
   const [operatorsMap, setOperatorsMap] = useState(defaultOperators);

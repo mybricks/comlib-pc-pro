@@ -83,8 +83,8 @@ export default function ({ data, input, output, style }: UpgradeParams<Data>): b
   /**
    * @description v1.0.3 
    * 支持最深层级限制
-   * 增加 input.addGroup output.addGroupDone io
-   * 增加 是否使用默认空白占位useDefaultEmpty、条件只有一个时是否展示连接符showJoinerWhenOnlyOneCondition 配置项
+   * 增加io: input.addGroup output.addGroupDone io
+   * 增加配置项: 是否使用默认空白占位useDefaultEmpty、条件只有一个时是否展示连接符showJoinerWhenOnlyOneCondition、展示条件组序号showConditionOrder
    */
 
   if (data?.useDeepestLevel === undefined) {
