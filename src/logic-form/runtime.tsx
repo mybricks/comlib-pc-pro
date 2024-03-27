@@ -15,7 +15,7 @@ import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { Data, FieldDBType, SQLOperator, SQLWhereJoiner, defaultOperators } from './constant';
 import { getFieldConditionAry } from './util';
-import { deepCopy, uuid } from '../utils';
+import { uuid } from '../utils';
 
 import styles from './styles.less';
 
@@ -30,10 +30,7 @@ export interface Condition {
   /** 条件语句值 */
   value?: string;
   conditions?: Condition[];
-  /** 条件组的运算符 */
   whereJoiner?: SQLWhereJoiner;
-  /** 所在条件组的运算符 */
-  parentWhereJoiner?: SQLWhereJoiner;
 }
 
 interface Field {
@@ -46,43 +43,27 @@ interface Field {
   formProps?: FormItemProps;
 }
 
-const getEmptyCondition = () => {
-  return {
-    id: uuid()
-  };
-};
-
 export default function (props: RuntimeParams<Data>) {
   const { env, inputs, data } = props;
   const [form] = Form.useForm();
-  const [fieldList, setFieldList] = useState<Field[]>([]);
-  const [operatorsMap, setOperatorsMap] = useState(defaultOperators);
   const BaseCondition = useMemo(() => {
     return {
       id: uuid(),
       fieldId: uuid(),
       fieldName: '条件组',
       whereJoiner: SQLWhereJoiner.AND,
-      conditions: [getEmptyCondition()]
+      conditions: []
     };
   }, []);
-  const [logicConditions, setLogicConditions] = useState<Condition[]>([BaseCondition]);
-  const logicConditionsRef = useRef<Condition[]>([{ ...BaseCondition }]);
-  const rootCondition = useMemo(() => {
-    return {
-      id: 'root',
-      fieldId: 'root',
-      fieldName: '条件组',
-      whereJoiner: SQLWhereJoiner.AND
-    };
-  }, []);
+
+  const [fieldList, setFieldList] = useState<Field[]>([]);
+  const [operatorsMap, setOperatorsMap] = useState(defaultOperators);
+  const [logicConditions, setLogicConditions] = useState<Condition>(BaseCondition);
+  const logicConditionsRef = useRef<Condition>({ ...BaseCondition });
 
   useLayoutEffect(() => {
     inputs['submit']((val, outputRels) => {
       form.validateFields().then((v) => {
-        logicConditionsRef.current.forEach((group) => {
-          group.parentWhereJoiner = rootCondition.whereJoiner;
-        });
         outputRels['onFinishForRels'](logicConditionsRef.current);
       });
     });
@@ -102,33 +83,50 @@ export default function (props: RuntimeParams<Data>) {
     });
 
     inputs['addGroup']?.((val, outputRels) => {
-      const newLogicConditions = [...logicConditionsRef.current, deepCopy(BaseCondition)];
-      setLogicConditions(newLogicConditions);
-      logicConditionsRef.current = newLogicConditions;
+      if (Array.isArray(logicConditionsRef.current?.conditions)) {
+        logicConditionsRef.current.conditions.push({
+          ...BaseCondition,
+          fieldId: uuid(),
+          conditions: [{ ...getEmptyCondition() }]
+        });
+      } else {
+        logicConditionsRef.current = {
+          ...BaseCondition,
+          conditions: [
+            {
+              ...BaseCondition,
+              fieldId: uuid(),
+              conditions: [{ ...getEmptyCondition() }]
+            }
+          ]
+        };
+      }
+      onTriggerChange();
       outputRels['addGroupDone'](val);
     });
   }, []);
 
+  const getEmptyCondition = useCallback(() => {
+    return {
+      id: uuid()
+    };
+  }, []);
+
   const onTriggerChange = useCallback(() => {
-    setLogicConditions([...logicConditionsRef.current]);
+    setLogicConditions({ ...logicConditionsRef.current });
   }, []);
 
   const onEmptyAdd = useCallback(() => {
     if (env.edit) {
       return;
     }
-    if (logicConditionsRef.current?.[0]) {
-      logicConditionsRef.current[0] = {
-        ...logicConditionsRef.current[0],
+    if (logicConditionsRef.current) {
+      logicConditionsRef.current.conditions = [{ ...getEmptyCondition() }];
+    } else {
+      logicConditionsRef.current = {
+        ...BaseCondition,
         conditions: [{ ...getEmptyCondition() }]
       };
-    } else {
-      logicConditionsRef.current = [
-        {
-          ...BaseCondition,
-          conditions: [{ ...getEmptyCondition() }]
-        }
-      ];
     }
 
     onTriggerChange();
@@ -164,10 +162,9 @@ export default function (props: RuntimeParams<Data>) {
           ? {
               ...BaseCondition,
               fieldId: uuid(),
-              conditions: [{ ...getEmptyCondition() }],
-              parentWhereJoiner: parentCondition.whereJoiner
+              conditions: [{ ...getEmptyCondition() }]
             }
-          : { ...getEmptyCondition(), parentWhereJoiner: parentCondition.whereJoiner }
+          : { ...getEmptyCondition() }
       );
     }
 
@@ -407,16 +404,9 @@ export default function (props: RuntimeParams<Data>) {
 
   return (
     <>
-      {logicConditions?.length ? (
+      {logicConditions?.conditions?.length ? (
         <Form form={form}>
-          <div key="root" className={styles.conditionGroup}>
-            {renderConditions(
-              logicConditionsRef.current ? logicConditionsRef.current : [],
-              [rootCondition],
-              []
-            )}
-            <Divider parentConditionChain={[]} condition={rootCondition} />
-          </div>
+          {renderConditions(logicConditionsRef.current ? [logicConditionsRef.current] : [], [], [])}
         </Form>
       ) : (
         <div className={styles.empty} onClick={onEmptyAdd}>
