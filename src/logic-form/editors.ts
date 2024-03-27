@@ -1,9 +1,16 @@
 import { Data } from './constant';
 
 export default {
+  '@init'({ style }) {
+    style.width = '100%';
+    style.height = 'auto';
+  },
+  '@resize': {
+    options: ['width', 'height']
+  },
   ':root': [
     {
-      title: '条件数目为1时是否展示连接符',
+      title: '条件数目为1时展示连接符',
       type: 'Switch',
       description: '关闭后, 当条件组的条件只有一条时，不展示连接符',
       value: {

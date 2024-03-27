@@ -424,7 +424,9 @@ export default function (props: RuntimeParams<Data>) {
           </span>
           新增条件
         </div>
-      ) : null}
+      ) : (
+        <div className={styles.emptyEdit}>这里是逻辑表单-搭建态占位</div>
+      )}
     </>
   );
 }

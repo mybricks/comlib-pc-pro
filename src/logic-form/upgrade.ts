@@ -1,6 +1,6 @@
 import { Data, InputIds, OutputIds } from './constant'
 
-export default function ({ data, input, output }: UpgradeParams<Data>): boolean {
+export default function ({ data, input, output, style }: UpgradeParams<Data>): boolean {
   /**
     * @description v1.0.2 增加 设置运算符 输入项及其关联输出
     */
@@ -110,6 +110,9 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
     data.showJoinerWhenOnlyOneCondition = true;
   }
 
+  if (style.height === undefined) {
+    style.height = 'auto';
+  }
   //=========== v1.0.3 end ===============
 
   return true;
