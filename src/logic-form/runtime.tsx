@@ -45,6 +45,8 @@ export interface Condition {
   operator?: string;
   /** 条件语句值 */
   value?: string;
+  /** 所在条件组的索引 */
+  parentIndex?: number;
   conditions?: Condition[];
   whereJoiner?: SQLWhereJoiner;
 }
@@ -65,7 +67,7 @@ export default function (props: RuntimeParams<Data>) {
   const getBaseCondition = useCallback(() => {
     return {
       id: uuid(),
-      fieldId: uuid(),
+      fieldId: '0',
       fieldName: '条件组',
       whereJoiner: SQLWhereJoiner.AND,
       conditions: []
@@ -296,10 +298,21 @@ export default function (props: RuntimeParams<Data>) {
   }, []);
 
   const renderConditions = useCallback(
-    (conditions: Condition[], parentConditionChain: Condition[], parentNames: string[]) => {
+    ({
+      conditions,
+      parentConditionChain = [],
+      parentNames = [],
+      parentIndex = 0
+    }: {
+      conditions: Condition[];
+      parentConditionChain?: Condition[];
+      parentNames?: string[];
+      parentIndex?: number;
+    }) => {
       return (
         conditions
           .map((condition, index) => {
+            condition.parentIndex = parentIndex;
             const originField = fieldList.find((f) => f.id === condition.fieldId);
             const operators = getFieldConditionAry(
               originField?.type || FieldDBType.STRING,
@@ -317,13 +330,14 @@ export default function (props: RuntimeParams<Data>) {
             }
             return condition.conditions ? (
               <div key={condition.fieldId} className={styles.conditionGroup}>
-                {renderConditions(
-                  condition.conditions,
-                  [...parentConditionChain, condition],
-                  parentNames.length
+                {renderConditions({
+                  conditions: condition.conditions,
+                  parentConditionChain: [...parentConditionChain, condition],
+                  parentNames: parentNames.length
                     ? [...parentNames, String(index), 'conditions']
-                    : ['conditions']
-                )}
+                    : ['conditions'],
+                  parentIndex: index
+                })}
                 <Divider
                   parentConditionChain={parentConditionChain}
                   condition={condition}
@@ -456,13 +470,17 @@ export default function (props: RuntimeParams<Data>) {
     [fieldList, operatorsMap]
   );
   if (env.edit) {
-    return <Form form={form}>{renderConditions([conditionsWhenEdit as Condition], [], [])}</Form>;
+    return (
+      <Form form={form}>{renderConditions({ conditions: [conditionsWhenEdit as Condition] })}</Form>
+    );
   }
   return (
     <>
       {logicConditions?.conditions?.length ? (
         <Form form={form}>
-          {renderConditions(logicConditionsRef.current ? [logicConditionsRef.current] : [], [], [])}
+          {renderConditions({
+            conditions: logicConditionsRef.current ? [logicConditionsRef.current] : []
+          })}
         </Form>
       ) : data.useDefaultEmpty ? (
         <div className={styles.empty} onClick={onEmptyAdd}>
