@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect, useCallback, useState } from 'react';
+import React, { useRef, useLayoutEffect, useCallback, useState, useMemo } from 'react';
 import {
   DatePicker,
   DatePickerProps,
@@ -15,7 +15,7 @@ import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { Data, FieldDBType, SQLOperator, SQLWhereJoiner, defaultOperators } from './constant';
 import { getFieldConditionAry } from './util';
-import { uuid } from '../utils';
+import { deepCopy, uuid } from '../utils';
 
 import styles from './styles.less';
 
@@ -30,7 +30,10 @@ export interface Condition {
   /** 条件语句值 */
   value?: string;
   conditions?: Condition[];
+  /** 条件组的运算符 */
   whereJoiner?: SQLWhereJoiner;
+  /** 所在条件组的运算符 */
+  parentWhereJoiner?: SQLWhereJoiner;
 }
 
 interface Field {
@@ -43,28 +46,43 @@ interface Field {
   formProps?: FormItemProps;
 }
 
-const BaseCondition = {
-  id: uuid(),
-  fieldId: String(Date.now()),
-  fieldName: '条件组',
-  whereJoiner: SQLWhereJoiner.AND,
-  conditions: []
-};
 const getEmptyCondition = () => {
   return {
     id: uuid()
   };
 };
+
 export default function (props: RuntimeParams<Data>) {
   const { env, inputs, data } = props;
   const [form] = Form.useForm();
-  const [logicConditions, setLogicConditions] = useState<Condition>(BaseCondition);
   const [fieldList, setFieldList] = useState<Field[]>([]);
   const [operatorsMap, setOperatorsMap] = useState(defaultOperators);
-  const logicConditionsRef = useRef<Condition>({ ...BaseCondition });
+  const BaseCondition = useMemo(() => {
+    return {
+      id: uuid(),
+      fieldId: uuid(),
+      fieldName: '条件组',
+      whereJoiner: SQLWhereJoiner.AND,
+      conditions: [getEmptyCondition()]
+    };
+  }, []);
+  const [logicConditions, setLogicConditions] = useState<Condition[]>([BaseCondition]);
+  const logicConditionsRef = useRef<Condition[]>([{ ...BaseCondition }]);
+  const rootCondition = useMemo(() => {
+    return {
+      id: 'root',
+      fieldId: 'root',
+      fieldName: '条件组',
+      whereJoiner: SQLWhereJoiner.AND
+    };
+  }, []);
+
   useLayoutEffect(() => {
     inputs['submit']((val, outputRels) => {
       form.validateFields().then((v) => {
+        logicConditionsRef.current.forEach((group) => {
+          group.parentWhereJoiner = rootCondition.whereJoiner;
+        });
         outputRels['onFinishForRels'](logicConditionsRef.current);
       });
     });
@@ -82,23 +100,35 @@ export default function (props: RuntimeParams<Data>) {
       setOperatorsMap(val);
       outputRels['setOperatorsMapDone'](val);
     });
+
+    inputs['addGroup']?.((val, outputRels) => {
+      const newLogicConditions = [...logicConditionsRef.current, deepCopy(BaseCondition)];
+      setLogicConditions(newLogicConditions);
+      logicConditionsRef.current = newLogicConditions;
+      outputRels['addGroupDone'](val);
+    });
   }, []);
 
   const onTriggerChange = useCallback(() => {
-    setLogicConditions({ ...logicConditionsRef.current });
+    setLogicConditions([...logicConditionsRef.current]);
   }, []);
 
   const onEmptyAdd = useCallback(() => {
     if (env.edit) {
       return;
     }
-    if (logicConditionsRef.current) {
-      logicConditionsRef.current.conditions = [{ ...getEmptyCondition() }];
-    } else {
-      logicConditionsRef.current = {
-        ...BaseCondition,
+    if (logicConditionsRef.current?.[0]) {
+      logicConditionsRef.current[0] = {
+        ...logicConditionsRef.current[0],
         conditions: [{ ...getEmptyCondition() }]
       };
+    } else {
+      logicConditionsRef.current = [
+        {
+          ...BaseCondition,
+          conditions: [{ ...getEmptyCondition() }]
+        }
+      ];
     }
 
     onTriggerChange();
@@ -133,10 +163,11 @@ export default function (props: RuntimeParams<Data>) {
         group
           ? {
               ...BaseCondition,
-              fieldId: String(Date.now()),
-              conditions: [{ ...getEmptyCondition() }]
+              fieldId: uuid(),
+              conditions: [{ ...getEmptyCondition() }],
+              parentWhereJoiner: parentCondition.whereJoiner
             }
-          : { ...getEmptyCondition() }
+          : { ...getEmptyCondition(), parentWhereJoiner: parentCondition.whereJoiner }
       );
     }
 
@@ -202,6 +233,30 @@ export default function (props: RuntimeParams<Data>) {
     [fieldList]
   );
 
+  const Divider = useCallback(({ parentConditionChain, condition }) => {
+    // TODO: 配置项 只有一个条件时，不显示运算符
+    if (condition.conditions?.length < 2) {
+      return null;
+    }
+    return (
+      <div
+        className={styles.dividerLine}
+        style={{ marginLeft: 30 * parentConditionChain.length + 'px' }}
+      >
+        <div
+          className={styles.whereJoiner}
+          onClick={() => {
+            condition.whereJoiner =
+              condition.whereJoiner === SQLWhereJoiner.AND ? SQLWhereJoiner.OR : SQLWhereJoiner.AND;
+            onTriggerChange();
+          }}
+        >
+          {condition.whereJoiner === SQLWhereJoiner.AND ? '且' : '或'}
+        </div>
+      </div>
+    );
+  }, []);
+
   const renderConditions = useCallback(
     (conditions: Condition[], parentConditionChain: Condition[], parentNames: string[]) => {
       return (
@@ -223,24 +278,7 @@ export default function (props: RuntimeParams<Data>) {
                     ? [...parentNames, String(index), 'conditions']
                     : ['conditions']
                 )}
-
-                <div
-                  className={styles.dividerLine}
-                  style={{ marginLeft: 30 * parentConditionChain.length + 'px' }}
-                >
-                  <div
-                    className={styles.whereJoiner}
-                    onClick={() => {
-                      condition.whereJoiner =
-                        condition.whereJoiner === SQLWhereJoiner.AND
-                          ? SQLWhereJoiner.OR
-                          : SQLWhereJoiner.AND;
-                      onTriggerChange();
-                    }}
-                  >
-                    {condition.whereJoiner === SQLWhereJoiner.AND ? '且' : '或'}
-                  </div>
-                </div>
+                <Divider parentConditionChain={parentConditionChain} condition={condition} />
               </div>
             ) : (
               <div
@@ -369,9 +407,16 @@ export default function (props: RuntimeParams<Data>) {
 
   return (
     <>
-      {logicConditions?.conditions?.length ? (
+      {logicConditions?.length ? (
         <Form form={form}>
-          {renderConditions(logicConditionsRef.current ? [logicConditionsRef.current] : [], [], [])}
+          <div key="root" className={styles.conditionGroup}>
+            {renderConditions(
+              logicConditionsRef.current ? logicConditionsRef.current : [],
+              [rootCondition],
+              []
+            )}
+            <Divider parentConditionChain={[]} condition={rootCondition} />
+          </div>
         </Form>
       ) : (
         <div className={styles.empty} onClick={onEmptyAdd}>

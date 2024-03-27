@@ -164,6 +164,17 @@
       "desc": "自定义不同数据类型的运算符选项, 默认string类型"
     },
     {
+      "id": "addGroup",
+      "title": "添加一个条件组",
+      "rels": [
+        "addGroupDone"
+      ],
+      "schema": {
+        "type": "any"
+      },
+      "desc": "在最外层添加一个条件组"
+    },
+    {
       "id": "submit",
       "title": "提交表单",
       "rels": [
@@ -249,6 +260,13 @@
             }
           }
         }
+      }
+    },
+    {
+      "id": "addGroupDone",
+      "title": "添加条件组完成",
+      "schema": {
+        "type": "any"
       }
     }
   ]

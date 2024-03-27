@@ -17,7 +17,31 @@ function unitConversion(value: string) {
   }
 }
 
+function deepCopy(obj: any, cache: any = []) {
+  if (obj === null || typeof obj !== 'object') {
+    return obj
+  }
+
+  const hit: any = cache.filter((c: any) => c.original === obj)[0]
+  if (hit) {
+    return hit.copy
+  }
+  const copy: any = Array.isArray(obj) ? [] : {}
+
+  cache.push({
+    original: obj,
+    copy
+  })
+
+  Object.keys(obj).forEach(key => {
+    copy[key] = deepCopy(obj[key], cache)
+  })
+
+  return copy
+}
+
 export {
   uuid,
-  unitConversion
+  unitConversion,
+  deepCopy
 }
