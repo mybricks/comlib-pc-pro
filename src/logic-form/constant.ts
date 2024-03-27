@@ -69,3 +69,76 @@ export const defaultOperators = {
 		{ label: '不等于 NULL', value: 'IS NOT NULL', notNeedValue: true },
 	]
 }
+
+export const conditionsWhenEdit = {
+	id: "0",
+	fieldId: "0",
+	fieldName: "条件组",
+	whereJoiner: "AND",
+	conditions: [
+		{
+			id: "0-0",
+			operator: "=",
+			fieldId: "条件0-0(搭建态占位)",
+			fieldName: "条件0-0(搭建态占位)",
+			value: '1'
+		},
+		{
+			id: "0-1",
+			fieldId: "0-1",
+			fieldName: "条件组",
+			whereJoiner: "OR",
+			conditions: [
+				{
+					fieldId: "条件0-1-0",
+					fieldName: "条件0-1-0",
+					id: "0-1-0",
+					operator: "IN",
+					value: ['1', '2']
+				},
+				{
+					fieldId: "条件0-1-1",
+					fieldName: "条件0-1-1",
+					operator: "IS NULL",
+					id: "0-1-1"
+				}
+			]
+		},
+		{
+			id: "0-2",
+			fieldId: "0-2",
+			fieldName: "条件组",
+			whereJoiner: "OR",
+			conditions: [
+				{
+					fieldId: "条件0-2-0",
+					fieldName: "条件0-2-0",
+					id: "0-2-0",
+					operator: "NOT LIKE",
+					value: '%'
+				}
+			]
+		}
+	]
+};
+
+export const InputIds = {
+	Submit: 'submit',
+	SetLogicConditions: 'setLogicConditions',
+	SetFields: 'setFields',
+	SetOperatorsMap: 'setOperatorsMap',
+	AddGroup: 'addGroup'
+}
+
+export const OutputIds = {
+	OnFinishForRels: 'onFinishForRels',
+	AddGroupDone: 'addGroupDone',
+	SetOperatorsMapDone: 'setOperatorsMapDone',
+}
+export interface Data {
+	useDeepestLevel: boolean;
+	deepestLevel: number;
+	useDefaultEmpty: boolean;
+	showJoinerWhenOnlyOneCondition: boolean;
+	showConditionOrder: boolean;
+}

@@ -1,4 +1,11 @@
-import React, { useRef, useLayoutEffect, useCallback, useState } from 'react';
+import React, {
+  useRef,
+  useLayoutEffect,
+  useCallback,
+  useState,
+  useMemo,
+  ReactElement
+} from 'react';
 import {
   DatePicker,
   DatePickerProps,
@@ -13,7 +20,16 @@ import {
 } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import moment from 'moment';
-import { FieldDBType, SQLOperator, SQLWhereJoiner, defaultOperators } from './constant';
+import {
+  Data,
+  FieldDBType,
+  InputIds,
+  OutputIds,
+  SQLOperator,
+  SQLWhereJoiner,
+  defaultOperators,
+  conditionsWhenEdit
+} from './constant';
 import { getFieldConditionAry } from './util';
 import { uuid } from '../utils';
 
@@ -29,6 +45,8 @@ export interface Condition {
   operator?: string;
   /** 条件语句值 */
   value?: string;
+  /** 所在条件组的索引 */
+  parentIndex?: number;
   conditions?: Condition[];
   whereJoiner?: SQLWhereJoiner;
 }
@@ -43,45 +61,79 @@ interface Field {
   formProps?: FormItemProps;
 }
 
-const BaseCondition = {
-  id: uuid(),
-  fieldId: String(Date.now()),
-  fieldName: '条件组',
-  whereJoiner: SQLWhereJoiner.AND,
-  conditions: []
-};
-const getEmptyCondition = () => {
-  return {
-    id: uuid()
-  };
-};
-export default function (props: RuntimeParams<Record<string, unknown>>) {
-  const { env, inputs } = props;
+export default function (props: RuntimeParams<Data>) {
+  const { env, inputs, data } = props;
   const [form] = Form.useForm();
-  const [logicConditions, setLogicConditions] = useState<Condition>(BaseCondition);
+  const getBaseCondition = useCallback(() => {
+    return {
+      id: uuid(),
+      fieldId: '0',
+      fieldName: '条件组',
+      whereJoiner: SQLWhereJoiner.AND,
+      conditions: []
+    };
+  }, []);
+
+  const marginEm = useMemo(() => {
+    return data.showConditionOrder ? 60 : 30;
+  }, [data.showConditionOrder]);
+
   const [fieldList, setFieldList] = useState<Field[]>([]);
   const [operatorsMap, setOperatorsMap] = useState(defaultOperators);
-  const logicConditionsRef = useRef<Condition>({ ...BaseCondition });
+  const [logicConditions, setLogicConditions] = useState<Condition>(getBaseCondition());
+  const logicConditionsRef = useRef<Condition>({ ...getBaseCondition() });
+
   useLayoutEffect(() => {
-    inputs['submit']((val, outputRels) => {
+    inputs[InputIds.Submit]((val, outputRels) => {
       form.validateFields().then((v) => {
         outputRels['onFinishForRels'](logicConditionsRef.current);
       });
     });
 
-    inputs['setLogicConditions']((val) => {
+    inputs[InputIds.SetLogicConditions]((val) => {
       setLogicConditions(val);
       logicConditionsRef.current = val;
     });
 
-    inputs['setFields']((val) => {
+    inputs[InputIds.SetFields]((val) => {
       setFieldList(val);
     });
 
-    inputs['setOperatorsMap']?.((val, outputRels) => {
+    inputs[InputIds.SetOperatorsMap]?.((val, outputRels) => {
       setOperatorsMap(val);
       outputRels['setOperatorsMapDone'](val);
     });
+
+    inputs[InputIds.AddGroup]?.((val, outputRels) => {
+      if (Array.isArray(logicConditionsRef.current?.conditions)) {
+        const length = logicConditionsRef.current.conditions.length;
+        logicConditionsRef.current.conditions.push({
+          ...getBaseCondition(),
+          fieldId: logicConditionsRef.current.fieldId + '-' + length,
+          conditions: [{ ...getEmptyCondition() }]
+        });
+      } else {
+        logicConditionsRef.current = {
+          ...getBaseCondition(),
+          fieldId: '0',
+          conditions: [
+            {
+              ...getBaseCondition(),
+              fieldId: '0-0',
+              conditions: [{ ...getEmptyCondition() }]
+            }
+          ]
+        };
+      }
+      onTriggerChange();
+      outputRels[OutputIds.AddGroupDone](val);
+    });
+  }, []);
+
+  const getEmptyCondition = useCallback(() => {
+    return {
+      id: uuid()
+    };
   }, []);
 
   const onTriggerChange = useCallback(() => {
@@ -96,7 +148,8 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
       logicConditionsRef.current.conditions = [{ ...getEmptyCondition() }];
     } else {
       logicConditionsRef.current = {
-        ...BaseCondition,
+        ...getBaseCondition(),
+        fieldId: '0',
         conditions: [{ ...getEmptyCondition() }]
       };
     }
@@ -129,11 +182,12 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
     const parentCondition = parentConditionChain[parentConditionChain.length - 1];
 
     if (parentCondition) {
+      const parentConditionLength = parentCondition.length;
       parentCondition.conditions.push(
         group
           ? {
-              ...BaseCondition,
-              fieldId: String(Date.now()),
+              ...getBaseCondition(),
+              fieldId: parentCondition.fieldId + '-' + parentConditionLength,
               conditions: [{ ...getEmptyCondition() }]
             }
           : { ...getEmptyCondition() }
@@ -202,11 +256,63 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
     [fieldList]
   );
 
+  const Order = useCallback(({ index }) => {
+    return <div className={styles.order}>{index + 1}</div>;
+  }, []);
+
+  const Divider = useCallback(({ parentConditionChain, condition, index }) => {
+    let orderJSX: any = null;
+    if (data.showConditionOrder && parentConditionChain.length) {
+      orderJSX = (
+        <div className={styles.orderBox}>
+          <Order index={index} />
+        </div>
+      );
+    }
+
+    let joinerJSX: any = null;
+    if (condition.conditions?.length > 1 || data.showJoinerWhenOnlyOneCondition) {
+      joinerJSX = (
+        <div
+          className={styles.whereJoiner}
+          onClick={() => {
+            condition.whereJoiner =
+              condition.whereJoiner === SQLWhereJoiner.AND ? SQLWhereJoiner.OR : SQLWhereJoiner.AND;
+            onTriggerChange();
+          }}
+        >
+          {condition.whereJoiner === SQLWhereJoiner.AND ? '且' : '或'}
+        </div>
+      );
+    }
+
+    return (
+      <div
+        className={`${styles.dividerLine} ${joinerJSX ? '' : styles.hidden}`}
+        style={{ marginLeft: marginEm * parentConditionChain.length + 'px' }}
+      >
+        {orderJSX}
+        {joinerJSX}
+      </div>
+    );
+  }, []);
+
   const renderConditions = useCallback(
-    (conditions: Condition[], parentConditionChain: Condition[], parentNames: string[]) => {
+    ({
+      conditions,
+      parentConditionChain = [],
+      parentNames = [],
+      parentIndex = 0
+    }: {
+      conditions: Condition[];
+      parentConditionChain?: Condition[];
+      parentNames?: string[];
+      parentIndex?: number;
+    }) => {
       return (
         conditions
           .map((condition, index) => {
+            condition.parentIndex = parentIndex;
             const originField = fieldList.find((f) => f.id === condition.fieldId);
             const operators = getFieldConditionAry(
               originField?.type || FieldDBType.STRING,
@@ -214,40 +320,37 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
             );
             const curOperator = operators.find((op) => op.value === condition.operator);
             const formProps = originField?.formProps || ({} as any);
+            let orderJSX: any = null;
+            if (data.showConditionOrder) {
+              orderJSX = (
+                <div className={styles.orderBox}>
+                  <Order index={index} />
+                </div>
+              );
+            }
             return condition.conditions ? (
               <div key={condition.fieldId} className={styles.conditionGroup}>
-                {renderConditions(
-                  condition.conditions,
-                  [...parentConditionChain, condition],
-                  parentNames.length
+                {renderConditions({
+                  conditions: condition.conditions,
+                  parentConditionChain: [...parentConditionChain, condition],
+                  parentNames: parentNames.length
                     ? [...parentNames, String(index), 'conditions']
-                    : ['conditions']
-                )}
-
-                <div
-                  className={styles.dividerLine}
-                  style={{ marginLeft: 30 * parentConditionChain.length + 'px' }}
-                >
-                  <div
-                    className={styles.whereJoiner}
-                    onClick={() => {
-                      condition.whereJoiner =
-                        condition.whereJoiner === SQLWhereJoiner.AND
-                          ? SQLWhereJoiner.OR
-                          : SQLWhereJoiner.AND;
-                      onTriggerChange();
-                    }}
-                  >
-                    {condition.whereJoiner === SQLWhereJoiner.AND ? '且' : '或'}
-                  </div>
-                </div>
+                    : ['conditions'],
+                  parentIndex: index
+                })}
+                <Divider
+                  parentConditionChain={parentConditionChain}
+                  condition={condition}
+                  index={index}
+                />
               </div>
             ) : (
               <div
                 key={index}
                 className={styles.condition}
-                style={{ marginLeft: 30 * parentConditionChain.length + 'px' }}
+                style={{ marginLeft: marginEm * parentConditionChain.length + 'px' }}
               >
+                {orderJSX}
                 <Form.Item
                   className={styles.fieldFormItem}
                   initialValue={condition.fieldId}
@@ -317,35 +420,40 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
                   {getFormItem(curOperator, condition)}
                 </Form.Item>
                 <Form.Item className={styles.operatorBox}>
-                  {index ? (
-                    <span className={`${styles.icon} ${styles.hidden}`}>
-                      <PlusOutlined />
-                    </span>
-                  ) : (
-                    <Dropdown
-                      placement="bottomRight"
-                      overlay={
-                        <Menu>
-                          <Menu.Item
-                            key="condition"
-                            onClick={() => addCondition({ parentConditionChain })}
-                          >
-                            条件
-                          </Menu.Item>
-                          <Menu.Item
-                            key="group"
-                            onClick={() => addCondition({ group: true, parentConditionChain })}
-                          >
-                            条件组
-                          </Menu.Item>
-                        </Menu>
-                      }
-                    >
-                      <span className={styles.icon}>
+                  {index === 0 ? (
+                    !data.useDeepestLevel || parentConditionChain?.length < data.deepestLevel ? (
+                      <Dropdown
+                        placement="bottomRight"
+                        overlay={
+                          <Menu>
+                            <Menu.Item
+                              key="condition"
+                              onClick={() => addCondition({ parentConditionChain })}
+                            >
+                              条件
+                            </Menu.Item>
+                            <Menu.Item
+                              key="group"
+                              onClick={() => addCondition({ group: true, parentConditionChain })}
+                            >
+                              条件组
+                            </Menu.Item>
+                          </Menu>
+                        }
+                      >
+                        <span className={styles.icon}>
+                          <PlusOutlined />
+                        </span>
+                      </Dropdown>
+                    ) : (
+                      <span
+                        className={`${styles.icon}`}
+                        onClick={() => addCondition({ parentConditionChain })}
+                      >
                         <PlusOutlined />
                       </span>
-                    </Dropdown>
-                  )}
+                    )
+                  ) : null}
                   <span
                     className={styles.icon}
                     onClick={() => removeCondition({ index, parentConditionChain })}
@@ -361,14 +469,20 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
     },
     [fieldList, operatorsMap]
   );
-
+  if (env.edit) {
+    return (
+      <Form form={form}>{renderConditions({ conditions: [conditionsWhenEdit as Condition] })}</Form>
+    );
+  }
   return (
     <>
       {logicConditions?.conditions?.length ? (
         <Form form={form}>
-          {renderConditions(logicConditionsRef.current ? [logicConditionsRef.current] : [], [], [])}
+          {renderConditions({
+            conditions: logicConditionsRef.current ? [logicConditionsRef.current] : []
+          })}
         </Form>
-      ) : (
+      ) : data.useDefaultEmpty ? (
         <div className={styles.empty} onClick={onEmptyAdd}>
           暂无条件，点击
           <span className={styles.emptyAddIcon}>
@@ -376,7 +490,7 @@ export default function (props: RuntimeParams<Record<string, unknown>>) {
           </span>
           新增条件
         </div>
-      )}
+      ) : null}
     </>
   );
 }
