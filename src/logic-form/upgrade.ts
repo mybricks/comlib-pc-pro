@@ -115,5 +115,9 @@ export default function ({ data, input, output, style }: UpgradeParams<Data>): b
   }
   //=========== v1.0.3 end ===============
 
+  if (style?.onlyShowOutermostLayerConditionOrder === undefined) {
+    style.onlyShowOutermostLayerConditionOrder = false;
+  }
+
   return true;
 }

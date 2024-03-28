@@ -141,4 +141,5 @@ export interface Data {
 	useDefaultEmpty: boolean;
 	showJoinerWhenOnlyOneCondition: boolean;
 	showConditionOrder: boolean;
+	onlyShowOutermostLayerConditionOrder?: boolean; // 是否只展示最外层条件组序号
 }

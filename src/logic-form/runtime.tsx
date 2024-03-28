@@ -260,7 +260,7 @@ export default function (props: RuntimeParams<Data>) {
     return <div className={styles.order}>{index + 1}</div>;
   }, []);
 
-  const Divider = useCallback(({ parentConditionChain, condition, index }) => {
+  const Divider = useCallback(({ parentConditionChain, condition, index, showOrder = true }) => {
     let orderJSX: any = null;
     if (data.showConditionOrder && parentConditionChain.length) {
       orderJSX = (
@@ -291,7 +291,7 @@ export default function (props: RuntimeParams<Data>) {
         className={`${styles.dividerLine} ${joinerJSX ? '' : styles.hidden}`}
         style={{ marginLeft: marginEm * parentConditionChain.length + 'px' }}
       >
-        {orderJSX}
+        {showOrder && orderJSX}
         {joinerJSX}
       </div>
     );
@@ -302,17 +302,22 @@ export default function (props: RuntimeParams<Data>) {
       conditions,
       parentConditionChain = [],
       parentNames = [],
-      parentIndex = 0
+      parentIndex = 0,
+      parentLayer = 0
     }: {
       conditions: Condition[];
       parentConditionChain?: Condition[];
       parentNames?: string[];
       parentIndex?: number;
+      parentLayer?: number /** 第几层 */;
     }) => {
       return (
         conditions
           .map((condition, index) => {
             condition.parentIndex = parentIndex;
+            const showOrder =
+              data.showConditionOrder &&
+              (!data.onlyShowOutermostLayerConditionOrder || parentLayer === 1);
             const originField = fieldList.find((f) => f.id === condition.fieldId);
             const operators = getFieldConditionAry(
               originField?.type || FieldDBType.STRING,
@@ -321,7 +326,7 @@ export default function (props: RuntimeParams<Data>) {
             const curOperator = operators.find((op) => op.value === condition.operator);
             const formProps = originField?.formProps || ({} as any);
             let orderJSX: any = null;
-            if (data.showConditionOrder) {
+            if (showOrder) {
               orderJSX = (
                 <div className={styles.orderBox}>
                   <Order index={index} />
@@ -336,11 +341,13 @@ export default function (props: RuntimeParams<Data>) {
                   parentNames: parentNames.length
                     ? [...parentNames, String(index), 'conditions']
                     : ['conditions'],
-                  parentIndex: index
+                  parentIndex: index,
+                  parentLayer: parentLayer + 1
                 })}
                 <Divider
                   parentConditionChain={parentConditionChain}
                   condition={condition}
+                  showOrder={showOrder}
                   index={index}
                 />
               </div>
