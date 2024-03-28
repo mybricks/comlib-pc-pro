@@ -2,5 +2,6 @@
     "useDeepestLevel": false,
     "deepestLevel": 5,
     "useDefaultEmpty": true,
-    "showJoinerWhenOnlyOneCondition": true
+    "showJoinerWhenOnlyOneCondition": true,
+    "onlyShowOutermostLayerConditionOrder": false
 }
