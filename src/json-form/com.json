@@ -85,18 +85,6 @@
               "items": {
                 "type": "object"
               }
-            },
-            "colProps": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "rowProps": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
             }
           }
         }
