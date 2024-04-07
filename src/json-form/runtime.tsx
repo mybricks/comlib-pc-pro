@@ -6,13 +6,14 @@ import type {
   SubmitterProps
 } from '@ant-design/pro-components';
 import { BetaSchemaForm } from '@ant-design/pro-components';
-import { Empty } from 'antd';
+import { Empty, FormProps } from 'antd';
 import styles from './styles.less';
 
 export interface Data {
   layoutType: ProFormLayoutType;
   grid: boolean;
   submitter: false | SubmitterProps;
+  config: FormProps;
 }
 
 type DataItem = {
@@ -58,6 +59,7 @@ export default function (props: RuntimeParams<Data>) {
     <>
       {columns?.length > 0 ? (
         <BetaSchemaForm<DataItem>
+          {...data.config}
           formRef={formRef}
           submitter={data.submitter}
           layoutType={data.layoutType}

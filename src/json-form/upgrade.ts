@@ -26,5 +26,15 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
   }
   //=========== v1.0.2 end ===============
 
+  /**
+    * @description v1.0.3 增加 data.config.layout 配置项; fix schema
+    */
+  if (!data.config) {
+    data.config = {
+      layout: data.layoutType === 'QueryFilter' ? 'horizontal' : 'vertical'
+    }
+  }
+  //=========== v1.0.3 end ===============
+
   return true;
 }

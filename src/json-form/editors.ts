@@ -1,3 +1,4 @@
+import { FormProps } from 'antd';
 import { Data } from './runtime'
 
 export default {
@@ -17,6 +18,23 @@ export default {
         },
         set({ data, id, name }: EditorResult<Data>, value: Data["layoutType"]) {
           data.layoutType = value;
+        }
+      }
+    },
+    {
+      title: '表单项布局',
+      type: 'Select',
+      options: [
+        { label: '水平', value: 'horizontal' },
+        { label: '垂直', value: 'vertical' },
+        { label: '内联', value: 'inline' }
+      ],
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data.config?.layout;
+        },
+        set({ data }: EditorResult<Data>, value: FormProps['layout']) {
+          data.config.layout = value;
         }
       }
     },
