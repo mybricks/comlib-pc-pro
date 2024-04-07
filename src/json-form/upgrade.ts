@@ -1,3 +1,5 @@
+import { deepCopy } from '../utils';
+import { BasicColumSchema, GridColumSchema, InputIds } from './constant';
 import { Data } from './runtime'
 
 export default function ({ data, input, output }: UpgradeParams<Data>): boolean {
@@ -25,6 +27,28 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
     });
   }
   //=========== v1.0.2 end ===============
+
+  /**
+    * @description v1.0.3 增加 data.config.layout 配置项; fix schema
+    */
+  if (!data.config) {
+    data.config = {
+      layout: data.layoutType === 'QueryFilter' ? 'horizontal' : 'vertical'
+    }
+  }
+  const setColumnsInput = input.get(InputIds.SetColumns);
+  if (setColumnsInput.schema?.type !== 'array') {
+    const schema = deepCopy(BasicColumSchema);
+    if (data.grid) {
+      schema.items.properties = {
+        ...schema.items.properties,
+        ...GridColumSchema
+      };
+    }
+    setColumnsInput.setSchema(schema);
+  }
+
+  //=========== v1.0.3 end ===============
 
   return true;
 }

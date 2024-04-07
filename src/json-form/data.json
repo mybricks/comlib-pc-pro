@@ -1,4 +1,7 @@
 {
   "layoutType": "Form",
-  "submitter": true
+  "submitter": true,
+  "config": {
+    "layout": "vertical"
+  }
 }

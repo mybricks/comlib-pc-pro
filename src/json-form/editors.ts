@@ -1,4 +1,7 @@
+import { FormProps } from 'antd';
 import { Data } from './runtime'
+import { InputIds, BasicColumSchema, GridColumSchema, OutputIds } from './constant';
+import { deepCopy } from '../utils';
 
 export default {
   ':root': [
@@ -21,6 +24,23 @@ export default {
       }
     },
     {
+      title: '表单项布局',
+      type: 'Select',
+      options: [
+        { label: '水平', value: 'horizontal' },
+        { label: '垂直', value: 'vertical' },
+        { label: '内联', value: 'inline' }
+      ],
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data.config?.layout;
+        },
+        set({ data }: EditorResult<Data>, value: FormProps['layout']) {
+          data.config.layout = value;
+        }
+      }
+    },
+    {
       title: '一行多列(grid模式)',
       type: 'Switch',
       ifVisible({ data }: EditorResult<Data>) {
@@ -30,8 +50,16 @@ export default {
         get({ data, }: EditorResult<Data>) {
           return data.grid;
         },
-        set({ data, }: EditorResult<Data>, value: boolean) {
+        set({ data, input }: EditorResult<Data>, value: boolean) {
           data.grid = value;
+          const schema = deepCopy(BasicColumSchema);
+          if (value) {
+            schema.items.properties = {
+              ...schema.items.properties,
+              ...GridColumSchema
+            };
+          }
+          input.get(InputIds.SetColumns).setSchema(schema);
         }
       }
     },
@@ -51,21 +79,21 @@ export default {
       title: '数据提交',
       type: '_Event',
       options: {
-        outputId: 'onFinish'
+        outputId: OutputIds.OnFinish
       }
     },
     {
       title: '重置输出',
       type: '_Event',
       options: {
-        outputId: 'onReset'
+        outputId: OutputIds.OnReset
       }
     },
     {
       title: '数据变化',
       type: '_Event',
       options: {
-        outputId: 'onValuesChange'
+        outputId: OutputIds.OnValuesChange
       }
     },
   ]
