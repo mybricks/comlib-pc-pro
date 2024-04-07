@@ -1,3 +1,5 @@
+import { deepCopy } from '../utils';
+import { BasicColumSchema, GridColumSchema, InputIds } from './constant';
 import { Data } from './runtime'
 
 export default function ({ data, input, output }: UpgradeParams<Data>): boolean {
@@ -34,6 +36,18 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
       layout: data.layoutType === 'QueryFilter' ? 'horizontal' : 'vertical'
     }
   }
+  const setColumnsInput = input.get(InputIds.SetColumns);
+  if (setColumnsInput.schema?.type !== 'array') {
+    const schema = deepCopy(BasicColumSchema);
+    if (data.grid) {
+      schema.items.properties = {
+        ...schema.items.properties,
+        ...GridColumSchema
+      };
+    }
+    setColumnsInput.setSchema(schema);
+  }
+
   //=========== v1.0.3 end ===============
 
   return true;

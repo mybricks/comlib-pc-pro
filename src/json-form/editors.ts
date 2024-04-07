@@ -1,5 +1,7 @@
 import { FormProps } from 'antd';
 import { Data } from './runtime'
+import { InputIds, BasicColumSchema, GridColumSchema, OutputIds } from './constant';
+import { deepCopy } from '../utils';
 
 export default {
   ':root': [
@@ -48,8 +50,16 @@ export default {
         get({ data, }: EditorResult<Data>) {
           return data.grid;
         },
-        set({ data, }: EditorResult<Data>, value: boolean) {
+        set({ data, input }: EditorResult<Data>, value: boolean) {
           data.grid = value;
+          const schema = deepCopy(BasicColumSchema);
+          if (value) {
+            schema.items.properties = {
+              ...schema.items.properties,
+              ...GridColumSchema
+            };
+          }
+          input.get(InputIds.SetColumns).setSchema(schema);
         }
       }
     },
@@ -69,21 +79,21 @@ export default {
       title: '数据提交',
       type: '_Event',
       options: {
-        outputId: 'onFinish'
+        outputId: OutputIds.OnFinish
       }
     },
     {
       title: '重置输出',
       type: '_Event',
       options: {
-        outputId: 'onReset'
+        outputId: OutputIds.OnReset
       }
     },
     {
       title: '数据变化',
       type: '_Event',
       options: {
-        outputId: 'onValuesChange'
+        outputId: OutputIds.OnValuesChange
       }
     },
   ]
