@@ -244,6 +244,7 @@ export default function (props: RuntimeParams<Data>) {
         );
 
         if (field?.type === FieldDBType.DATE) {
+          const { format } = fieldProps;
           node = (
             <DatePicker
               allowClear
@@ -253,7 +254,16 @@ export default function (props: RuntimeParams<Data>) {
               value={getDate(condition.value)}
               onChange={(value) => {
                 condition.value = value?.valueOf?.() || value;
-
+                if (format) {
+                  switch (typeof format) {
+                    case 'string':
+                      condition.value = moment(condition.value).format(fieldProps.format);
+                      break;
+                    case 'function':
+                      condition.value = format(condition.value);
+                      break;
+                  }
+                }
                 onTriggerChange();
               }}
             />
