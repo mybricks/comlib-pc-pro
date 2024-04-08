@@ -197,9 +197,19 @@ export default function (props: RuntimeParams<Data>) {
     onTriggerChange();
   }, []);
 
+  const getDate = useCallback((val: any) => {
+    if (val === undefined) return void 0;
+    if (moment(val).isValid()) {
+      return moment(val);
+    }
+    return void 0;
+  }, []);
+
   const getFormItem = useCallback(
     (operator, condition) => {
       const field = fieldList.find((f) => f.id === condition.fieldId);
+      // 提交数据中增加类型字段
+      condition.type = field?.type;
       const fieldProps = field?.fieldProps || ({} as any);
       if (operator?.notNeedValue) {
         return <span style={{ width: '130px', height: '24px' }} />;
@@ -240,7 +250,7 @@ export default function (props: RuntimeParams<Data>) {
               showTime
               placeholder="请选择时间"
               {...fieldProps}
-              value={moment(condition.value)}
+              value={getDate(condition.value)}
               onChange={(value) => {
                 condition.value = value?.valueOf?.() || value;
 
