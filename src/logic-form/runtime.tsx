@@ -208,6 +208,8 @@ export default function (props: RuntimeParams<Data>) {
   const getFormItem = useCallback(
     (operator, condition) => {
       const field = fieldList.find((f) => f.id === condition.fieldId);
+      // 提交数据中增加类型字段
+      condition.type = field?.type;
       const fieldProps = field?.fieldProps || ({} as any);
       if (operator?.notNeedValue) {
         return <span style={{ width: '130px', height: '24px' }} />;
