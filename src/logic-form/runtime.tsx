@@ -200,7 +200,7 @@ export default function (props: RuntimeParams<Data>) {
   const getDate = useCallback((val: any) => {
     if (val === undefined) return void 0;
     if (moment(val).isValid()) {
-      return moment();
+      return moment(val);
     }
     return void 0;
   }, []);
