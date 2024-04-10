@@ -30,7 +30,7 @@ import {
   defaultOperators,
   conditionsWhenEdit
 } from './constant';
-import { getFieldConditionAry } from './util';
+import { getFieldConditionAry, dfs } from './util';
 import { uuid } from '../utils';
 
 import styles from './styles.less';
@@ -49,6 +49,8 @@ export interface Condition {
   parentIndex?: number;
   conditions?: Condition[];
   whereJoiner?: SQLWhereJoiner;
+  validateStatus?: 'success' | 'warning' | 'error' | 'validating';
+  errorMsg?: string;
 }
 
 interface Field {
@@ -85,9 +87,23 @@ export default function (props: RuntimeParams<Data>) {
 
   useLayoutEffect(() => {
     inputs[InputIds.Submit]((val, outputRels) => {
-      form.validateFields().then((v) => {
+      let success: boolean = true;
+      dfs(
+        (node: Condition) => {
+          if (!node.value) {
+            node.validateStatus = 'error';
+            node.errorMsg = '内容不能为空';
+            success = false;
+          }
+        },
+        'conditions',
+        logicConditionsRef.current.conditions
+      );
+      if (success) {
         outputRels['onFinishForRels'](logicConditionsRef.current);
-      });
+      } else {
+        onTriggerChange();
+      }
     });
 
     inputs[InputIds.SetLogicConditions]((val) => {
@@ -138,6 +154,16 @@ export default function (props: RuntimeParams<Data>) {
 
   const onTriggerChange = useCallback(() => {
     setLogicConditions({ ...logicConditionsRef.current });
+  }, []);
+
+  const validateEmptyInput = useCallback((value, condition) => {
+    if (!value) {
+      condition.validateStatus = 'error';
+      condition.errorMsg = '内容不能为空';
+    } else {
+      delete condition.validateStatus;
+      delete condition.errorMsg;
+    }
   }, []);
 
   const onEmptyAdd = useCallback(() => {
@@ -222,6 +248,7 @@ export default function (props: RuntimeParams<Data>) {
             {...fieldProps}
             value={condition.value}
             onChange={(value) => {
+              validateEmptyInput(value, condition);
               condition.value = value;
 
               onTriggerChange();
@@ -237,6 +264,7 @@ export default function (props: RuntimeParams<Data>) {
             {...fieldProps}
             value={condition.value}
             onChange={(e) => {
+              validateEmptyInput(e.target.value, condition);
               condition.value = e.target.value;
               onTriggerChange();
             }}
@@ -253,6 +281,7 @@ export default function (props: RuntimeParams<Data>) {
               {...fieldProps}
               value={getDate(condition.value)}
               onChange={(value) => {
+                validateEmptyInput(value?.valueOf?.() || value, condition);
                 condition.value = value?.valueOf?.() || value;
                 if (format) {
                   switch (typeof format) {
@@ -443,6 +472,8 @@ export default function (props: RuntimeParams<Data>) {
                       : condition.value
                   }
                   {...formProps}
+                  validateStatus={condition.validateStatus}
+                  help={condition.errorMsg}
                 >
                   {getFormItem(curOperator, condition)}
                 </Form.Item>
