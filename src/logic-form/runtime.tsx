@@ -90,7 +90,7 @@ export default function (props: RuntimeParams<Data>) {
       let success: boolean = true;
       dfs(
         (node: Condition) => {
-          if (!node.value) {
+          if (!node.conditions && !node.value) {
             node.validateStatus = 'error';
             node.errorMsg = '内容不能为空';
             success = false;
