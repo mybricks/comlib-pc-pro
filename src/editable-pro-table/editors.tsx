@@ -9,6 +9,9 @@ export default {
   '@init': ({ data, input, output, slot }: EditorResult<Data>) => {
     setDataSchema({ data, input, output, slot });
   },
+  '@resize': {
+    options: ['width']
+  },
   ':root': {
     items: ({}: EditorResult<Data>, cate1, cate2) => {
       cate1.title = '常规';
