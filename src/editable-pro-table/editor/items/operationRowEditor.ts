@@ -54,19 +54,29 @@ export default (data: Data, output) => ({
             }
           } as Action;
           // const itemSchema = getItemSchema(data);
+          const { _key, ...recordSchema } = getColumnsDataSchema(data.columns);
 
           const actionSchema = {
             type: 'object',
             properties: {
-              _isEdit: {
-                type: "boolean",
-                title: "是否编辑态"
+              _key: {
+                type: 'string',
+                title: '_key'
               },
               index: {
                 type: 'number',
                 title: '行索引'
               },
-              ...getColumnsDataSchema(data.columns)
+              isEdit: {
+                type: 'boolean',
+                title: '是否编辑态'
+              },
+              record: {
+                type: 'object',
+                properties: {
+                  ...recordSchema
+                }
+              }
             }
           };
           output.add(outputId, `点击${title}`, actionSchema);
@@ -187,7 +197,7 @@ export default (data: Data, output) => ({
             autoSize: true,
             placeholder: `例：{title} === '1'`,
             suggestions: getSuggestions(data),
-            runCode: run,
+            runCode: run
           },
           value: {
             get({ data }: EditorResult<Data>) {
@@ -197,7 +207,7 @@ export default (data: Data, output) => ({
               data.addChildBtnScript = value;
             }
           }
-        },
+        }
       ]
     },
     {
@@ -286,7 +296,7 @@ export default (data: Data, output) => ({
               data.cancelText = val;
             }
           }
-        },
+        }
       ]
     },
     {
