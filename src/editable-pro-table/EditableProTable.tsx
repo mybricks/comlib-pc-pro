@@ -48,7 +48,7 @@ import { getTemplateRenderScript } from '../utils/runExpCodeScript';
 // @ts-ignore
 import { EditableProTable } from '@ant-design/pro-table';
 // const EditableProTable = React.lazy(() => import('./importTable'));
-import './antd.variable.without.theme.min.css';
+// import './antd.variable.without.theme.min.css';
 import { Actions } from './components/Actions';
 
 const swapArr = (arr: any[], idx1: number, idx2: number) => {
