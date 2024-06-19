@@ -54,6 +54,10 @@ const Actions = (props: RuntimeParams<Data>, record, editableKeys, rowKey) => {
   // 是否所有的按钮都隐藏，如果是，则操作区不应该占位
   // let isEmpty = true;
 
+  if (!data.actions) {
+    return [];
+  }
+
   return data.actions.map((item) => {
     const { iconConfig, ...res } = item;
     const icon = getBtnIcon(item);

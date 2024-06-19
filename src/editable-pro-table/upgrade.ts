@@ -67,5 +67,9 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
     data.fixedHeight = false;
   }
 
+  if(data.actions === undefined) {
+    data.actions = []
+  }
+
   return true;
 }

@@ -15,7 +15,7 @@ export default {
       },
       value: {
         set({ data, focusArea }: EditorResult<Data>) {
-          const idx = getThIdx(focusArea)
+          const idx = getThIdx(focusArea);
           const item = data.columns[idx];
           data.columns.splice(idx, 1);
           data.columns.splice(idx - 1, 0, item);
@@ -26,12 +26,12 @@ export default {
       title: '后移',
       type: 'button',
       ifVisible({ data, focusArea }: EditorResult<Data>) {
-        const idx = getThIdx(focusArea)
+        const idx = getThIdx(focusArea);
         return idx < data.columns.length - 2;
       },
       value: {
         set({ data, focusArea }: EditorResult<Data>) {
-          const idx = getThIdx(focusArea)
+          const idx = getThIdx(focusArea);
           const item = data.columns[idx];
           data.columns.splice(idx, 1);
           data.columns.splice(idx + 1, 0, item);
@@ -42,8 +42,10 @@ export default {
       title: '删除列',
       type: 'button',
       value: {
-        set({ data, focusArea }: EditorResult<Data>) {
-          const idx = getThIdx(focusArea)
+        set({ data, focusArea, slot }: EditorResult<Data>) {
+          const idx = getThIdx(focusArea);
+          data.columns[idx].slotId && slot.remove(data.columns[idx].slotId);
+          data.columns[idx].slotEditId && slot.remove(data.columns[idx].slotEditId);
           data.columns.splice(idx, 1);
         }
       }
