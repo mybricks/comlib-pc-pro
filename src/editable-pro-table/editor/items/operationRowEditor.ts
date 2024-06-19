@@ -58,6 +58,10 @@ export default (data: Data, output) => ({
           const actionSchema = {
             type: 'object',
             properties: {
+              _isEdit: {
+                type: "boolean",
+                title: "是否编辑态"
+              },
               index: {
                 type: 'number',
                 title: '行索引'

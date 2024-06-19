@@ -43,7 +43,7 @@ const Actions = (props: RuntimeParams<Data>, record, editableKeys, rowKey) => {
     if (env.edit) return;
     const { _add: _, ...outputObject } = record;
     outputs[item.key] &&
-      outputs[item.key]({ isEdit: editableKeys.includes(record[rowKey]), ...outputObject });
+      outputs[item.key]({ _isEdit: editableKeys.includes(record[rowKey]), ...outputObject });
   };
 
   //   const isLast =
