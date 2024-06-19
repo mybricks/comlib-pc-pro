@@ -36,14 +36,19 @@ const getBtnIcon = (btn: Action) => {
   return void 0;
 };
 
-const Actions = (props: RuntimeParams<Data>, record, editableKeys, rowKey) => {
+const Actions = (props: RuntimeParams<Data>, record, editableKeys, rowKey, idx?) => {
   const { data, env, outputs } = props;
 
   const onClick = (item: Action) => {
     if (env.edit) return;
-    const { _add: _, ...outputObject } = record;
+    const { _add, [rowKey]: _, index, ...customRecord } = record;
     outputs[item.key] &&
-      outputs[item.key]({ _isEdit: editableKeys.includes(record[rowKey]), ...outputObject });
+      outputs[item.key]({
+        [rowKey]: record[rowKey],
+        index: idx ?? record.index,
+        isEdit: editableKeys.includes(record[rowKey]),
+        record: customRecord
+      });
   };
 
   //   const isLast =
@@ -83,7 +88,7 @@ const Actions = (props: RuntimeParams<Data>, record, editableKeys, rowKey) => {
     // isEmpty = false;
     return (
       <Button
-        key={item.key}
+        // key={item.key}
         data-form-actions-item={item.key}
         {...res}
         // disabled={data.disabled}

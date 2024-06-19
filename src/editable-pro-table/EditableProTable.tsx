@@ -406,7 +406,7 @@ export default function (props: RuntimeParams<Data>) {
                     {data.addChildBtnLabel}
                   </Button>
                 ),
-              ...Actions(props, record, editableKeys, rowKey)
+              ...Actions(props, record, editableKeys, rowKey, idx)
             ];
           };
           break;
