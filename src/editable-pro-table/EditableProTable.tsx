@@ -1,4 +1,4 @@
-import React, { Suspense, useRef, useCallback, useEffect, useState } from 'react';
+import React, { Suspense, useRef, useCallback, useEffect, useState, useMemo } from 'react';
 import moment from 'moment';
 import {
   Spin,
@@ -13,7 +13,8 @@ import {
   InputNumber,
   Tooltip,
   ConfigProvider,
-  Image
+  Image,
+  Button
 } from 'antd';
 
 import { TableRowSelection } from 'antd/lib/table/interface';
@@ -48,6 +49,7 @@ import { getTemplateRenderScript } from '../utils/runExpCodeScript';
 import { EditableProTable } from '@ant-design/pro-table';
 // const EditableProTable = React.lazy(() => import('./importTable'));
 import './antd.variable.without.theme.min.css';
+import { Actions } from './components/Actions';
 
 const swapArr = (arr: any[], idx1: number, idx2: number) => {
   if (arr[idx1] && arr[idx2]) {
@@ -58,15 +60,8 @@ const swapArr = (arr: any[], idx1: number, idx2: number) => {
   return arr;
 };
 const { RangePicker } = DatePicker;
-export default function ({
-  data,
-  slots,
-  inputs,
-  outputs,
-  env,
-  logger,
-  title
-}: RuntimeParams<Data>) {
+export default function (props: RuntimeParams<Data>) {
+  const { data, slots, inputs, outputs, env, logger, title } = props;
   const wrapRef = useRef<HTMLDivElement>(null);
   const actionRef = useRef<ActionType>();
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([]);
@@ -313,6 +308,9 @@ export default function ({
     );
   }, []);
 
+  // TODO 为了让actions更新时重新渲染
+  const actions = data.actions;
+
   const getColumns = (dataSource: DataSourceType[]) => {
     const col = formatColumn(data, env, colsCfg);
     return col.map((item, colIdx) => {
@@ -335,10 +333,12 @@ export default function ({
               item.showAddChildBtn = true;
             }
             return [
-              !data.hideModifyBtn && editable && (
-                <a
+              !data.hideModifyBtn && editable && data?.editText && (
+                <Button
                   key="editable"
                   className="editable"
+                  type="link"
+                  size="small"
                   onClick={(e) => {
                     if (env.edit) return;
                     action?.startEditable?.(record?.[rowKey]);
@@ -346,12 +346,14 @@ export default function ({
                   }}
                 >
                   {data?.editText}
-                </a>
+                </Button>
               ),
-              !data.hideDeleteBtn && (
-                <a
+              !data.hideDeleteBtn && data?.deleteText && (
+                <Button
                   key="delete"
                   className="delete"
+                  type="link"
+                  size="small"
                   onClick={(e) => {
                     if (env.edit) return;
                     setDataSource(deleteItemByKey(dataSource, record?.[rowKey], rowKey));
@@ -362,12 +364,14 @@ export default function ({
                   }}
                 >
                   {data?.deleteText}
-                </a>
+                </Button>
               ),
               !data.hideNewBtn && (
-                <a
+                <Button
                   key="add"
                   className="add"
+                  type="link"
+                  size="small"
                   onClick={(e) => {
                     if (env.edit) return;
                     actionRef.current?.addEditRecord?.({
@@ -379,25 +383,30 @@ export default function ({
                   }}
                 >
                   新增
-                </a>
+                </Button>
               ),
-              !data.hideAllAddChildBtn && (!!env.edit || item.showAddChildBtn) && (
-                <a
-                  key="addChild"
-                  className="addChild"
-                  onClick={(e) => {
-                    if (env.edit) return;
-                    const newExpandedRowKeys = [...expandedRowKeys, record?.[rowKey]].filter(
-                      (item, inx, self) => item && self.indexOf(item) === inx
-                    );
-                    setExpandedRowKeys(newExpandedRowKeys);
-                    setDataSource(addChildByKey(dataSource, record?.[rowKey], rowKey));
-                    e.stopPropagation();
-                  }}
-                >
-                  {data.addChildBtnLabel}
-                </a>
-              )
+              !data.hideAllAddChildBtn &&
+                data.addChildBtnLabel &&
+                (!!env.edit || item.showAddChildBtn) && (
+                  <Button
+                    key="addChild"
+                    className="addChild"
+                    type="link"
+                    size="small"
+                    onClick={(e) => {
+                      if (env.edit) return;
+                      const newExpandedRowKeys = [...expandedRowKeys, record?.[rowKey]].filter(
+                        (item, inx, self) => item && self.indexOf(item) === inx
+                      );
+                      setExpandedRowKeys(newExpandedRowKeys);
+                      setDataSource(addChildByKey(dataSource, record?.[rowKey], rowKey));
+                      e.stopPropagation();
+                    }}
+                  >
+                    {data.addChildBtnLabel}
+                  </Button>
+                ),
+              ...Actions(props, record, editableKeys, rowKey)
             ];
           };
           break;
@@ -790,9 +799,22 @@ export default function ({
               },
               actionRender: (row, config, defaultDoms) => {
                 return [
-                  !data.hideSaveBtn && <span className="save">{defaultDoms.save}</span>,
-                  !data.hideDeleteBtnInEdit && <span className="delete">{defaultDoms.delete}</span>,
-                  !data.hideCancelBtn && <span className="cancel">{defaultDoms.cancel}</span>
+                  !data.hideSaveBtn && defaultDoms.save && (
+                    <Button type="link" size="small" className="save">
+                      {defaultDoms.save}
+                    </Button>
+                  ),
+                  !data.hideDeleteBtnInEdit && defaultDoms.delete && (
+                    <Button type="link" size="small" className="delete">
+                      {defaultDoms.delete}
+                    </Button>
+                  ),
+                  !data.hideCancelBtn && defaultDoms.cancel && (
+                    <Button type="link" size="small" className="cancel">
+                      {defaultDoms.cancel}
+                    </Button>
+                  ),
+                  ...Actions(props, row, editableKeys, rowKey)
                 ].filter((item) => !!item);
               },
               onValuesChange: (record, recordList: DataSourceType[]) => {

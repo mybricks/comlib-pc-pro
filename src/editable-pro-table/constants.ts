@@ -1,4 +1,5 @@
 import { ProColumns } from '@ant-design/pro-table';
+import { ButtonType } from 'antd/lib/button';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export const INPUTS = {
@@ -258,8 +259,75 @@ export interface Data {
   bordered: boolean; // 边框
 
   // 是否支持动态表头
-  dynamicColumns: boolean
+  dynamicColumns: boolean;
+
+  actions: Action[];
 }
+
+/**@description 组件尺寸分类 */
+export enum SizeEnum {
+  "Small" = "small",
+  "Middle" = "middle",
+  "Large" = "large"
+};
+
+export type IconSrcType = false | 'custom' | 'inner';
+
+/** @description 按钮图标位置 */
+export enum LocationEnum {
+  FRONT = 'front',
+  BACK = 'back'
+}
+
+export interface Action {
+  title: string
+  loading?: boolean
+  isDefault: boolean
+  outputId: string
+  type?: ButtonType
+  key: string
+  visible?: boolean
+  danger?: boolean
+  size: SizeEnum
+  /** @description 动态显示表达式 */
+  displayExpression?: string
+  /** @description 图标配置 */
+  iconConfig: {
+    // 图标来源
+    src: IconSrcType;
+    // 图标尺寸
+    size: [number, number];
+    // 图标与文字的间隔
+    gutter: number;
+    // 内置图标
+    innerIcon?: string;
+    // 自定义图标
+    customIcon?: string;
+    // 图标位置
+    location: LocationEnum;
+  }
+  /** @description 权限配置 */
+  permission?: {
+    id: string,
+    type?: string;
+  }
+}
+
+/**@description 组件尺寸的选项 */
+export const SizeOptions = [
+  {
+    label: '小',
+    value: SizeEnum.Small
+  },
+  {
+    label: '默认',
+    value: SizeEnum.Middle
+  },
+  {
+    label: '大',
+    value: SizeEnum.Large
+  },
+]
 
 interface Scroll {
   y: number | string | undefined;

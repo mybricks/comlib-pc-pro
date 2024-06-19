@@ -16,7 +16,7 @@ export const COLUMN_EDITORS_CLASS_KEY =
   '.ant-table-thead .ant-table-cell:not(.ant-table-selection-column):not(.ant-table-cell-scrollbar):not(.ant-table-row-expand-icon-cell):not(.column-draggle)';
 export default {
   [COLUMN_EDITORS_CLASS_KEY]: {
-    items: ({ data }: EditorResult<Data>, cate1, cate2) => {
+    items: ({ data, output }: EditorResult<Data>, cate1, cate2) => {
       cate1.title = '常规';
       cate1.items = [
         baseEditor,
@@ -70,7 +70,7 @@ export default {
       cate2.title = '高级';
       cate2.items = [
         proEditor(data),
-        operationRowEditor(data),
+        operationRowEditor(data, output),
         switchEditor,
         dateEditor,
         selectEditor

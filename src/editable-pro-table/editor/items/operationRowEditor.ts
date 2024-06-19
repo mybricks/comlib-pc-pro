@@ -1,8 +1,10 @@
-import { Data, OUTPUTS, TypeEnum } from '../../constants';
+import { Action, Data, OUTPUTS, TypeEnum } from '../../constants';
 import { getColumnsDataSchema } from '../../schema';
 import { checkType, getSuggestions, run } from '../../utils';
+import { uuid } from '../../../utils';
+import VisibleOpt from '../../../components/editorRender/visibleOpt';
 
-export default (data: Data) => ({
+export default (data: Data, output) => ({
   title: '操作列配置',
   ifVisible({ data, focusArea }: EditorResult<Data>) {
     return checkType(data, focusArea, [TypeEnum.Option]);
@@ -18,6 +20,62 @@ export default (data: Data) => ({
         },
         set({ data }: EditorResult<Data>, val: boolean) {
           data.hideAllOperation = !!val;
+        }
+      }
+    },
+    {
+      title: '自定义操作',
+      description: '选中拖拽各项左侧手柄，可改变按钮的相对位置',
+      type: 'array',
+      options: {
+        addText: '添加操作',
+        deletable: false,
+        editable: false,
+        customOptRender: VisibleOpt,
+        getTitle: (item) => {
+          return item?.title;
+        },
+        onAdd: (_id) => {
+          const outputId = uuid();
+          const title = `自定义操作${data.actions.length + 1}`;
+          const item = {
+            title: title,
+            key: outputId,
+            outputId,
+            isDefault: false,
+            visible: true,
+            type: 'link',
+            size: 'small',
+            iconConfig: {
+              src: false,
+              size: [14, 14],
+              gutter: 8,
+              location: 'front'
+            }
+          } as Action;
+          // const itemSchema = getItemSchema(data);
+
+          const actionSchema = {
+            type: 'object',
+            properties: {
+              index: {
+                type: 'number',
+                title: '行索引'
+              },
+              ...getColumnsDataSchema(data.columns)
+            }
+          };
+          output.add(outputId, `点击${title}`, actionSchema);
+          data.actions.push(item);
+          return item;
+        }
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data.actions || [];
+        },
+        set({ data }: EditorResult<Data>, val: any[]) {
+          data.actions = val;
         }
       }
     },
@@ -311,4 +369,4 @@ export default (data: Data) => ({
       ]
     }
   ]
-})
+});
