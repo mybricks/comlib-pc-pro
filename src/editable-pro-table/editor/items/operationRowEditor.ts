@@ -54,15 +54,14 @@ export default (data: Data, output) => ({
             }
           } as Action;
           // const itemSchema = getItemSchema(data);
-          const { _key, ...recordSchema } = getColumnsDataSchema(data.columns);
+          const recordSchema = getColumnsDataSchema(
+            data.columns,
+            data.rowKey
+          );
 
           const actionSchema = {
             type: 'object',
             properties: {
-              _key: {
-                type: 'string',
-                title: '_key'
-              },
               index: {
                 type: 'number',
                 title: '行索引'
@@ -319,7 +318,7 @@ export default (data: Data, output) => ({
                     type: 'number',
                     title: '行索引'
                   },
-                  ...getColumnsDataSchema(data.columns)
+                  ...getColumnsDataSchema(data.columns, data.rowKey)
                 }
               };
               if (val && !hasEvent) {
@@ -359,7 +358,7 @@ export default (data: Data, output) => ({
                       type: 'number',
                       title: '行索引'
                     },
-                    ...getColumnsDataSchema(data.columns)
+                    ...getColumnsDataSchema(data.columns, data.rowKey)
                   }
                 };
                 output.add(OUTPUTS.DelCallback, '删除回调', schema);

@@ -16,11 +16,7 @@ export default [
           set({ data, input }: EditorResult<Data>, val: boolean) {
             data.useOperationDynamic = !!val;
             if (val && !input.get(INPUTS.SetOpConfig)) {
-              input.add(
-                INPUTS.SetOpConfig,
-                '修改操作配置',
-                Schemas.SetOpConfig
-              );
+              input.add(INPUTS.SetOpConfig, '修改操作配置', Schemas.SetOpConfig);
             }
             if (!val && input.get(INPUTS.SetOpConfig)) {
               input.remove(INPUTS.SetOpConfig);
@@ -145,14 +141,9 @@ export default [
             const hasInputEvent = input.get(INPUTS.GetRowSelect);
             const hasOutputEvent = input.get(OUTPUTS.GetRowSelect);
             if (val) {
-              !hasInputEvent &&
-                input.add(INPUTS.GetRowSelect, '获取勾选数据', Schemas.Void);
+              !hasInputEvent && input.add(INPUTS.GetRowSelect, '获取勾选数据', Schemas.Void);
               !hasOutputEvent &&
-                output.add(
-                  OUTPUTS.GetRowSelect,
-                  '勾选数据输出',
-                  Schemas.GetRowSelect(data)
-                );
+                output.add(OUTPUTS.GetRowSelect, '勾选数据输出', Schemas.GetRowSelect(data));
               input.get(OUTPUTS.GetRowSelect)?.setRels([OUTPUTS.GetRowSelect]);
             } else {
               hasInputEvent && input.remove(INPUTS.GetRowSelect);
@@ -164,9 +155,9 @@ export default [
       {
         title: '勾选标识',
         type: 'text',
-        description: '行唯一标识字段，默认为_key',
+        description: '勾选标识字段，默认为行唯一标识字段',
         options: {
-          placeholder: '行唯一标识字段，默认为_key'
+          placeholder: '默认为行唯一标识字段'
         },
         ifVisible({ data }: EditorResult<Data>) {
           return data.useRowSelection;
@@ -194,12 +185,7 @@ export default [
             data.useSetSelectedRowKeys = value;
             const hasEvent = input.get(INPUTS.SetRowSelect);
             if (value) {
-              !hasEvent &&
-                input.add(
-                  INPUTS.SetRowSelect,
-                  '设置勾选项',
-                  Schemas.SetRowSelect
-                );
+              !hasEvent && input.add(INPUTS.SetRowSelect, '设置勾选项', Schemas.SetRowSelect);
             } else {
               hasEvent && input.remove(INPUTS.SetRowSelect);
             }
@@ -222,12 +208,7 @@ export default [
           set({ data, output }: EditorResult<Data>, val: boolean) {
             const hasEvent = output.get(OUTPUTS.ChangeEvent);
             if (val) {
-              !hasEvent &&
-                output.add(
-                  OUTPUTS.ChangeEvent,
-                  '数据变化',
-                  Schemas.ChangeEvent(data)
-                );
+              !hasEvent && output.add(OUTPUTS.ChangeEvent, '数据变化', Schemas.ChangeEvent(data));
             } else {
               hasEvent && output.remove(OUTPUTS.ChangeEvent);
             }

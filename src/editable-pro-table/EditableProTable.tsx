@@ -27,7 +27,8 @@ import {
   DataSourceType,
   defaultData,
   TypeEnum,
-  getDefaultColumns
+  getDefaultColumns,
+  ROW_KEY
 } from './constants';
 import { uuid } from '../utils';
 import {
@@ -71,7 +72,7 @@ export default function (props: RuntimeParams<Data>) {
   // 表格列配置
   const [colsCfg, setColsCfg] = useState<any>({});
 
-  const rowKey = data.useRowSelection && data.selectionRowKey ? data.selectionRowKey : '_key';
+  const rowKey = data.rowKey || ROW_KEY;
 
   useEffect(() => {
     if (env.edit) {
@@ -88,7 +89,7 @@ export default function (props: RuntimeParams<Data>) {
       });
       inputs[INPUTS.SetDataSource]((val) => {
         if (Array.isArray(val)) {
-          const dataSource = formatDataSource(val, data.columns);
+          const dataSource = formatDataSource(val, data.columns, rowKey);
           setDataSource(dataSource);
         } else {
           console.error('可编辑表格：输入数据格式非法，输入数据必须是数组');
@@ -116,20 +117,6 @@ export default function (props: RuntimeParams<Data>) {
               data[key] = val[key];
             }
           });
-        });
-      }
-
-      // 动态设置勾选项
-      if (data.useSetSelectedRowKeys && inputs[INPUTS.SetRowSelect]) {
-        inputs[INPUTS.SetRowSelect]((val) => {
-          const newSelectedRowKeys: Array<any> = [];
-          (Array.isArray(val) ? val : [val]).forEach((selected) => {
-            const selectedKey = typeof selected === 'object' ? selected?.[rowKey] : selected;
-            if (selectedKey) {
-              newSelectedRowKeys.push(selectedKey);
-            }
-          });
-          setSelectedRowKeys(newSelectedRowKeys);
         });
       }
 
@@ -163,19 +150,45 @@ export default function (props: RuntimeParams<Data>) {
     }
   }, []);
 
+  // 动态设置勾选项
+  useEffect(() => {
+    if (data.useSetSelectedRowKeys && inputs[INPUTS.SetRowSelect]) {
+      const handleSetRowSelect = (val: any) => {
+        const selectedKeys = Array.isArray(val) ? val : [val];
+        const newSelectedRowKeys = selectedKeys
+          .map((selected) => {
+            const key =
+              typeof selected === 'object' ? selected[data.selectionRowKey || rowKey] : selected;
+            return data.selectionRowKey
+              ? dataSource.find((item) => item[data.selectionRowKey!] === key)?.[rowKey]
+              : key;
+          })
+          .filter(Boolean); // 过滤掉未找到的key
+        setSelectedRowKeys(newSelectedRowKeys);
+      };
+      inputs[INPUTS.SetRowSelect](handleSetRowSelect);
+    }
+  }, [dataSource, data.useSetSelectedRowKeys]);
+
   useEffect(() => {
     if (env.runtime && data.useRowSelection && inputs[INPUTS.GetRowSelect]) {
       inputs[INPUTS.GetRowSelect]((val, relOutputs) => {
         relOutputs[OUTPUTS.GetRowSelect] &&
           relOutputs[OUTPUTS.GetRowSelect]({
-            selectedRowKeys,
+            selectedRowKeys: data.selectionRowKey
+              ? selectedRowKeys.map(
+                  (key) => dataSource.find((item) => item[rowKey] === key)?.[data.selectionRowKey!]
+                )
+              : selectedRowKeys,
             selectedRows: formatSubmitDataSource(
-              dataSource.filter((item) => selectedRowKeys.includes(item?.[rowKey]))
+              dataSource.filter((item) => {
+                return selectedRowKeys.includes(item[rowKey]);
+              })
             )
           });
       });
     }
-  }, [selectedRowKeys, dataSource]);
+  }, [data.useRowSelection, data.selectionRowKey, selectedRowKeys, dataSource]);
 
   const debouncedChangeEventOutput = useCallback(
     debounce((val) => {
@@ -193,7 +206,6 @@ export default function (props: RuntimeParams<Data>) {
           const intiValue = Object.prototype.toString.call(val) === '[object Object]' ? val : {};
           actionRef.current?.addEditRecord?.(
             {
-              _key: uuid(),
               [rowKey]: uuid(),
               _add: true,
               ...intiValue
@@ -210,7 +222,8 @@ export default function (props: RuntimeParams<Data>) {
           const delKeys: any[] = val.map((item) => item?.[rowKey]).filter((item) => item);
           const newDataSource = formatDataSource(
             dataSource.filter((item) => !delKeys.includes(item?.[rowKey])),
-            data.columns
+            data.columns,
+            rowKey
           );
           setDataSource(newDataSource);
         });
@@ -223,7 +236,8 @@ export default function (props: RuntimeParams<Data>) {
             if (idx !== -1 && idx < dataSource.length - 1) {
               const newDataSource = formatDataSource(
                 swapArr([...dataSource], idx, idx + 1),
-                data.columns
+                data.columns,
+                rowKey
               );
               setDataSource(newDataSource);
             }
@@ -235,7 +249,8 @@ export default function (props: RuntimeParams<Data>) {
             if (idx !== -1 && idx > 0) {
               const newDataSource = formatDataSource(
                 swapArr([...dataSource], idx, idx - 1),
-                data.columns
+                data.columns,
+                rowKey
               );
               setDataSource(newDataSource);
             }
@@ -375,7 +390,6 @@ export default function (props: RuntimeParams<Data>) {
                   onClick={(e) => {
                     if (env.edit) return;
                     actionRef.current?.addEditRecord?.({
-                      _key: uuid(),
                       [rowKey]: uuid(),
                       _add: true
                     });
@@ -406,7 +420,7 @@ export default function (props: RuntimeParams<Data>) {
                     {data.addChildBtnLabel}
                   </Button>
                 ),
-              ...Actions(props, record, editableKeys, rowKey, idx)
+              ...Actions(props, record, editableKeys, idx)
             ];
           };
           break;
@@ -752,7 +766,7 @@ export default function (props: RuntimeParams<Data>) {
                 : {
                     newRecordType: data.useAutoSave ? 'dataSource' : 'cache',
                     creatorButtonText: data.creatorButtonText,
-                    record: () => ({ _key: uuid(), [rowKey]: uuid(), _add: true }),
+                    record: () => ({ [rowKey]: uuid(), _add: true }),
                     disabled: !!env?.edit
                   }
             }
@@ -814,7 +828,7 @@ export default function (props: RuntimeParams<Data>) {
                       {defaultDoms.cancel}
                     </Button>
                   ),
-                  ...Actions(props, row, editableKeys, rowKey)
+                  ...Actions(props, row, editableKeys)
                 ].filter((item) => !!item);
               },
               onValuesChange: (record, recordList: DataSourceType[]) => {
