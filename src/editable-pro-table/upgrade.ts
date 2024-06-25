@@ -71,5 +71,9 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
     data.actions = []
   }
 
+  if(data.selectionRowKey) {
+    data.rowKey = data.selectionRowKey;
+  }
+
   return true;
 }

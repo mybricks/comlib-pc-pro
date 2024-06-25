@@ -78,41 +78,41 @@ export const ColumnsSchema = {
         items: [
           {
             type: 'string',
-            value: 'text',
+            value: 'text'
           },
           {
             type: 'string',
-            value: 'digit',
+            value: 'digit'
           },
           {
             type: 'string',
-            value: 'select',
+            value: 'select'
           },
           {
             type: 'string',
-            value: 'treeSelect',
+            value: 'treeSelect'
           },
           {
             type: 'string',
-            value: 'cascader',
+            value: 'cascader'
           },
           {
             type: 'string',
-            value: 'switch',
+            value: 'switch'
           },
           {
             type: 'string',
-            value: 'checkbox',
+            value: 'checkbox'
           },
           {
             type: 'string',
-            value: 'date',
+            value: 'date'
           },
           {
             type: 'string',
-            value: 'dateRange',
-          },
-        ],
+            value: 'dateRange'
+          }
+        ]
       },
       width: {
         type: 'number'
@@ -122,17 +122,17 @@ export const ColumnsSchema = {
         items: [
           {
             type: 'string',
-            value: 'left',
+            value: 'left'
           },
           {
             type: 'string',
-            value: 'center',
+            value: 'center'
           },
           {
             type: 'string',
-            value: 'right',
-          },
-        ],
+            value: 'right'
+          }
+        ]
       },
       required: {
         type: 'string'
@@ -151,7 +151,7 @@ export const ColumnsSchema = {
       },
       tooltip: {
         type: 'string'
-      },
+      }
       // valueEnum: {
       //   type: 'array',
       //   items: {
@@ -172,6 +172,8 @@ export const ColumnsSchema = {
     }
   }
 };
+
+export const ROW_KEY = '_key';
 
 export type ColumnItem = ProColumns<any> & {
   readonly?: boolean;
@@ -239,12 +241,11 @@ export interface Data {
 
   clickChangeToedit?: boolean;
 
-
   fixedHeader: boolean; // 固定表头
   scroll: Scroll; // 滚动
   fixedHeight?: boolean | undefined;
 
-  editType: "single" | "multiple", // 可编辑表格的类型，单行编辑或者多行编辑
+  editType: 'single' | 'multiple'; // 可编辑表格的类型，单行编辑或者多行编辑
 
   saveText: string; // 保存按钮文案
   deleteText: string; // 删除按钮文案
@@ -262,14 +263,15 @@ export interface Data {
   dynamicColumns: boolean;
 
   actions: Action[];
+  rowKey: string;
 }
 
 /**@description 组件尺寸分类 */
 export enum SizeEnum {
-  "Small" = "small",
-  "Middle" = "middle",
-  "Large" = "large"
-};
+  'Small' = 'small',
+  'Middle' = 'middle',
+  'Large' = 'large'
+}
 
 export type IconSrcType = false | 'custom' | 'inner';
 
@@ -280,17 +282,17 @@ export enum LocationEnum {
 }
 
 export interface Action {
-  title: string
-  loading?: boolean
-  isDefault: boolean
-  outputId: string
-  type?: ButtonType
-  key: string
-  visible?: boolean
-  danger?: boolean
-  size: SizeEnum
+  title: string;
+  loading?: boolean;
+  isDefault: boolean;
+  outputId: string;
+  type?: ButtonType;
+  key: string;
+  visible?: boolean;
+  danger?: boolean;
+  size: SizeEnum;
   /** @description 动态显示表达式 */
-  displayExpression?: string
+  displayExpression?: string;
   /** @description 图标配置 */
   iconConfig: {
     // 图标来源
@@ -305,12 +307,12 @@ export interface Action {
     customIcon?: string;
     // 图标位置
     location: LocationEnum;
-  }
+  };
   /** @description 权限配置 */
   permission?: {
-    id: string,
+    id: string;
     type?: string;
-  }
+  };
 }
 
 /**@description 组件尺寸的选项 */
@@ -326,15 +328,15 @@ export const SizeOptions = [
   {
     label: '大',
     value: SizeEnum.Large
-  },
-]
+  }
+];
 
 interface Scroll {
   y: number | string | undefined;
 }
 
 export type DataSourceType = {
-  _key: React.Key;
+  // _key: React.Key;
   _add?: boolean;
   [key: string]: any;
 };

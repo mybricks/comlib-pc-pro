@@ -1,10 +1,10 @@
-import { ColumnItem, INPUTS, OUTPUTS, TypeEnum } from './constants';
+import { ColumnItem, INPUTS, OUTPUTS, ROW_KEY, TypeEnum } from './constants';
 
-export function getColumnsDataSchema(columns: ColumnItem[]) {
+export function getColumnsDataSchema(columns: ColumnItem[], rowKey: string = ROW_KEY) {
   const dataSchema = {
-    _key: {
+    [rowKey]: {
       type: 'string',
-      title: '_key',
+      title: '行唯一标识'
     }
   };
   columns.forEach((item) => {
@@ -153,8 +153,8 @@ function setAddOrDelRowSchema({ dataSchema, input }) {
 }
 
 // 设置插槽行数据schema
-function setSlotRowValueSchema({ dataSchema, slot, data}) {
-  data.columns.forEach(column => {
+function setSlotRowValueSchema({ dataSchema, slot, data }) {
+  data.columns.forEach((column) => {
     if (column?.valueType === 'slot' && column?.slotId) {
       slot?.get(column?.slotId)?.inputs?.get(INPUTS.SlotRowValue)?.setSchema({
         type: 'object',
@@ -166,10 +166,7 @@ function setSlotRowValueSchema({ dataSchema, slot, data}) {
         type: 'object',
         properties: dataSchema
       });
-      slot
-      ?.get(column?.slotEditId)
-      ?.outputs?.get(OUTPUTS.EditTableData)
-      ?.setSchema({
+      slot?.get(column?.slotEditId)?.outputs?.get(OUTPUTS.EditTableData)?.setSchema({
         type: 'object',
         properties: dataSchema
       });
@@ -178,26 +175,32 @@ function setSlotRowValueSchema({ dataSchema, slot, data}) {
 }
 
 // 设置插槽列数据schema
-function setSlotColValueSchema({ slot, data}) {
-  data.columns.forEach(column => {
+function setSlotColValueSchema({ slot, data }) {
+  data.columns.forEach((column) => {
     if (column?.valueType === 'slot' && column?.slotId) {
-      slot?.get(column?.slotId)?.inputs?.get(INPUTS.SlotColValue)?.setSchema({
-        title: column.dataIndex,
-        type: column?.dataSchema?.type || 'string'
-      });
+      slot
+        ?.get(column?.slotId)
+        ?.inputs?.get(INPUTS.SlotColValue)
+        ?.setSchema({
+          title: column.dataIndex,
+          type: column?.dataSchema?.type || 'string'
+        });
     }
     if (column?.valueType === 'slot' && column?.slotEditId) {
-      slot?.get(column?.slotEditId)?.inputs?.get(INPUTS.SlotColValue)?.setSchema({
-        title: column.dataIndex,
-        type: column?.dataSchema?.type || 'string'
-      });
+      slot
+        ?.get(column?.slotEditId)
+        ?.inputs?.get(INPUTS.SlotColValue)
+        ?.setSchema({
+          title: column.dataIndex,
+          type: column?.dataSchema?.type || 'string'
+        });
     }
   });
 }
 
 // 设置插槽行序号数据schema
-function setSlotRowIndexSchema({ slot, data}) {
-  data.columns.forEach(column => {
+function setSlotRowIndexSchema({ slot, data }) {
+  data.columns.forEach((column) => {
     if (column?.valueType === 'slot' && column?.slotId) {
       slot?.get(column?.slotId)?.inputs?.get(INPUTS.RowIndex)?.setSchema({
         title: column.dataIndex,
@@ -225,7 +228,7 @@ export function getOptionSchema() {
     { key: 'hideDeleteBtnInEdit', title: '编辑态-隐藏删除啊扭' },
     { key: 'hideSaveBtn', title: '编辑态-隐藏保存按扭' },
     { key: 'hideCancelBtn', title: '编辑态-隐藏取消按扭' },
-    { key: 'clickChangeToedit', title: '点击切换编辑态'},
+    { key: 'clickChangeToedit', title: '点击切换编辑态' }
   ];
   options.forEach(({ key, title }) => {
     properties[key] = { title, type: 'boolean' };
@@ -238,7 +241,7 @@ export function getOptionSchema() {
 }
 
 export function setDataSchema({ data, output, input, slot = {} }) {
-  const dataSchema = getColumnsDataSchema(data.columns);
+  const dataSchema = getColumnsDataSchema(data.columns, data.rowKey);
   setDataSourceSchema({ dataSchema, input });
   setDataSourceSubmitSchema({ dataSchema, output });
   setRowSelectionSchema({ dataSchema, output });
@@ -263,17 +266,17 @@ export const Schemas = {
   AddRow: (data) => ({
     title: '行数据',
     type: 'object',
-    properties: getColumnsDataSchema(data.columns)
+    properties: getColumnsDataSchema(data.columns, data.rowKey)
   }),
   DelRow: (data) => ({
     title: '行数据',
     type: 'object',
-    properties: getColumnsDataSchema(data.columns)
+    properties: getColumnsDataSchema(data.columns, data.rowKey)
   }),
   MoveRow: (data) => ({
     title: '行数据',
     type: 'object',
-    properties: getColumnsDataSchema(data.columns)
+    properties: getColumnsDataSchema(data.columns, data.rowKey)
   }),
   GetRowSelect: (data) => ({
     title: '勾选数据',
@@ -291,7 +294,7 @@ export const Schemas = {
         type: 'array',
         items: {
           type: 'object',
-          properties: getColumnsDataSchema(data.columns)
+          properties: getColumnsDataSchema(data.columns, data.rowKey)
         }
       }
     }
@@ -301,7 +304,7 @@ export const Schemas = {
     type: 'array',
     items: {
       type: 'object',
-      properties: getColumnsDataSchema(data.columns)
+      properties: getColumnsDataSchema(data.columns, data.rowKey)
     }
   })
 };

@@ -2,7 +2,7 @@ import { ProColumns } from '@ant-design/pro-table';
 import moment from 'moment';
 import { runScript } from '../utils/runExpCodeScript';
 import { uuid } from '../utils';
-import { ColumnItem, Data, DataSourceType, TypeEnum } from './constants';
+import { ColumnItem, Data, DataSourceType, ROW_KEY, TypeEnum } from './constants';
 
 export const getThIdx = (focusArea) => {
   return focusArea?.dataset?.tableThIdx;
@@ -35,7 +35,7 @@ export function checkType(data: Data, focusArea, includes?: any[], excludes?: an
 export const deleteItemByKey = (
   ds: DataSourceType[],
   _key: React.Key | undefined,
-  rowKey: string = '_key'
+  rowKey: string = ROW_KEY
 ): DataSourceType[] => {
   return ds
     .map((item) => {
@@ -57,7 +57,7 @@ export const deleteItemByKey = (
 export const addChildByKey = (
   ds: DataSourceType[],
   _key: React.Key | undefined,
-  rowKey: string = '_key'
+  rowKey: string = ROW_KEY
 ): DataSourceType[] => {
   return ds
     .map((item) => {
@@ -81,7 +81,7 @@ export const addChildByKey = (
     .filter(Boolean) as DataSourceType[];
 };
 // 格式化数据
-export const formatDataSource = (ds: DataSourceType[], columns: ColumnItem[]) => {
+export const formatDataSource = (ds: DataSourceType[], columns: ColumnItem[], rowKey: string = ROW_KEY) => {
   const dateDataIndex = columns
     .filter((item) => item.valueType === TypeEnum.Date || item.valueType === TypeEnum.DateRange)
     .map((item) => ({
@@ -90,7 +90,9 @@ export const formatDataSource = (ds: DataSourceType[], columns: ColumnItem[]) =>
     }));
   if (Array.isArray(ds)) {
     ds.forEach((item) => {
-      item._key = uuid();
+      if (item[rowKey] === undefined) {
+        item[rowKey] = uuid();
+      }
       dateDataIndex.forEach(({ key, format }) => {
         if (item[key]) {
           item[key] = Array.isArray(item[key])
@@ -99,14 +101,14 @@ export const formatDataSource = (ds: DataSourceType[], columns: ColumnItem[]) =>
         }
       });
       if (item.children) {
-        formatDataSource(item.children, columns);
+        formatDataSource(item.children, columns, rowKey);
       }
     });
   }
   return ds;
 };
 // 获取数据下的所有key
-export const getAllDsKey = (ds: DataSourceType[], rowKey: string = '_key'): string[] => {
+export const getAllDsKey = (ds: DataSourceType[], rowKey: string = ROW_KEY): string[] => {
   const keys: Array<any> = [];
   if (Array.isArray(ds)) {
     ds.forEach((item) => {
@@ -126,7 +128,7 @@ export const formatSubmitDataSource = (ds: DataSourceType[]) => {
     return ds;
   }
   return ds.map((item) => {
-    const { _key, _add, children, ...res } = item;
+    const { _add, children, ...res } = item;
     if (children) {
       return { ...res, children: formatSubmitDataSource(children) };
     }
@@ -134,9 +136,12 @@ export const formatSubmitDataSource = (ds: DataSourceType[]) => {
   });
 };
 
-const getColumnConfig = (colsCfg: { [x: string]: any; }, item: ProColumns<any, any>): ProColumns<any> => {
+const getColumnConfig = (
+  colsCfg: { [x: string]: any },
+  item: ProColumns<any, any>
+): ProColumns<any> => {
   const colCfg = (colsCfg ? colsCfg[item.key as React.Key] : {}) || {};
-  (item.fieldProps as any) = { ...item.fieldProps, ...colCfg};
+  (item.fieldProps as any) = { ...item.fieldProps, ...colCfg };
   if (item.valueType === TypeEnum.TreeSelect && colCfg.options) {
     (item.fieldProps as any).treeData = colCfg.options;
   }
@@ -202,7 +207,11 @@ export const formatColumn = (data: Data, env: Env, colsCfg: any): ColumnItem[] =
           }
           // Todo hack 方法
           if (env.edit) {
-            item.key = [!data.hideModifyBtn && 'editable', !data.hideDeleteBtn && 'delete', !data.hideNewBtn && 'add']
+            item.key = [
+              !data.hideModifyBtn && 'editable',
+              !data.hideDeleteBtn && 'delete',
+              !data.hideNewBtn && 'add'
+            ]
               .filter((item) => item)
               .join();
           }

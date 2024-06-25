@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { Button, Col, Form, Space, Image } from 'antd';
 import * as Icons from '@ant-design/icons';
-import { Action, Data, LocationEnum } from '../constants';
+import { Action, Data, LocationEnum, ROW_KEY } from '../constants';
 import css from './index.less';
 
 /**
@@ -36,18 +36,18 @@ const getBtnIcon = (btn: Action) => {
   return void 0;
 };
 
-const Actions = (props: RuntimeParams<Data>, record, editableKeys, rowKey, idx?) => {
+const Actions = (props: RuntimeParams<Data>, record, editableKeys, idx?) => {
   const { data, env, outputs } = props;
 
   const onClick = (item: Action) => {
     if (env.edit) return;
-    const { _add, [rowKey]: _, index, ...customRecord } = record;
+    const { _add, index, ...res } = record;
     outputs[item.key] &&
       outputs[item.key]({
-        [rowKey]: record[rowKey],
         index: idx ?? record.index,
-        isEdit: editableKeys.includes(record[rowKey]),
-        record: customRecord
+        _add: !!_add,
+        isEdit: editableKeys.includes(record[data.rowKey || ROW_KEY]),
+        record: res
       });
   };
 
@@ -132,7 +132,6 @@ const Actions = (props: RuntimeParams<Data>, record, editableKeys, rowKey, idx?)
 //     colon: false
 //   };
 //   const FormActions = Actions(props);
-//   console.log('---');
 
 //   if (typeof FormActions !== 'boolean') {
 //     return (

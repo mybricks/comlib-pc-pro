@@ -1,12 +1,28 @@
 import type { ProColumns } from '@ant-design/pro-table';
 import { uuid } from '../../utils';
-import { ColumnsSchema, Data, INPUTS } from '../constants';
-import { setDataSchema, getColumnsDataSchema } from '../schema';
+import { ColumnsSchema, Data, INPUTS, ROW_KEY } from '../constants';
+import { setDataSchema } from '../schema';
 import { emptyEditor } from './empty';
 
 export default {
   title: '基础配置',
   items: [
+    {
+      title: '行唯一标识',
+      type: 'text',
+      description: '行唯一标识字段，默认为_key',
+      options: {
+        placeholder: ROW_KEY
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data.rowKey;
+        },
+        set({ data }: EditorResult<Data>, value: string) {
+          data.rowKey = value;
+        }
+      }
+    },
     {
       title: '新增按钮文案',
       type: 'text',
