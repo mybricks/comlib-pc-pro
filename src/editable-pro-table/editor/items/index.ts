@@ -10,6 +10,7 @@ import operationRowEditor from './operationRowEditor';
 import dateEditor from './dateEditor';
 import selectEditor from './selectEditor';
 import proEditor from './proEditor';
+import PaginatorEditor from './paginator';
 import { uuid } from '../../../utils';
 
 export const COLUMN_EDITORS_CLASS_KEY =
@@ -81,5 +82,6 @@ export default {
       };
     },
     style: [styleEditor, TitleTipEditor, ...newStyleEditor]
-  }
+  },
+  ...PaginatorEditor
 };

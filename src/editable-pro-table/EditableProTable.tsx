@@ -38,7 +38,8 @@ import {
   formatColumn,
   formatDataSource,
   formatSubmitDataSource,
-  getAllDsKey
+  replacePageElements,
+  swapArr
 } from './utils';
 import styles from './style.less';
 // @ts-ignore
@@ -52,15 +53,8 @@ import { EditableProTable } from '@ant-design/pro-table';
 // const EditableProTable = React.lazy(() => import('./importTable'));
 import './antd.variable.without.theme.min.css';
 import { Actions } from './components/Actions';
+import Paginator from './components/Paginator';
 
-const swapArr = (arr: any[], idx1: number, idx2: number) => {
-  if (arr[idx1] && arr[idx2]) {
-    const temp = arr[idx1];
-    arr[idx1] = arr[idx2];
-    arr[idx2] = temp;
-  }
-  return arr;
-};
 const { RangePicker } = DatePicker;
 export default function (props: RuntimeParams<Data>) {
   const { data, slots, inputs, outputs, env, logger, title } = props;
@@ -70,6 +64,8 @@ export default function (props: RuntimeParams<Data>) {
   const [dataSource, setDataSource] = useState<DataSourceType[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
+  // 前端分页后表格数据
+  const [pageDataSource, setPageDataSource] = useState<any[]>([]);
   // 表格列配置
   const [colsCfg, setColsCfg] = useState<any>({});
 
@@ -313,6 +309,24 @@ export default function (props: RuntimeParams<Data>) {
     }
     return undefined;
   };
+
+  // 前端分页
+  useEffect(() => {
+    if (useFrontPage) {
+      let tempDataSource = [...dataSource];
+      // 分页
+      const len = data.paginationConfig.pageSize || data.paginationConfig.defaultPageSize || 1;
+      const start = (data.paginationConfig.current - 1) * len;
+      const end = start + len;
+      data.paginationConfig.total = tempDataSource.length;
+      setPageDataSource([...tempDataSource.slice(start, end)]);
+    }
+  }, [
+    dataSource,
+    data.usePagination,
+    data.paginationConfig.current,
+    data.paginationConfig.pageSize
+  ]);
 
   const columnsRender = useCallback((value, ellipsis) => {
     return ellipsis ? (
@@ -774,6 +788,11 @@ export default function (props: RuntimeParams<Data>) {
       setSelectedRowKeys(selectedRowKeys);
     }
   };
+
+  const useFrontPage = useMemo(() => {
+    return env.runtime && data.usePagination && data.paginationConfig?.useFrontPage;
+  }, [env.runtime, data.usePagination, data.paginationConfig?.useFrontPage]);
+
   return (
     <div
       className={`${styles['fz-editable-table']} ${
@@ -790,7 +809,7 @@ export default function (props: RuntimeParams<Data>) {
               return {
                 onClick: () => {
                   if (env.edit || !data.clickChangeToedit) return;
-                  if (actionRef?.current?.editableKeys?.includes(record?.[rowKey])) {
+                  if (actionRef?.current?.preEditableKeys?.includes(record?.[rowKey])) {
                     return;
                   }
                   actionRef?.current?.startEditable?.(record?.[rowKey]);
@@ -807,10 +826,14 @@ export default function (props: RuntimeParams<Data>) {
                     disabled: !!env?.edit
                   }
             }
-            value={dataSource}
+            value={useFrontPage ? pageDataSource : dataSource}
             columns={getColumns(dataSource)}
             onChange={(value) => {
-              setDataSource(value as DataSourceType[]);
+              if (useFrontPage) {
+                setDataSource(replacePageElements(dataSource, value, data.paginationConfig));
+              } else {
+                setDataSource(value as DataSourceType[]);
+              }
             }}
             scroll={{
               x: '100%',
@@ -895,6 +918,15 @@ export default function (props: RuntimeParams<Data>) {
               }
             }}
           />
+          {data?.usePagination && (
+            <Paginator
+              env={env}
+              parentSlot={props.parentSlot}
+              data={data.paginationConfig}
+              inputs={inputs}
+              outputs={outputs}
+            />
+          )}
         </ConfigProvider>
       </Suspense>
     </div>

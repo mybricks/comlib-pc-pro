@@ -63,15 +63,15 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
     data.bordered = false;
   }
 
-  if(data.fixedHeight === undefined) {
+  if (data.fixedHeight === undefined) {
     data.fixedHeight = false;
   }
 
-  if(data.actions === undefined) {
-    data.actions = []
+  if (data.actions === undefined) {
+    data.actions = [];
   }
 
-  if(data.selectionRowKey) {
+  if (data.selectionRowKey) {
     data.rowKey = data.selectionRowKey;
   }
 

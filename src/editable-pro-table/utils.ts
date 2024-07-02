@@ -81,7 +81,11 @@ export const addChildByKey = (
     .filter(Boolean) as DataSourceType[];
 };
 // 格式化数据
-export const formatDataSource = (ds: DataSourceType[], columns: ColumnItem[], rowKey: string = ROW_KEY) => {
+export const formatDataSource = (
+  ds: DataSourceType[],
+  columns: ColumnItem[],
+  rowKey: string = ROW_KEY
+) => {
   const dateDataIndex = columns
     .filter((item) => item.valueType === TypeEnum.Date || item.valueType === TypeEnum.DateRange)
     .map((item) => ({
@@ -148,7 +152,7 @@ const getColumnConfig = (
   return item;
 };
 // 格式化Column
-export const formatColumn = (data: Data, env: Env, colsCfg: any): ColumnItem[] => {
+export const formatColumn = (data: Data, env: Env, colsCfg: any): any[] => {
   return data.columns
     .map((colItem, idx) => {
       const {
@@ -268,3 +272,37 @@ export const run = (script: string) => {
 };
 
 export const getFilterSelectorWithId = (id: string) => `:not(#${id} *[data-isslot="1"] *)`;
+
+export const checkIfMobile = (env) => {
+  return env?.canvas?.type === 'mobile';
+};
+
+export const swapArr = (arr: any[], idx1: number, idx2: number) => {
+  if (arr[idx1] && arr[idx2]) {
+    const temp = arr[idx1];
+    arr[idx1] = arr[idx2];
+    arr[idx2] = temp;
+  }
+  return arr;
+};
+
+// 前端分页下，编辑表格数据回填
+export const replacePageElements = (originalArray, replacementArray, paginationConfig) => {
+  const startIndex =
+    (paginationConfig.currentPage.pageNum - 1) * paginationConfig.currentPage.pageSize;
+  const endIndex = startIndex + paginationConfig.currentPage.pageSize;
+
+  // 将替换数组的元素插入到原始数组中
+  for (let i = 0; i < replacementArray.length; i++) {
+    if (replacementArray[i]._add) {
+      // 如果有"_add"属性，表示要添加新元素
+      replacementArray[i]._add = false;
+      originalArray.push(replacementArray[i]);
+    } else {
+      // 否则，替换现有元素
+      originalArray[startIndex + i] = replacementArray[i];
+    }
+  }
+
+  return [...originalArray];
+};
