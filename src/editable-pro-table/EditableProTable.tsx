@@ -14,7 +14,8 @@ import {
   Tooltip,
   ConfigProvider,
   Image,
-  Button
+  Button,
+  Popconfirm
 } from 'antd';
 
 import { TableRowSelection } from 'antd/lib/table/interface';
@@ -337,18 +338,38 @@ export default function (props: RuntimeParams<Data>) {
             if (typeof item.editable === 'function') {
               editable = item.editable(_, record, idx);
             }
-            const { addChildBtnScript } = data;
-            if (addChildBtnScript) {
-              try {
-                item.showAddChildBtn = eval(getTemplateRenderScript(addChildBtnScript))(record);
-              } catch (e) {
-                // console.log(e);
+            const {
+              addChildBtnScript,
+              dynamicDisplayModifyBtnScript,
+              dynamicDisplayDeleteBtnScript
+            } = data;
+            let showEditChildBtn = true,
+              showDeleteChildBtn = true;
+
+            const evaluateDisplayScript = (script: string | undefined, record: any) => {
+              if (script) {
+                try {
+                  return eval(getTemplateRenderScript(script))(record);
+                } catch (e) {
+                  console.warn('Error executing script:', e);
+                }
               }
-            } else {
-              item.showAddChildBtn = true;
-            }
+              return true;
+            };
+            item.showAddChildBtn = evaluateDisplayScript(addChildBtnScript, record);
+            showEditChildBtn = evaluateDisplayScript(dynamicDisplayModifyBtnScript, record);
+            showDeleteChildBtn = evaluateDisplayScript(dynamicDisplayDeleteBtnScript, record);
+
+            const onDelete = () => {
+              if (env.edit) return;
+              setDataSource(deleteItemByKey(dataSource, record?.[rowKey], rowKey));
+              if (data.useDelCallback) {
+                outputs[OUTPUTS.DelCallback](record);
+              }
+            };
+
             return [
-              !data.hideModifyBtn && editable && data?.editText && (
+              !data.hideModifyBtn && editable && data?.editText && showEditChildBtn && (
                 <Button
                   key="editable"
                   className="editable"
@@ -357,30 +378,46 @@ export default function (props: RuntimeParams<Data>) {
                   onClick={(e) => {
                     if (env.edit) return;
                     action?.startEditable?.(record?.[rowKey]);
+                    if (data?.useStateSwitching) {
+                      outputs[OUTPUTS.StateSwitching]({
+                        isEdit: true,
+                        value: record
+                      });
+                    }
                     e.stopPropagation();
                   }}
                 >
                   {data?.editText}
                 </Button>
               ),
-              !data.hideDeleteBtn && data?.deleteText && (
-                <Button
-                  key="delete"
-                  className="delete"
-                  type="link"
-                  size="small"
-                  onClick={(e) => {
-                    if (env.edit) return;
-                    setDataSource(deleteItemByKey(dataSource, record?.[rowKey], rowKey));
-                    if (data.useDelCallback) {
-                      outputs[OUTPUTS.DelCallback](record);
-                    }
-                    e.stopPropagation();
-                  }}
-                >
-                  {data?.deleteText}
-                </Button>
-              ),
+              !data.hideDeleteBtn &&
+                data?.deleteText &&
+                showDeleteChildBtn &&
+                (data?.deleteSecondConfirm ? (
+                  <Popconfirm
+                    title={data?.deleteSecondConfirmText}
+                    onConfirm={onDelete}
+                    okText="确认"
+                    cancelText="取消"
+                  >
+                    <Button key="delete" className="delete" type="link" size="small">
+                      {data?.deleteText}
+                    </Button>
+                  </Popconfirm>
+                ) : (
+                  <Button
+                    key="delete"
+                    className="delete"
+                    type="link"
+                    size="small"
+                    onClick={(e) => {
+                      onDelete();
+                      e.stopPropagation();
+                    }}
+                  >
+                    {data?.deleteText}
+                  </Button>
+                )),
               !data.hideNewBtn && (
                 <Button
                   key="add"
@@ -800,11 +837,25 @@ export default function (props: RuntimeParams<Data>) {
                 if (data.useSaveCallback) {
                   outputs[OUTPUTS.SaveCallback](value);
                 }
+                if (data?.useStateSwitching) {
+                  outputs[OUTPUTS.StateSwitching]({
+                    isEdit: false,
+                    value
+                  });
+                }
                 return Promise.resolve();
               },
               saveText: data?.saveText,
               cancelText: data?.cancelText,
-
+              onCancel: (key, value, originRow) => {
+                if (data?.useStateSwitching) {
+                  outputs[OUTPUTS.StateSwitching]({
+                    isEdit: false,
+                    value: originRow
+                  });
+                }
+                return Promise.resolve();
+              },
               onDelete: (key, value) => {
                 if (data.useDelCallback) {
                   outputs[OUTPUTS.DelCallback](value);

@@ -54,10 +54,7 @@ export default (data: Data, output) => ({
             }
           } as Action;
           // const itemSchema = getItemSchema(data);
-          const recordSchema = getColumnsDataSchema(
-            data.columns,
-            data.rowKey
-          );
+          const recordSchema = getColumnsDataSchema(data.columns, data.rowKey);
 
           const actionSchema = {
             type: 'object',
@@ -126,6 +123,28 @@ export default (data: Data, output) => ({
           }
         },
         {
+          title: '动态显示编辑按钮表达式',
+          description: `通过表格行字段值，动态控制编辑按钮按钮的显隐，不设置则默认显示。表达式支持（{}, =, <, >, ||, &&）, 例：{title} === '1'`,
+          type: 'EXPRESSION',
+          options: {
+            autoSize: true,
+            placeholder: `例：{title} === '1'`,
+            suggestions: getSuggestions(data),
+            runCode: run
+          },
+          ifVisible({ data }: EditorResult<Data>) {
+            return !data.hideModifyBtn;
+          },
+          value: {
+            get({ data }: EditorResult<Data>) {
+              return data?.dynamicDisplayModifyBtnScript;
+            },
+            set({ data }: EditorResult<Data>, val: string) {
+              data.dynamicDisplayModifyBtnScript = val;
+            }
+          }
+        },
+        {
           title: '隐藏删除按钮',
           type: 'switch',
           value: {
@@ -134,6 +153,58 @@ export default (data: Data, output) => ({
             },
             set({ data }: EditorResult<Data>, val: boolean) {
               data.hideDeleteBtn = !!val;
+            }
+          }
+        },
+        {
+          title: '动态显示删除按钮表达式',
+          description: `通过表格行字段值，动态控制删除按钮按钮的显隐，不设置则默认显示。表达式支持（{}, =, <, >, ||, &&）, 例：{title} === '1'`,
+          type: 'EXPRESSION',
+          options: {
+            autoSize: true,
+            placeholder: `例：{title} === '1'`,
+            suggestions: getSuggestions(data),
+            runCode: run
+          },
+          ifVisible({ data }: EditorResult<Data>) {
+            return !data.hideDeleteBtn;
+          },
+          value: {
+            get({ data }: EditorResult<Data>) {
+              return data?.dynamicDisplayDeleteBtnScript;
+            },
+            set({ data }: EditorResult<Data>, val: string) {
+              data.dynamicDisplayDeleteBtnScript = val;
+            }
+          }
+        },
+        {
+          title: '删除二次确认',
+          type: 'switch',
+          ifVisible({ data }: EditorResult<Data>) {
+            return !data.hideDeleteBtn;
+          },
+          value: {
+            get({ data }: EditorResult<Data>) {
+              return !!data?.deleteSecondConfirm;
+            },
+            set({ data }: EditorResult<Data>, val: boolean) {
+              data.deleteSecondConfirm = !!val;
+            }
+          }
+        },
+        {
+          title: '删除二次确认文案',
+          type: 'text',
+          ifVisible({ data }: EditorResult<Data>) {
+            return !data.hideDeleteBtn && data?.deleteSecondConfirm;
+          },
+          value: {
+            get({ data }: EditorResult<Data>) {
+              return data?.deleteSecondConfirmText;
+            },
+            set({ data }: EditorResult<Data>, val: string) {
+              data.deleteSecondConfirmText = val;
             }
           }
         },
@@ -239,6 +310,36 @@ export default (data: Data, output) => ({
             },
             set({ data }: EditorResult<Data>, val: string) {
               data.saveText = val;
+            }
+          }
+        },
+        {
+          title: '保存二次确认',
+          type: 'switch',
+          ifVisible({ data }: EditorResult<Data>) {
+            return !data.hideSaveBtn;
+          },
+          value: {
+            get({ data }: EditorResult<Data>) {
+              return !!data?.saveSecondConfirm;
+            },
+            set({ data }: EditorResult<Data>, val: boolean) {
+              data.saveSecondConfirm = !!val;
+            }
+          }
+        },
+        {
+          title: '保存二次确认文案',
+          type: 'text',
+          ifVisible({ data }: EditorResult<Data>) {
+            return !data.hideSaveBtn && data?.saveSecondConfirm;
+          },
+          value: {
+            get({ data }: EditorResult<Data>) {
+              return data?.saveSecondConfirmText;
+            },
+            set({ data }: EditorResult<Data>, val: string) {
+              data.saveSecondConfirmText = val;
             }
           }
         },

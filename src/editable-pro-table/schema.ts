@@ -306,5 +306,22 @@ export const Schemas = {
       type: 'object',
       properties: getColumnsDataSchema(data.columns, data.rowKey)
     }
+  }),
+  StateSwitching: (data) => ({
+    type: 'object',
+    properties: {
+      isEdit: {
+        title: '状态',
+        type: 'boolean'
+      },
+      value: {
+        title: '表格数据',
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: getColumnsDataSchema(data.columns, data.rowKey)
+        }
+      }
+    }
   })
 };

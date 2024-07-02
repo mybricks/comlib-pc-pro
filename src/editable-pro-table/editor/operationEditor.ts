@@ -225,6 +225,36 @@ export default [
         options: {
           outputId: OUTPUTS.ChangeEvent
         }
+      },
+      {
+        title: '状态切换事件',
+        description: '开启状态切换事件,包括进入编辑,保存退出编辑,取消退出编辑',
+        type: 'switch',
+        value: {
+          get({ data }: EditorResult<Data>) {
+            return data?.useStateSwitching;
+          },
+          set({ data, output }: EditorResult<Data>, val: boolean) {
+            const hasEvent = output.get(OUTPUTS.StateSwitching);
+            if (val) {
+              !hasEvent &&
+                output.add(OUTPUTS.StateSwitching, '状态切换', Schemas.StateSwitching(data));
+            } else {
+              hasEvent && output.remove(OUTPUTS.StateSwitching);
+            }
+            data.useStateSwitching = !!val;
+          }
+        }
+      },
+      {
+        title: '状态切换事件',
+        type: '_Event',
+        ifVisible({ data, output }: EditorResult<Data>) {
+          return !!(data.useStateSwitching && output.get(OUTPUTS.StateSwitching));
+        },
+        options: {
+          outputId: OUTPUTS.StateSwitching
+        }
       }
     ]
   }
