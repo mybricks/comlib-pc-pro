@@ -38,7 +38,8 @@ import {
   formatColumn,
   formatDataSource,
   formatSubmitDataSource,
-  getAllDsKey
+  replacePageElements,
+  swapArr
 } from './utils';
 import styles from './style.less';
 // @ts-ignore
@@ -52,15 +53,8 @@ import { EditableProTable } from '@ant-design/pro-table';
 // const EditableProTable = React.lazy(() => import('./importTable'));
 import './antd.variable.without.theme.min.css';
 import { Actions } from './components/Actions';
+import Paginator from './components/Paginator';
 
-const swapArr = (arr: any[], idx1: number, idx2: number) => {
-  if (arr[idx1] && arr[idx2]) {
-    const temp = arr[idx1];
-    arr[idx1] = arr[idx2];
-    arr[idx2] = temp;
-  }
-  return arr;
-};
 const { RangePicker } = DatePicker;
 export default function (props: RuntimeParams<Data>) {
   const { data, slots, inputs, outputs, env, logger, title } = props;
@@ -70,10 +64,20 @@ export default function (props: RuntimeParams<Data>) {
   const [dataSource, setDataSource] = useState<DataSourceType[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
+  // 前端分页后表格数据
+  const [pageDataSource, setPageDataSource] = useState<any[]>([]);
   // 表格列配置
   const [colsCfg, setColsCfg] = useState<any>({});
 
   const rowKey = data.rowKey || ROW_KEY;
+
+  const useFrontPage = useMemo(() => {
+    return env.runtime && data.usePagination && data.paginationConfig?.useFrontPage;
+  }, [env.runtime, data.usePagination, data.paginationConfig?.useFrontPage]);
+
+  const useBackendPage = useMemo(() => {
+    return env.runtime && data?.usePagination && !data.paginationConfig?.useFrontPage;
+  }, [env.runtime, data.usePagination, data.paginationConfig?.useFrontPage]);
 
   useEffect(() => {
     if (env.edit) {
@@ -89,12 +93,42 @@ export default function (props: RuntimeParams<Data>) {
         setColsCfg(val);
       });
       inputs[INPUTS.SetDataSource]((val) => {
-        if (Array.isArray(val)) {
-          const dataSource = formatDataSource(val, data.columns, rowKey);
-          setDataSource(dataSource);
+        if (useBackendPage && val && typeof val === 'object') {
+          const dsKey = Object.keys(val);
+          if (Array.isArray(val?.dataSource)) {
+            const dataSource = formatDataSource(val?.dataSource, data.columns, rowKey);
+            setDataSource(dataSource);
+          } else {
+            const arrayItemKey = dsKey.filter((key) => !!Array.isArray(val[key]));
+            if (arrayItemKey.length === 1) {
+              const dataSource = formatDataSource(val?.[arrayItemKey[0]], data.columns, rowKey);
+              setDataSource(dataSource);
+            } else {
+              console.error('[可编辑表格]：未传入列表数据', val);
+            }
+          }
+          if (typeof val?.total === 'number') {
+            data.paginationConfig.total = val?.total;
+          } else {
+            const numberItemKey = dsKey.filter((key) => !!(typeof val[key] === 'number'));
+            if (numberItemKey.length === 1) {
+              data.paginationConfig.total = val?.[numberItemKey[0]];
+            }
+          }
+          if (typeof val?.pageSize === 'number' && val?.pageSize > 0) {
+            data.paginationConfig.pageSize = val?.pageSize;
+          }
+          if (typeof val?.pageNum === 'number') {
+            data.paginationConfig.current = val?.pageNum;
+          }
         } else {
-          console.error('可编辑表格：输入数据格式非法，输入数据必须是数组');
-          logger?.error?.('输入数据格式非法，输入数据必须是数组');
+          if (Array.isArray(val)) {
+            const dataSource = formatDataSource(val, data.columns, rowKey);
+            setDataSource(dataSource);
+          } else {
+            console.error('可编辑表格：输入数据格式非法，输入数据必须是数组');
+            logger?.error?.('输入数据格式非法，输入数据必须是数组');
+          }
         }
       });
 
@@ -313,6 +347,24 @@ export default function (props: RuntimeParams<Data>) {
     }
     return undefined;
   };
+
+  // 前端分页
+  useEffect(() => {
+    if (useFrontPage) {
+      let tempDataSource = [...dataSource];
+      // 分页
+      const len = data.paginationConfig.pageSize || data.paginationConfig.defaultPageSize || 1;
+      const start = (data.paginationConfig.current - 1) * len;
+      const end = start + len;
+      data.paginationConfig.total = tempDataSource.length;
+      setPageDataSource([...tempDataSource.slice(start, end)]);
+    }
+  }, [
+    dataSource,
+    data.usePagination,
+    data.paginationConfig.current,
+    data.paginationConfig.pageSize
+  ]);
 
   const columnsRender = useCallback((value, ellipsis) => {
     return ellipsis ? (
@@ -774,6 +826,7 @@ export default function (props: RuntimeParams<Data>) {
       setSelectedRowKeys(selectedRowKeys);
     }
   };
+
   return (
     <div
       className={`${styles['fz-editable-table']} ${
@@ -790,7 +843,7 @@ export default function (props: RuntimeParams<Data>) {
               return {
                 onClick: () => {
                   if (env.edit || !data.clickChangeToedit) return;
-                  if (actionRef?.current?.editableKeys?.includes(record?.[rowKey])) {
+                  if (actionRef?.current?.preEditableKeys?.includes(record?.[rowKey])) {
                     return;
                   }
                   actionRef?.current?.startEditable?.(record?.[rowKey]);
@@ -807,10 +860,14 @@ export default function (props: RuntimeParams<Data>) {
                     disabled: !!env?.edit
                   }
             }
-            value={dataSource}
+            value={useFrontPage ? pageDataSource : dataSource}
             columns={getColumns(dataSource)}
             onChange={(value) => {
-              setDataSource(value as DataSourceType[]);
+              if (useFrontPage) {
+                setDataSource(replacePageElements(dataSource, value, data.paginationConfig));
+              } else {
+                setDataSource(value as DataSourceType[]);
+              }
             }}
             scroll={{
               x: '100%',
@@ -895,6 +952,15 @@ export default function (props: RuntimeParams<Data>) {
               }
             }}
           />
+          {data?.usePagination && (
+            <Paginator
+              env={env}
+              parentSlot={props.parentSlot}
+              data={data.paginationConfig}
+              inputs={inputs}
+              outputs={outputs}
+            />
+          )}
         </ConfigProvider>
       </Suspense>
     </div>

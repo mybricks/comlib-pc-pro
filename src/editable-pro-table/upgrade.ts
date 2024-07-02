@@ -1,5 +1,7 @@
 import { Data } from './constants';
 
+import { AlignTypeEnum, SizeTypeEnum } from './components/Paginator/constants';
+
 export default function ({ data, input, output }: UpgradeParams<Data>): boolean {
   //1.0.13 -> 1.0.14
   let key: Array<any> = [];
@@ -63,15 +65,15 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
     data.bordered = false;
   }
 
-  if(data.fixedHeight === undefined) {
+  if (data.fixedHeight === undefined) {
     data.fixedHeight = false;
   }
 
-  if(data.actions === undefined) {
-    data.actions = []
+  if (data.actions === undefined) {
+    data.actions = [];
   }
 
-  if(data.selectionRowKey) {
+  if (data.selectionRowKey) {
     data.rowKey = data.selectionRowKey;
   }
 
@@ -83,6 +85,32 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
   }
   if (typeof data?.useStateSwitching === 'undefined') {
     data.useStateSwitching = false;
+  }
+
+  if (typeof data?.usePagination === 'undefined') {
+    data.usePagination = true;
+  }
+
+  if (typeof data?.paginationConfig === 'undefined') {
+    data.paginationConfig = {
+      total: 20,
+      text: '共 {total} 条结果',
+      current: 1,
+      useFrontPage: false,
+      currentPage: {
+        pageNum: 1,
+        pageSize: 10
+      },
+      isDynamic: false,
+      disabled: false,
+      defaultPageSize: 10,
+      align: AlignTypeEnum.FlexEnd,
+      size: SizeTypeEnum.Default,
+      showSizeChanger: false,
+      pageSizeOptions: ['10', '20', '50', '100'],
+      showQuickJumper: false,
+      hideOnSinglePage: false
+    };
   }
 
   return true;

@@ -1,6 +1,7 @@
 import { ProColumns } from '@ant-design/pro-table';
 import { ButtonType } from 'antd/lib/button';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { Data as PaginationData } from './components/Paginator/constants';
 
 export const INPUTS = {
   SetDataSource: 'value',
@@ -278,7 +279,29 @@ export interface Data {
   saveSecondConfirmText?: string;
 
   useStateSwitching?: boolean; // 状态切换事件
+
+  usePagination?: boolean;
+  paginationConfig: PaginationData;
 }
+
+export const OutputIds = {
+  PageChange: 'pageChange',
+  GetPageInfo: 'getPageInfo',
+  SetPageNumFinish: 'setPageNumFinish',
+  // 新增对应串行输出
+  SetTotal: 'setTotal',
+  SetDisable: 'setDisable',
+  SetEnable: 'setEnable'
+};
+export const InputIds = {
+  SetEnable: 'setEnable',
+  SetDisable: 'setDisable',
+
+  SetTotal: 'setTotal',
+  SetPageNum: 'setPageNum',
+
+  GetPageInfo: 'getPageInfo'
+};
 
 /**@description 组件尺寸分类 */
 export enum SizeEnum {
