@@ -11,7 +11,7 @@ export function getColumnsDataSchema(columns: ColumnItem[], rowKey: string = ROW
     if (item.valueType !== TypeEnum.Option) {
       dataSchema[`${item.dataIndex}`] = {
         type: item?.dataSchema?.type || 'string',
-        title: item.title
+        title: item?.title
       };
     }
   });
@@ -19,17 +19,46 @@ export function getColumnsDataSchema(columns: ColumnItem[], rowKey: string = ROW
 }
 
 // 设置输入数据schema
-function setDataSourceSchema({ dataSchema, input }) {
+function setDataSourceSchema({ dataSchema, input, data }) {
   const ioPin = input.get(INPUTS.SetDataSource);
   if (ioPin) {
-    ioPin.setSchema({
-      title: '表格数据',
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: dataSchema
-      }
-    });
+    const TableDataSchema =
+      data?.usePagination && !data.paginationConfig?.useFrontPage
+        ? {
+            title: '数据列表',
+            type: 'object',
+            properties: {
+              dataSource: {
+                type: 'array',
+                description: '表格数据',
+                items: {
+                  type: 'object',
+                  properties: dataSchema
+                }
+              },
+              total: {
+                type: 'number',
+                description: '数据总数'
+              },
+              pageSize: {
+                type: 'number',
+                description: '表格每页条数'
+              },
+              pageNum: {
+                type: 'number',
+                description: '表格当前页码'
+              }
+            }
+          }
+        : {
+            title: '表格数据',
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: dataSchema
+            }
+          };
+    ioPin.setSchema(TableDataSchema);
   }
 }
 // 设置输出数据schema
@@ -242,7 +271,7 @@ export function getOptionSchema() {
 
 export function setDataSchema({ data, output, input, slot = {} }) {
   const dataSchema = getColumnsDataSchema(data.columns, data.rowKey);
-  setDataSourceSchema({ dataSchema, input });
+  setDataSourceSchema({ dataSchema, input, data });
   setDataSourceSubmitSchema({ dataSchema, output });
   setRowSelectionSchema({ dataSchema, output });
   setColConfigSchema({ data, input });
