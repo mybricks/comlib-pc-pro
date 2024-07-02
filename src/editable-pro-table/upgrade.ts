@@ -88,7 +88,7 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
   }
 
   if (typeof data?.usePagination === 'undefined') {
-    data.usePagination = true;
+    data.usePagination = false;
   }
 
   if (typeof data?.paginationConfig === 'undefined') {
