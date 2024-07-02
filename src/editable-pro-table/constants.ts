@@ -32,7 +32,9 @@ export const OUTPUTS = {
 
   ChangeEvent: 'changeEvent',
 
-  EditTableData: 'editTableData'
+  EditTableData: 'editTableData',
+
+  StateSwitching: 'stateSwitching'
 };
 
 export enum TypeEnum {
@@ -264,6 +266,18 @@ export interface Data {
 
   actions: Action[];
   rowKey: string;
+
+  // 动态显隐操作按钮
+  dynamicDisplayModifyBtnScript?: string;
+  dynamicDisplayDeleteBtnScript?: string;
+
+  // 二次确认框
+  deleteSecondConfirm?: boolean;
+  deleteSecondConfirmText?: string;
+  saveSecondConfirm?: boolean;
+  saveSecondConfirmText?: string;
+
+  useStateSwitching?: boolean; // 状态切换事件
 }
 
 /**@description 组件尺寸分类 */

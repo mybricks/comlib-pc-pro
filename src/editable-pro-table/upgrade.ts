@@ -75,5 +75,15 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
     data.rowKey = data.selectionRowKey;
   }
 
+  if (typeof data?.deleteSecondConfirmText === 'undefined') {
+    data.deleteSecondConfirmText = '确定要删除这条数据吗？';
+  }
+  if (typeof data?.saveSecondConfirmText === 'undefined') {
+    data.saveSecondConfirmText = '确定要保存吗？';
+  }
+  if (typeof data?.useStateSwitching === 'undefined') {
+    data.useStateSwitching = false;
+  }
+
   return true;
 }

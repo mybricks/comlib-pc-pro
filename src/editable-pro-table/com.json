@@ -3,7 +3,7 @@
   "namespace": "mybricks.pro-pc.editable-pro-table",
   "author": "MyBricks",
   "author_name": "MyBricks",
-  "version": "1.0.32",
+  "version": "1.0.33",
   "description": "",
   "icon": "./icon.svg",
   "data": "./data.json",
@@ -42,9 +42,7 @@
     {
       "id": "submit",
       "title": "提交数据",
-      "rels": [
-        "submit"
-      ],
+      "rels": ["submit"],
       "schema": {
         "type": "any"
       }
