@@ -201,6 +201,8 @@ export type ColumnItem = ProColumns<any> & {
   ellipsis?: any;
 
   optionFilterProp?: string; // 搜索规则 默认 value
+
+  errorType?: 'popover' | 'default'; // 校验失败提示类型
 };
 export interface Data {
   headerTitle: string;
