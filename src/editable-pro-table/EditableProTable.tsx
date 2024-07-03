@@ -924,7 +924,7 @@ export default function (props: RuntimeParams<Data>) {
                 return [
                   !data.hideSaveBtn && defaultDoms.save && (
                     <Button type="link" size="small" className="save">
-                      {data?.saveSecondConfirmText ? (
+                      {data?.saveSecondConfirm ? (
                         <Popconfirm
                           title={data?.saveSecondConfirmText}
                           okText="确认"
