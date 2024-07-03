@@ -33,6 +33,37 @@ export default (data: Data) => ({
       }
     },
     {
+      title: '必填校验失败样式',
+      type: 'Select',
+      ifVisible({ data, focusArea }: EditorResult<Data>) {
+        return (
+          checkType(data, focusArea, [
+            TypeEnum.Text,
+            TypeEnum.Select,
+            TypeEnum.Date,
+            TypeEnum.DateRange,
+            TypeEnum.Checkbox,
+            TypeEnum.Number,
+            TypeEnum.Cascader,
+            TypeEnum.TreeSelect,
+            TypeEnum.Slot
+          ]) && getCol(data, focusArea, 'required')
+        );
+      },
+      options: [
+        { value: 'default', label: '围绕' },
+        { value: 'popover', label: '气泡' }
+      ],
+      value: {
+        get({ data, focusArea }: EditorResult<Data>) {
+          return getCol(data, focusArea, 'errorType') || 'popover';
+        },
+        set({ data, focusArea }: EditorResult<Data>, value: string) {
+          setCol(data, focusArea, 'errorType', value);
+        }
+      }
+    },
+    {
       title: '只读',
       type: 'Switch',
       ifVisible({ data, focusArea }: EditorResult<Data>) {
@@ -58,7 +89,7 @@ export default (data: Data) => ({
         autoSize: true,
         placeholder: `例：{title} === '1'`,
         suggestions: getSuggestions(data),
-        runCode: run,
+        runCode: run
       },
       value: {
         get({ data, focusArea }: EditorResult<Data>) {
@@ -68,6 +99,6 @@ export default (data: Data) => ({
           setCol(data, focusArea, 'disableScript', value);
         }
       }
-    },
+    }
   ]
-})
+});

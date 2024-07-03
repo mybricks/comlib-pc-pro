@@ -451,6 +451,7 @@ export default function (props: RuntimeParams<Data>) {
                     onConfirm={onDelete}
                     okText="确认"
                     cancelText="取消"
+                    okButtonProps={{ danger: true }}
                   >
                     <Button key="delete" className="delete" type="link" size="small">
                       {data?.deleteText}
@@ -923,7 +924,21 @@ export default function (props: RuntimeParams<Data>) {
                 return [
                   !data.hideSaveBtn && defaultDoms.save && (
                     <Button type="link" size="small" className="save">
-                      {defaultDoms.save}
+                      {data?.saveSecondConfirmText ? (
+                        <Popconfirm
+                          title={data?.saveSecondConfirmText}
+                          okText="确认"
+                          cancelText="取消"
+                          okButtonProps={{ danger: true }}
+                          onConfirm={async () => {
+                            await actionRef?.current?.saveEditable(row[rowKey]);
+                          }}
+                        >
+                          {data?.saveText}
+                        </Popconfirm>
+                      ) : (
+                        defaultDoms.save
+                      )}
                     </Button>
                   ),
                   !data.hideDeleteBtnInEdit && defaultDoms.delete && (
