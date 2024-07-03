@@ -197,8 +197,10 @@ export const formatColumn = (data: Data, env: Env, colsCfg: any): any[] => {
             message: '此项是必填项'
           }
         ];
-        // @ts-ignore 库ts有问题
-        item.formItemProps.errorType = errorType;
+        if (!!errorType) {
+          // @ts-ignore 库ts有问题
+          item.formItemProps.errorType = errorType;
+        }
       }
       if (useTooltip && tooltip) {
         (item as any).tooltip = tooltip;
