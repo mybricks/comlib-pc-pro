@@ -31,7 +31,7 @@ import {
   getDefaultColumns,
   ROW_KEY
 } from './constants';
-import { uuid } from '../utils';
+import { isNullValue, uuid } from '../utils';
 import {
   addChildByKey,
   deleteItemByKey,
@@ -380,7 +380,7 @@ export default function (props: RuntimeParams<Data>) {
   const actions = data.actions;
 
   const getColumns = (dataSource: DataSourceType[]) => {
-    const col = formatColumn(data, env, colsCfg);
+    const col = formatColumn(data, env, colsCfg, validateValueExisting);
     return col.map((item, colIdx) => {
       const { disableScript } = item;
       switch (item.valueType) {
@@ -827,6 +827,24 @@ export default function (props: RuntimeParams<Data>) {
       setSelectedRowKeys(selectedRowKeys);
     }
   };
+
+  // 校验值是否出现过
+  const validateValueExisting = useCallback(
+    (value, dataIndex) => {
+      let tempDataSource = [...dataSource];
+      if (useFrontPage) {
+        tempDataSource = [...pageDataSource];
+      }
+      if (tempDataSource && tempDataSource?.length > 0 && dataIndex && !isNullValue(value)) {
+        if (tempDataSource.some((item) => String(item[dataIndex]) == String(value))) {
+          return Promise.reject(new Error(`${dataIndex}值已经存在`));
+        }
+      }
+      // 否则，返回成功的校验结果
+      return Promise.resolve();
+    },
+    [dataSource, pageDataSource, data.usePagination]
+  );
 
   return (
     <div

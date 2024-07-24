@@ -33,7 +33,23 @@ export default (data: Data) => ({
       }
     },
     {
-      title: '必填校验失败样式',
+      title: '不能重复',
+      type: 'Switch',
+      description: `该列字段的值在数据数组每一行不能重复`,
+      ifVisible({ data, focusArea }: EditorResult<Data>) {
+        return !checkType(data, focusArea, [TypeEnum.Slot, TypeEnum.Switch]);
+      },
+      value: {
+        get({ data, focusArea }: EditorResult<Data>) {
+          return getCol(data, focusArea, 'repeat');
+        },
+        set({ data, focusArea }: EditorResult<Data>, value: boolean) {
+          setCol(data, focusArea, 'repeat', value);
+        }
+      }
+    },
+    {
+      title: '校验失败样式',
       type: 'Select',
       ifVisible({ data, focusArea }: EditorResult<Data>) {
         return (
@@ -47,7 +63,8 @@ export default (data: Data) => ({
             TypeEnum.Cascader,
             TypeEnum.TreeSelect,
             TypeEnum.Slot
-          ]) && getCol(data, focusArea, 'required')
+          ]) &&
+          (getCol(data, focusArea, 'required') || getCol(data, focusArea, 'repeat'))
         );
       },
       options: [

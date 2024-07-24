@@ -1,5 +1,6 @@
 function uuid(pre = 'u_', len = 6) {
-  const seed = 'abcdefhijkmnprstwxyz0123456789', maxPos = seed.length;
+  const seed = 'abcdefhijkmnprstwxyz0123456789',
+    maxPos = seed.length;
   let rtn = '';
   for (let i = 0; i < len; i++) {
     rtn += seed.charAt(Math.floor(Math.random() * maxPos));
@@ -9,39 +10,39 @@ function uuid(pre = 'u_', len = 6) {
 
 function unitConversion(value: string) {
   if (/^\d+(?:%)$/.test(value)) {
-    return value
+    return value;
   } else if (/^(?:calc)/.test(value)) {
-    return value
+    return value;
   } else {
-    return /^\d+(?:px)?$/.test(value) ? parseInt(value, 10) + 'px' : void 0
+    return /^\d+(?:px)?$/.test(value) ? parseInt(value, 10) + 'px' : void 0;
   }
 }
 
 function deepCopy(obj: any, cache: any = []) {
   if (obj === null || typeof obj !== 'object') {
-    return obj
+    return obj;
   }
 
-  const hit: any = cache.filter((c: any) => c.original === obj)[0]
+  const hit: any = cache.filter((c: any) => c.original === obj)[0];
   if (hit) {
-    return hit.copy
+    return hit.copy;
   }
-  const copy: any = Array.isArray(obj) ? [] : {}
+  const copy: any = Array.isArray(obj) ? [] : {};
 
   cache.push({
     original: obj,
     copy
-  })
+  });
 
-  Object.keys(obj).forEach(key => {
-    copy[key] = deepCopy(obj[key], cache)
-  })
+  Object.keys(obj).forEach((key) => {
+    copy[key] = deepCopy(obj[key], cache);
+  });
 
-  return copy
+  return copy;
 }
 
-export {
-  uuid,
-  unitConversion,
-  deepCopy
-}
+const isNullValue = (value: any) => {
+  return value === null || value === undefined || value === '';
+};
+
+export { uuid, unitConversion, deepCopy, isNullValue };

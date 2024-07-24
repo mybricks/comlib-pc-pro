@@ -183,6 +183,7 @@ export type ColumnItem = ProColumns<any> & {
   disableScript?: string;
   showAddChildBtn?: boolean;
   required?: boolean;
+  repeat?: boolean; // 是否重复校验
   openText?: string;
   closeText?: string;
   defaultChecked?: boolean;

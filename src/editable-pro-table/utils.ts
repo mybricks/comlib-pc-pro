@@ -152,7 +152,12 @@ const getColumnConfig = (
   return item;
 };
 // 格式化Column
-export const formatColumn = (data: Data, env: Env, colsCfg: any): any[] => {
+export const formatColumn = (
+  data: Data,
+  env: Env,
+  colsCfg: any,
+  validateValueExisting: (value: any, dataIndex: any) => Promise<void>
+): any[] => {
   return data.columns
     .map((colItem, idx) => {
       const {
@@ -166,6 +171,7 @@ export const formatColumn = (data: Data, env: Env, colsCfg: any): any[] => {
         tooltip,
         useTooltip,
         errorType,
+        repeat,
         ...item
       } = colItem;
       if (env.runtime) {
@@ -200,6 +206,17 @@ export const formatColumn = (data: Data, env: Env, colsCfg: any): any[] => {
         if (!!errorType) {
           // @ts-ignore 库ts有问题
           item.formItemProps.errorType = errorType;
+        }
+      }
+      if (repeat) {
+        const repeatRule = {
+          validator: (rule: any, value: any) => validateValueExisting(value, item.dataIndex),
+          message: '该字段值不能重复'
+        };
+        if (item.formItemProps?.rules && item.formItemProps.rules?.length > 0) {
+          item.formItemProps.rules.push(repeatRule);
+        } else {
+          item.formItemProps.rules = [repeatRule];
         }
       }
       if (useTooltip && tooltip) {
