@@ -209,15 +209,10 @@ export const formatColumn = (
           // 对不同校验设置 formItemProps.rules
           switch (rules.key) {
             case 'required':
-              // required之前的先这样覆盖下 TODO 直接去除老的 required 字段
-              if (required) {
-                temp.required = required;
-                temp.message = '此项是必填项';
+              if (rules.status) {
+                temp.required = rules.status;
+                temp.message = rules.message;
               }
-              // if (rules.status) {
-              //   temp.required = rules.status;
-              //   temp.message = rules.message;
-              // }
               break;
             case 'repeat':
               if (rules.status) {
@@ -241,6 +236,16 @@ export const formatColumn = (
             item.formItemProps.rules.push(temp);
           }
         });
+      } else {
+        // 没有升级的兼容
+        if (required) {
+          item.formItemProps.rules = [
+            {
+              required: true,
+              message: '此项是必填项'
+            }
+          ];
+        }
       }
 
       if (useTooltip && tooltip) {

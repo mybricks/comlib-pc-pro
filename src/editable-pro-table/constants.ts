@@ -198,8 +198,7 @@ export const baseVerificationRules: Array<VerificationRuleType> = [
     key: RuleKeys.REQUIRED,
     title: '必填',
     message: '此项是必填项',
-    status: false,
-    required: false
+    status: false
   },
   {
     key: RuleKeys.REPEAT,

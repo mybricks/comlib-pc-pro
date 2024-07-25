@@ -118,8 +118,8 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
   data.columns &&
     data.columns.forEach((column, index) => {
       if (isNullValue(column.VerificationRules)) {
-        const temp = baseVerificationRules;
-        temp[0].status = column.required;
+        const temp = JSON.parse(JSON.stringify(baseVerificationRules));
+        temp[0].status = !!column.required;
         data.columns[index].VerificationRules = temp;
       }
     });

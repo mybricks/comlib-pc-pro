@@ -26,9 +26,19 @@ export default (data: Data) => ({
       value: {
         get({ data, focusArea }: EditorResult<Data>) {
           return getCol(data, focusArea, 'required');
+          // return getCol(data, focusArea, 'VerificationRules')?.[0]?.status || false;
         },
         set({ data, focusArea }: EditorResult<Data>, value: boolean) {
           setCol(data, focusArea, 'required', value);
+          let newVerificationRules = getCol(data, focusArea, 'VerificationRules');
+          // 兼容组件没有升级，但升级了组件库
+          if (newVerificationRules) {
+            newVerificationRules = JSON.parse(
+              JSON.stringify(getCol(data, focusArea, 'VerificationRules'))
+            );
+            newVerificationRules[0].status = value;
+            setCol(data, focusArea, 'VerificationRules', newVerificationRules);
+          }
         }
       }
     },
@@ -37,7 +47,10 @@ export default (data: Data) => ({
       type: 'Switch',
       description: `该列字段的值在数据数组每一行不能重复`,
       ifVisible({ data, focusArea }: EditorResult<Data>) {
-        return !checkType(data, focusArea, [TypeEnum.Slot, TypeEnum.Switch]);
+        return (
+          !checkType(data, focusArea, [TypeEnum.Slot, TypeEnum.Switch]) &&
+          !!getCol(data, focusArea, 'VerificationRules')
+        );
       },
       value: {
         get({ data, focusArea }: EditorResult<Data>) {
