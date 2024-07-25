@@ -1,6 +1,15 @@
 import type { ProColumns } from '@ant-design/pro-table';
 import { uuid } from '../../utils';
-import { ColumnsSchema, Data, INPUTS, InputIds, OutputIds, ROW_KEY } from '../constants';
+import {
+  ColumnItem,
+  ColumnsSchema,
+  Data,
+  INPUTS,
+  InputIds,
+  OutputIds,
+  ROW_KEY,
+  baseVerificationRules
+} from '../constants';
 import { setDataSchema } from '../schema';
 import { emptyEditor } from './empty';
 
@@ -111,14 +120,15 @@ export default {
       type: 'button',
       value: {
         set({ data, output, input, slot }: EditorResult<Data>) {
-          const item: ProColumns = {
+          const item: ColumnItem = {
             title: '新增',
             dataIndex: `${uuid()}`,
             valueType: 'text',
             width: 140,
             align: 'left',
             key: uuid(),
-            fieldProps: {}
+            fieldProps: {},
+            VerificationRules: baseVerificationRules
           };
           data.columns.splice(data.columns.length - 1, 0, item);
           setDataSchema({ data, output, input, slot });

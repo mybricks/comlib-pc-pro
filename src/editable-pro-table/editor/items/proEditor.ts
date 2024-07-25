@@ -41,10 +41,14 @@ export default (data: Data) => ({
       },
       value: {
         get({ data, focusArea }: EditorResult<Data>) {
-          return getCol(data, focusArea, 'repeat');
+          return getCol(data, focusArea, 'VerificationRules')?.[1]?.status || false;
         },
         set({ data, focusArea }: EditorResult<Data>, value: boolean) {
-          setCol(data, focusArea, 'repeat', value);
+          const newVerificationRules = JSON.parse(
+            JSON.stringify(getCol(data, focusArea, 'VerificationRules'))
+          );
+          newVerificationRules[1].status = value;
+          setCol(data, focusArea, 'VerificationRules', newVerificationRules);
         }
       }
     },
@@ -52,20 +56,17 @@ export default (data: Data) => ({
       title: '校验失败样式',
       type: 'Select',
       ifVisible({ data, focusArea }: EditorResult<Data>) {
-        return (
-          checkType(data, focusArea, [
-            TypeEnum.Text,
-            TypeEnum.Select,
-            TypeEnum.Date,
-            TypeEnum.DateRange,
-            TypeEnum.Checkbox,
-            TypeEnum.Number,
-            TypeEnum.Cascader,
-            TypeEnum.TreeSelect,
-            TypeEnum.Slot
-          ]) &&
-          (getCol(data, focusArea, 'required') || getCol(data, focusArea, 'repeat'))
-        );
+        return checkType(data, focusArea, [
+          TypeEnum.Text,
+          TypeEnum.Select,
+          TypeEnum.Date,
+          TypeEnum.DateRange,
+          TypeEnum.Checkbox,
+          TypeEnum.Number,
+          TypeEnum.Cascader,
+          TypeEnum.TreeSelect,
+          TypeEnum.Slot
+        ]);
       },
       options: [
         { value: 'default', label: '围绕' },

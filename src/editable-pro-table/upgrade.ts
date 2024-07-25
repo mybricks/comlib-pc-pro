@@ -1,6 +1,7 @@
-import { Data } from './constants';
+import { Data, baseVerificationRules } from './constants';
 
 import { AlignTypeEnum, SizeTypeEnum } from './components/Paginator/constants';
+import { isNullValue } from '../utils';
 
 export default function ({ data, input, output }: UpgradeParams<Data>): boolean {
   //1.0.13 -> 1.0.14
@@ -112,6 +113,16 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
       hideOnSinglePage: false
     };
   }
+
+  // 列配置修改
+  data.columns &&
+    data.columns.forEach((column, index) => {
+      if (isNullValue(column.VerificationRules)) {
+        const temp = baseVerificationRules;
+        temp[0].status = column.required;
+        data.columns[index].VerificationRules = temp;
+      }
+    });
 
   return true;
 }

@@ -178,12 +178,43 @@ export const ColumnsSchema = {
 
 export const ROW_KEY = '_key';
 
+export enum RuleKeys {
+  REQUIRED = 'required',
+  REPEAT = 'repeat',
+  CUSTOM_EVENT = 'customEvent'
+}
+
+export type VerificationRuleType = {
+  key: RuleKeys; // 唯一标识
+  title: string; // 名字 '自定义校验'
+  message: string; // 校验后提示
+  status?: boolean; // 是否启用
+  visible?: boolean; // 是否显示
+  [k: string]: any; // 其他需要加的特殊字段
+};
+
+export const baseVerificationRules: Array<VerificationRuleType> = [
+  {
+    key: RuleKeys.REQUIRED,
+    title: '必填',
+    message: '此项是必填项',
+    status: false,
+    required: false
+  },
+  {
+    key: RuleKeys.REPEAT,
+    title: '值不重复',
+    message: '该字段值不能重复',
+    status: false
+  }
+];
+
 export type ColumnItem = ProColumns<any> & {
   readonly?: boolean;
   disableScript?: string;
   showAddChildBtn?: boolean;
   required?: boolean;
-  repeat?: boolean; // 是否重复校验
+  VerificationRules?: VerificationRuleType[];
   openText?: string;
   closeText?: string;
   defaultChecked?: boolean;
@@ -401,7 +432,8 @@ export const getDefaultColumns: () => ProColumns<any>[] = () => [
     width: 200,
     fixed: undefined,
     key: 'title',
-    fieldProps: {}
+    fieldProps: {},
+    VerificationRules: baseVerificationRules
   },
   {
     title: '描述',
@@ -411,7 +443,8 @@ export const getDefaultColumns: () => ProColumns<any>[] = () => [
     width: 200,
     fixed: undefined,
     key: 'desc',
-    fieldProps: {}
+    fieldProps: {},
+    VerificationRules: baseVerificationRules
   },
   {
     title: '活动时间',
@@ -421,7 +454,8 @@ export const getDefaultColumns: () => ProColumns<any>[] = () => [
     width: 200,
     fixed: undefined,
     key: 'createdAt',
-    fieldProps: {}
+    fieldProps: {},
+    VerificationRules: baseVerificationRules
   },
   {
     title: '操作',
@@ -433,7 +467,11 @@ export const getDefaultColumns: () => ProColumns<any>[] = () => [
   }
 ];
 
-export const getColumnItem = (data: Data, focusArea, datasetKey = 'tableThIdx'): ColumnItem => {
+export const getColumnItem = (
+  data: Data,
+  focusArea: { dataset: { [x: string]: any } },
+  datasetKey = 'tableThIdx'
+): ColumnItem => {
   const key = focusArea.dataset[datasetKey];
   return data.columns[key] || {};
 };

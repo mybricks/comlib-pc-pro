@@ -171,7 +171,7 @@ export const formatColumn = (
         tooltip,
         useTooltip,
         errorType,
-        repeat,
+        VerificationRules,
         ...item
       } = colItem;
       if (env.runtime) {
@@ -196,29 +196,53 @@ export const formatColumn = (
       item.formItemProps = {
         ...item.formItemProps
       };
-      if (required) {
-        item.formItemProps.rules = [
-          {
-            required: true,
-            message: '此项是必填项'
+
+      if (!!errorType) {
+        // @ts-ignore 库ts有问题
+        item.formItemProps.errorType = errorType;
+      }
+
+      // 对校验做处理
+      if (VerificationRules && VerificationRules?.length > 0) {
+        VerificationRules.forEach((rules) => {
+          const temp: Record<string, any> = {};
+          // 对不同校验设置 formItemProps.rules
+          switch (rules.key) {
+            case 'required':
+              // required之前的先这样覆盖下 TODO 直接去除老的 required 字段
+              if (required) {
+                temp.required = required;
+                temp.message = '此项是必填项';
+              }
+              // if (rules.status) {
+              //   temp.required = rules.status;
+              //   temp.message = rules.message;
+              // }
+              break;
+            case 'repeat':
+              if (rules.status) {
+                temp.message = rules.message;
+                temp.validator = (rule: any, value: any) =>
+                  validateValueExisting(value, item.dataIndex);
+              }
+              break;
+            default:
+              break;
           }
-        ];
-        if (!!errorType) {
-          // @ts-ignore 库ts有问题
-          item.formItemProps.errorType = errorType;
-        }
+
+          // @ts-ignore
+          if (item?.formItemProps && !item?.formItemProps?.rules) {
+            // @ts-ignore
+            item.formItemProps.rules = [];
+          }
+          // @ts-ignore
+          if (Object.keys(temp).length !== 0) {
+            // @ts-ignore
+            item.formItemProps.rules.push(temp);
+          }
+        });
       }
-      if (repeat) {
-        const repeatRule = {
-          validator: (rule: any, value: any) => validateValueExisting(value, item.dataIndex),
-          message: '该字段值不能重复'
-        };
-        if (item.formItemProps?.rules && item.formItemProps.rules?.length > 0) {
-          item.formItemProps.rules.push(repeatRule);
-        } else {
-          item.formItemProps.rules = [repeatRule];
-        }
-      }
+
       if (useTooltip && tooltip) {
         (item as any).tooltip = tooltip;
       }
@@ -295,7 +319,7 @@ export const run = (script: string) => {
 
 export const getFilterSelectorWithId = (id: string) => `:not(#${id} *[data-isslot="1"] *)`;
 
-export const checkIfMobile = (env) => {
+export const checkIfMobile = (env: Env) => {
   return env?.canvas?.type === 'mobile';
 };
 
