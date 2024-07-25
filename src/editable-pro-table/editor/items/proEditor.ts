@@ -26,29 +26,60 @@ export default (data: Data) => ({
       value: {
         get({ data, focusArea }: EditorResult<Data>) {
           return getCol(data, focusArea, 'required');
+          // return getCol(data, focusArea, 'VerificationRules')?.[0]?.status || false;
         },
         set({ data, focusArea }: EditorResult<Data>, value: boolean) {
           setCol(data, focusArea, 'required', value);
+          let newVerificationRules = getCol(data, focusArea, 'VerificationRules');
+          // 兼容组件没有升级，但升级了组件库
+          if (newVerificationRules) {
+            newVerificationRules = JSON.parse(
+              JSON.stringify(getCol(data, focusArea, 'VerificationRules'))
+            );
+            newVerificationRules[0].status = value;
+            setCol(data, focusArea, 'VerificationRules', newVerificationRules);
+          }
         }
       }
     },
     {
-      title: '必填校验失败样式',
-      type: 'Select',
+      title: '不能重复',
+      type: 'Switch',
+      description: `该列字段的值在数据数组每一行不能重复`,
       ifVisible({ data, focusArea }: EditorResult<Data>) {
         return (
-          checkType(data, focusArea, [
-            TypeEnum.Text,
-            TypeEnum.Select,
-            TypeEnum.Date,
-            TypeEnum.DateRange,
-            TypeEnum.Checkbox,
-            TypeEnum.Number,
-            TypeEnum.Cascader,
-            TypeEnum.TreeSelect,
-            TypeEnum.Slot
-          ]) && getCol(data, focusArea, 'required')
+          !checkType(data, focusArea, [TypeEnum.Slot, TypeEnum.Switch]) &&
+          !!getCol(data, focusArea, 'VerificationRules')
         );
+      },
+      value: {
+        get({ data, focusArea }: EditorResult<Data>) {
+          return getCol(data, focusArea, 'VerificationRules')?.[1]?.status || false;
+        },
+        set({ data, focusArea }: EditorResult<Data>, value: boolean) {
+          const newVerificationRules = JSON.parse(
+            JSON.stringify(getCol(data, focusArea, 'VerificationRules'))
+          );
+          newVerificationRules[1].status = value;
+          setCol(data, focusArea, 'VerificationRules', newVerificationRules);
+        }
+      }
+    },
+    {
+      title: '校验失败样式',
+      type: 'Select',
+      ifVisible({ data, focusArea }: EditorResult<Data>) {
+        return checkType(data, focusArea, [
+          TypeEnum.Text,
+          TypeEnum.Select,
+          TypeEnum.Date,
+          TypeEnum.DateRange,
+          TypeEnum.Checkbox,
+          TypeEnum.Number,
+          TypeEnum.Cascader,
+          TypeEnum.TreeSelect,
+          TypeEnum.Slot
+        ]);
       },
       options: [
         { value: 'default', label: '围绕' },

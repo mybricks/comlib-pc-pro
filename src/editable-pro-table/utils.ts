@@ -152,7 +152,12 @@ const getColumnConfig = (
   return item;
 };
 // 格式化Column
-export const formatColumn = (data: Data, env: Env, colsCfg: any): any[] => {
+export const formatColumn = (
+  data: Data,
+  env: Env,
+  colsCfg: any,
+  validateValueExisting: (value: any, dataIndex: any) => Promise<void>
+): any[] => {
   return data.columns
     .map((colItem, idx) => {
       const {
@@ -166,6 +171,7 @@ export const formatColumn = (data: Data, env: Env, colsCfg: any): any[] => {
         tooltip,
         useTooltip,
         errorType,
+        VerificationRules,
         ...item
       } = colItem;
       if (env.runtime) {
@@ -190,18 +196,58 @@ export const formatColumn = (data: Data, env: Env, colsCfg: any): any[] => {
       item.formItemProps = {
         ...item.formItemProps
       };
-      if (required) {
-        item.formItemProps.rules = [
-          {
-            required: true,
-            message: '此项是必填项'
+
+      if (!!errorType) {
+        // @ts-ignore 库ts有问题
+        item.formItemProps.errorType = errorType;
+      }
+
+      // 对校验做处理
+      if (VerificationRules && VerificationRules?.length > 0) {
+        VerificationRules.forEach((rules) => {
+          const temp: Record<string, any> = {};
+          // 对不同校验设置 formItemProps.rules
+          switch (rules.key) {
+            case 'required':
+              if (rules.status) {
+                temp.required = rules.status;
+                temp.message = rules.message;
+              }
+              break;
+            case 'repeat':
+              if (rules.status) {
+                temp.message = rules.message;
+                temp.validator = (rule: any, value: any) =>
+                  validateValueExisting(value, item.dataIndex);
+              }
+              break;
+            default:
+              break;
           }
-        ];
-        if (!!errorType) {
-          // @ts-ignore 库ts有问题
-          item.formItemProps.errorType = errorType;
+
+          // @ts-ignore
+          if (item?.formItemProps && !item?.formItemProps?.rules) {
+            // @ts-ignore
+            item.formItemProps.rules = [];
+          }
+          // @ts-ignore
+          if (Object.keys(temp).length !== 0) {
+            // @ts-ignore
+            item.formItemProps.rules.push(temp);
+          }
+        });
+      } else {
+        // 没有升级的兼容
+        if (required) {
+          item.formItemProps.rules = [
+            {
+              required: true,
+              message: '此项是必填项'
+            }
+          ];
         }
       }
+
       if (useTooltip && tooltip) {
         (item as any).tooltip = tooltip;
       }
@@ -278,7 +324,7 @@ export const run = (script: string) => {
 
 export const getFilterSelectorWithId = (id: string) => `:not(#${id} *[data-isslot="1"] *)`;
 
-export const checkIfMobile = (env) => {
+export const checkIfMobile = (env: Env) => {
   return env?.canvas?.type === 'mobile';
 };
 

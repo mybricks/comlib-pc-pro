@@ -13,10 +13,7 @@ export default {
         get({ data, focusArea }: EditorResult<Data>) {
           return getCol(data, focusArea, 'title');
         },
-        set(
-          { data, output, input, focusArea, slot }: EditorResult<Data>,
-          val: string
-        ) {
+        set({ data, output, input, focusArea, slot }: EditorResult<Data>, val: string) {
           setCol(data, focusArea, 'title', val);
           setDataSchema({ data, output, input, slot });
         }
@@ -32,10 +29,7 @@ export default {
         get({ data, focusArea }: EditorResult<Data>) {
           return getCol(data, focusArea, 'dataIndex');
         },
-        set(
-          { data, output, input, focusArea, slot }: EditorResult<Data>,
-          val: string
-        ) {
+        set({ data, output, input, focusArea, slot }: EditorResult<Data>, val: string) {
           setCol(data, focusArea, 'dataIndex', val);
           setDataSchema({ data, output, input, slot });
         }
@@ -69,28 +63,30 @@ export default {
           if (val === TypeEnum.Slot) {
             setCol(data, focusArea, 'slotId', slotId);
             setCol(data, focusArea, 'slotEditId', slotEditId);
-            slot.add({ 
+            slot.add({
               id: slotId,
               title: `${getCol(data, focusArea, 'title')}列`,
               type: 'scope',
               inputs: [
                 { id: INPUTS.SlotRowValue, title: '当前行数据', schema: { type: 'object' } },
                 { id: INPUTS.SlotColValue, title: '当前列数据', schema: { type: 'any' } },
-                { id: INPUTS.RowIndex, title: '当前行序号', schema: { type: 'number' } },
+                { id: INPUTS.RowIndex, title: '当前行序号', schema: { type: 'number' } }
               ]
             });
-            slot.add({ 
+            slot.add({
               id: slotEditId,
               title: `${getCol(data, focusArea, 'title')}列编辑态`,
               type: 'scope',
               inputs: [
                 { id: INPUTS.SlotRowValue, title: '当前行数据', schema: { type: 'object' } },
                 { id: INPUTS.SlotColValue, title: '当前列数据', schema: { type: 'any' } },
-                { id: INPUTS.RowIndex, title: '当前行序号', schema: { type: 'number' } },
+                { id: INPUTS.RowIndex, title: '当前行序号', schema: { type: 'number' } }
               ],
               outputs: [
                 {
-                  id: OUTPUTS.EditTableData, title: '更新行数据', schema: { type: 'object' }
+                  id: OUTPUTS.EditTableData,
+                  title: '更新行数据',
+                  schema: { type: 'object' }
                 }
               ]
             });
@@ -117,10 +113,10 @@ export default {
         },
         set({ data, output, input, focusArea, slot }: EditorResult<Data>, value: object) {
           if (!focusArea) return;
-          setCol( data, focusArea , 'dataSchema', value);
+          setCol(data, focusArea, 'dataSchema', value);
           setDataSchema({ data, output, input, slot });
         }
       }
-    },
+    }
   ]
 };
