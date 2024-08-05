@@ -1,6 +1,6 @@
-import { Data, OUTPUTS, baseVerificationRules } from './constants';
+import { Data, INPUTS, OUTPUTS, baseVerificationRules } from './constants';
 
-import { AlignTypeEnum, SizeTypeEnum } from './components/Paginator/constants';
+import { AlignTypeEnum, SizeTypeEnum, Schemas } from './components/Paginator/constants';
 import { isNullValue } from '../utils';
 
 export default function ({ data, input, output }: UpgradeParams<Data>): boolean {
@@ -124,23 +124,21 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
       }
     });
 
-  if (!output.get(OUTPUTS.SetDataSourceDone)) {
-    output.add(OUTPUTS.SetDataSourceDone, '数据', {
-      type: 'any'
-    });
-  }
+  const addOutputAndRel = (
+    outputKey: string,
+    description: string,
+    inputKey: string,
+    schema?: Record<string, any>
+  ) => {
+    if (!output.get(outputKey)) {
+      output.add(outputKey, description, schema || { type: 'any' });
+      input.get(inputKey)?.setRels([outputKey]);
+    }
+  };
 
-  if (!output.get(OUTPUTS.AddRowDone)) {
-    output.add(OUTPUTS.AddRowDone, '新增一行完成', {
-      type: 'any'
-    });
-  }
-
-  if (!output.get(OUTPUTS.SetColConfigDone)) {
-    output.add(OUTPUTS.SetColConfigDone, '设置列配置完成', {
-      type: 'any'
-    });
-  }
+  addOutputAndRel(OUTPUTS.SetDataSourceDone, '数据', INPUTS.SetDataSource);
+  addOutputAndRel(OUTPUTS.AddRowDone, '新增一行完成', INPUTS.AddRow);
+  addOutputAndRel(OUTPUTS.SetColConfigDone, '设置列配置完成', INPUTS.SetColConfig);
 
   return true;
 }
