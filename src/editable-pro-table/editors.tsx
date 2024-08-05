@@ -14,6 +14,7 @@ export default {
     options: ['width']
   },
   ':root': {
+    title: '可编辑表格',
     items: ({}: EditorResult<Data>, cate1, cate2) => {
       cate1.title = '常规';
       cate1.items = [baseEditor];
