@@ -131,8 +131,11 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
     schema?: Record<string, any>
   ) => {
     if (!output.get(outputKey)) {
-      output.add(outputKey, description, schema || { type: 'any' });
-      input.get(inputKey)?.setRels([outputKey]);
+      const Input = input.get(inputKey);
+      output.add(outputKey, description, schema || Input?.schema || { type: 'any' });
+      if (Input) {
+        Input?.setRels([outputKey]);
+      }
     }
   };
 
