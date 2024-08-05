@@ -115,7 +115,7 @@ export default [
     items: [
       {
         title: '父节点行数据只读',
-        description: '开启后，含children字段的数据行禁止编辑',
+        description: '开启后，含children字段的数据行禁止编辑，不是设置所有的数据只读',
         type: 'switch',
         value: {
           get({ data }: EditorResult<Data>) {

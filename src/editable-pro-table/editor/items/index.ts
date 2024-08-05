@@ -17,6 +17,7 @@ export const COLUMN_EDITORS_CLASS_KEY =
   '.ant-table-thead .ant-table-cell:not(.ant-table-selection-column):not(.ant-table-cell-scrollbar):not(.ant-table-row-expand-icon-cell):not(.column-draggle)';
 export default {
   [COLUMN_EDITORS_CLASS_KEY]: {
+    title: '表格列',
     items: ({ data, output }: EditorResult<Data>, cate1, cate2) => {
       cate1.title = '常规';
       cate1.items = [

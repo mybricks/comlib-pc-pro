@@ -99,7 +99,7 @@ export default (data: Data) => ({
     {
       title: '只读',
       type: 'Switch',
-      description: `开启后本列编辑态只读`,
+      description: `开启后本列编辑态只读，禁止编辑，可以开启所有列的只读实现整个表格只读`,
       ifVisible({ data, focusArea }: EditorResult<Data>) {
         return checkType(data, focusArea, [], [TypeEnum.Option]);
       },
