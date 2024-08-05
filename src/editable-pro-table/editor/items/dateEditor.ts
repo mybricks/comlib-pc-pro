@@ -10,9 +10,7 @@ export default {
     {
       title: '选择时间',
       type: 'Switch',
-      options: {
-        placeholder: '开启后支持选择时间'
-      },
+      description: '开启后支持选择时间',
       value: {
         get({ data, focusArea }: EditorResult<Data>) {
           return getCol(data, focusArea, 'showTime');

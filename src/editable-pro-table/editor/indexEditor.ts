@@ -10,6 +10,7 @@ export default {
     {
       title: '前移',
       type: 'button',
+      description: '向前移动本列',
       ifVisible({ focusArea }: EditorResult<Data>) {
         return focusArea?.index > 0;
       },
@@ -25,6 +26,7 @@ export default {
     {
       title: '后移',
       type: 'button',
+      description: '向后移动本列',
       ifVisible({ data, focusArea }: EditorResult<Data>) {
         const idx = getThIdx(focusArea);
         return idx < data.columns.length - 2;
@@ -41,6 +43,7 @@ export default {
     {
       title: '删除列',
       type: 'button',
+      description: '删除本列',
       value: {
         set({ data, focusArea, slot }: EditorResult<Data>) {
           const idx = getThIdx(focusArea);

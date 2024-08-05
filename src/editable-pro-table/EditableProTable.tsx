@@ -39,7 +39,8 @@ import {
   formatDataSource,
   formatSubmitDataSource,
   replacePageElements,
-  swapArr
+  swapArr,
+  handleOutputFn
 } from './utils';
 import styles from './style.less';
 // @ts-ignore
@@ -89,20 +90,23 @@ export default function (props: RuntimeParams<Data>) {
       if (!data.fixedHeader && data.scroll) {
         data.scroll.y = undefined;
       }
-      inputs[INPUTS.SetColConfig]((val) => {
+      inputs[INPUTS.SetColConfig]((val, relOutputs: any) => {
         setColsCfg(val);
+        handleOutputFn(relOutputs, outputs, OUTPUTS.SetColConfigDone, val);
       });
-      inputs[INPUTS.SetDataSource]((val) => {
+      inputs[INPUTS.SetDataSource]((val, relOutputs: any) => {
         if (useBackendPage && val && typeof val === 'object') {
           const dsKey = Object.keys(val);
           if (Array.isArray(val?.dataSource)) {
             const dataSource = formatDataSource(val?.dataSource, data.columns, rowKey);
             setDataSource(dataSource);
+            handleOutputFn(relOutputs, outputs, OUTPUTS.SetDataSourceDone, dataSource);
           } else {
             const arrayItemKey = dsKey.filter((key) => !!Array.isArray(val[key]));
             if (arrayItemKey.length === 1) {
               const dataSource = formatDataSource(val?.[arrayItemKey[0]], data.columns, rowKey);
               setDataSource(dataSource);
+              handleOutputFn(relOutputs, outputs, OUTPUTS.SetDataSourceDone, dataSource);
             } else {
               console.error('[可编辑表格]：未传入列表数据', val);
             }
@@ -125,6 +129,7 @@ export default function (props: RuntimeParams<Data>) {
           if (Array.isArray(val)) {
             const dataSource = formatDataSource(val, data.columns, rowKey);
             setDataSource(dataSource);
+            handleOutputFn(relOutputs, outputs, OUTPUTS.SetDataSourceDone, dataSource);
           } else {
             console.error('可编辑表格：输入数据格式非法，输入数据必须是数组');
             logger?.error?.('输入数据格式非法，输入数据必须是数组');
@@ -134,7 +139,7 @@ export default function (props: RuntimeParams<Data>) {
 
       // 动态修改操作配置
       if (data.useOperationDynamic && inputs[INPUTS.SetOpConfig]) {
-        inputs[INPUTS.SetOpConfig]((val) => {
+        inputs[INPUTS.SetOpConfig]((val, relOutputs) => {
           const dataKey = [
             'useAutoSave',
             'hideAllOperation',
@@ -147,6 +152,7 @@ export default function (props: RuntimeParams<Data>) {
             'hideCancelBtn',
             'clickChangeToedit'
           ];
+          handleOutputFn(relOutputs, outputs, OUTPUTS.SetOpConfigDone, val);
           dataKey.forEach((key) => {
             if (val && typeof val[key] === 'boolean') {
               data[key] = val[key];
@@ -237,7 +243,7 @@ export default function (props: RuntimeParams<Data>) {
         relOutputs[OUTPUTS.Submit](formatSubmitDataSource(dataSource));
       });
       inputs[INPUTS.AddRow] &&
-        inputs[INPUTS.AddRow]((val: any) => {
+        inputs[INPUTS.AddRow]((val: any, relOutputs) => {
           const intiValue = Object.prototype.toString.call(val) === '[object Object]' ? val : {};
           actionRef.current?.addEditRecord?.(
             {
@@ -249,6 +255,7 @@ export default function (props: RuntimeParams<Data>) {
               newRecordType: 'dataSource'
             }
           );
+          handleOutputFn(relOutputs, outputs, OUTPUTS.AddRowDone, val);
         });
       data.useDelDataSource &&
         inputs[INPUTS.DelRow] &&

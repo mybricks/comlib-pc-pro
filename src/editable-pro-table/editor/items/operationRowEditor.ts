@@ -91,6 +91,7 @@ export default (data: Data, output) => ({
     },
     {
       title: '只读态操作',
+      description: '配置只读状态下操作列按钮',
       ifVisible({ data }: EditorResult<Data>) {
         return !data.hideAllOperation;
       },
@@ -239,7 +240,6 @@ export default (data: Data, output) => ({
         },
         {
           title: '添加子项按钮文案',
-          description: ``,
           type: 'text',
           ifVisible({ data }: EditorResult<Data>) {
             return !data.hideAllAddChildBtn;
@@ -282,6 +282,7 @@ export default (data: Data, output) => ({
     },
     {
       title: '编辑态操作',
+      description: '配置编辑状态下操作列按钮',
       ifVisible({ data }: EditorResult<Data>) {
         return !data.hideAllOperation;
       },

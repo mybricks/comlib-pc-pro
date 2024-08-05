@@ -11,6 +11,7 @@ export function getColumnsDataSchema(columns: ColumnItem[], rowKey: string = ROW
     if (item.valueType !== TypeEnum.Option) {
       dataSchema[`${item.dataIndex}`] = {
         type: item?.dataSchema?.type || 'string',
+        // @ts-ignore
         title: item?.title
       };
     }
@@ -19,8 +20,9 @@ export function getColumnsDataSchema(columns: ColumnItem[], rowKey: string = ROW
 }
 
 // 设置输入数据schema
-function setDataSourceSchema({ dataSchema, input, data }) {
+function setDataSourceSchema({ dataSchema, input, data, output }) {
   const ioPin = input.get(INPUTS.SetDataSource);
+  const oPin = output.get(OUTPUTS.SetDataSourceDone);
   if (ioPin) {
     const TableDataSchema =
       data?.usePagination && !data.paginationConfig?.useFrontPage
@@ -59,6 +61,7 @@ function setDataSourceSchema({ dataSchema, input, data }) {
             }
           };
     ioPin.setSchema(TableDataSchema);
+    oPin && oPin.setSchema(TableDataSchema);
   }
 }
 // 设置输出数据schema
@@ -271,7 +274,7 @@ export function getOptionSchema() {
 
 export function setDataSchema({ data, output, input, slot = {} }) {
   const dataSchema = getColumnsDataSchema(data.columns, data.rowKey);
-  setDataSourceSchema({ dataSchema, input, data });
+  setDataSourceSchema({ dataSchema, input, data, output });
   setDataSourceSubmitSchema({ dataSchema, output });
   setRowSelectionSchema({ dataSchema, output });
   setColConfigSchema({ data, input });

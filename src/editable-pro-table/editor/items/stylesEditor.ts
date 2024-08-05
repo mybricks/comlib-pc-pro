@@ -82,7 +82,7 @@ export const StylesEditor = [
         data.actions = [...data.actions];
       }
     }
-  },
+  }
   // {
   //   title: '图标来源',
   //   type: 'Radio',

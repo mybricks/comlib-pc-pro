@@ -357,3 +357,16 @@ export const replacePageElements = (originalArray, replacementArray, paginationC
 
   return [...originalArray];
 };
+
+// IO串行处理
+export const handleOutputFn = (
+  relOutputs: { [x: string]: any },
+  outputs: { [x: string]: any },
+  OutputId: string,
+  val: any
+) => {
+  const outputFn = relOutputs?.[OutputId] || outputs[OutputId];
+  if (outputFn) {
+    outputFn(val);
+  }
+};

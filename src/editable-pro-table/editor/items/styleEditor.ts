@@ -48,7 +48,12 @@ export default {
       type: 'Switch',
       description: '内容超出宽度后文本是否自动省略、不换行、以省略号结尾',
       ifVisible({ data, focusArea }: EditorResult<Data>) {
-        return !checkType(data, focusArea, [TypeEnum.Option, TypeEnum.Slot, TypeEnum.Checkbox, TypeEnum.Switch]);
+        return !checkType(data, focusArea, [
+          TypeEnum.Option,
+          TypeEnum.Slot,
+          TypeEnum.Checkbox,
+          TypeEnum.Switch
+        ]);
       },
       value: {
         get({ data, focusArea }: EditorResult<Data>) {

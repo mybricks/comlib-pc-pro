@@ -1,4 +1,4 @@
-import { Data, baseVerificationRules } from './constants';
+import { Data, OUTPUTS, baseVerificationRules } from './constants';
 
 import { AlignTypeEnum, SizeTypeEnum } from './components/Paginator/constants';
 import { isNullValue } from '../utils';
@@ -123,6 +123,24 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
         data.columns[index].VerificationRules = temp;
       }
     });
+
+  if (!output.get(OUTPUTS.SetDataSourceDone)) {
+    output.add(OUTPUTS.SetDataSourceDone, '数据', {
+      type: 'any'
+    });
+  }
+
+  if (!output.get(OUTPUTS.AddRowDone)) {
+    output.add(OUTPUTS.AddRowDone, '新增一行完成', {
+      type: 'any'
+    });
+  }
+
+  if (!output.get(OUTPUTS.SetColConfigDone)) {
+    output.add(OUTPUTS.SetColConfigDone, '设置列配置完成', {
+      type: 'any'
+    });
+  }
 
   return true;
 }

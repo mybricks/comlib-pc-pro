@@ -13,13 +13,15 @@ export default [
           get({ data }: EditorResult<Data>) {
             return data.useOperationDynamic;
           },
-          set({ data, input }: EditorResult<Data>, val: boolean) {
+          set({ data, input, output }: EditorResult<Data>, val: boolean) {
             data.useOperationDynamic = !!val;
             if (val && !input.get(INPUTS.SetOpConfig)) {
               input.add(INPUTS.SetOpConfig, '修改操作配置', Schemas.SetOpConfig);
+              output.add(OUTPUTS.SetOpConfigDone, '修改操作配置完成', Schemas.SetOpConfig);
             }
             if (!val && input.get(INPUTS.SetOpConfig)) {
               input.remove(INPUTS.SetOpConfig);
+              output.remove(OUTPUTS.SetOpConfigDone);
             }
           }
         }
@@ -83,6 +85,7 @@ export default [
       {
         title: '隐藏新增按钮',
         type: 'switch',
+        description: '隐藏操作列的新增按钮',
         value: {
           get({ data }: EditorResult<Data>) {
             return data.hideAddBtn;
@@ -174,6 +177,7 @@ export default [
       {
         title: '动态设置勾选项',
         type: 'Switch',
+        description: '开启后，可以通过输入项【设置勾选项】动态设置勾选项',
         ifVisible({ data }: EditorResult<Data>) {
           return data.useRowSelection;
         },
@@ -249,6 +253,7 @@ export default [
       {
         title: '状态切换事件',
         type: '_Event',
+        description: '任一列的状态发生变化时触发，关联输出项【状态切换】',
         ifVisible({ data, output }: EditorResult<Data>) {
           return !!(data.useStateSwitching && output.get(OUTPUTS.StateSwitching));
         },

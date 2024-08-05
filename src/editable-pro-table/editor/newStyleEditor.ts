@@ -19,7 +19,7 @@ const createEditor = ({ title, catelog, target }) => {
 
 export default [
   {
-    title: '表格样式',
+    title: '表格',
     items: [
       createEditor({
         title: '表头',
@@ -35,7 +35,9 @@ export default [
         title: '行Hover',
         catelog: 'Hover',
         target: ({ id }) =>
-          `table tbody>tr>td.ant-table-cell-row-hover[data-table-column-id]${getFilterSelectorWithId(id)}`
+          `table tbody>tr>td.ant-table-cell-row-hover[data-table-column-id]${getFilterSelectorWithId(
+            id
+          )}`
       })
     ]
   }
