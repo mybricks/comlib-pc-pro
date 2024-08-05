@@ -72,7 +72,7 @@ export default {
           //   }
           // },
           {
-            title: '按钮样式',
+            title: '按钮',
             catelog: '默认',
             options: ['border', { type: 'font', config: { disableTextAlign: true } }, 'background'],
             target({ focusArea, data }) {
@@ -85,7 +85,7 @@ export default {
             }
           },
           {
-            title: '按钮样式',
+            title: '按钮',
             catelog: 'Hover',
             options: ['border', { type: 'font', config: { disableTextAlign: true } }, 'background'],
             target({ focusArea, data }) {
@@ -124,7 +124,7 @@ export default {
           //   }
           // },
           {
-            title: '按钮样式',
+            title: '按钮',
             catelog: '激活',
             options: ['border', { type: 'font', config: { disableTextAlign: true } }, 'background'],
             target({ focusArea, data }) {
@@ -163,7 +163,7 @@ export default {
           //   }
           // },
           {
-            title: '按钮样式',
+            title: '按钮',
             catelog: '禁用',
             options: ['border', { type: 'font', config: { disableTextAlign: true } }, 'background'],
             target({ focusArea, data }) {

@@ -49,6 +49,7 @@ export default {
     {
       title: '新增按钮文案',
       type: 'text',
+      description: '配置新增一行按钮的文本',
       value: {
         get({ data }: EditorResult<Data>) {
           return data.creatorButtonText;
@@ -61,6 +62,8 @@ export default {
     {
       title: '分页模式',
       type: 'Switch',
+      description:
+        '是否开启表格分页功能。开启后，传给输入项【设置数据源】的数据除了包含表格的列表数据，还需要包含分页信息total, pageSize, pageNum',
       value: {
         get({ data }: EditorResult<Data>) {
           return data?.usePagination;
@@ -69,7 +72,7 @@ export default {
           data.usePagination = value;
           if (value) {
             input.add(InputIds.SetTotal, '设置数据总数', { type: 'number' });
-            output.add(InputIds.SetTotal, '设置数据总数完成', { type: 'number' });
+            output.add(OutputIds.SetTotal, '设置数据总数完成', { type: 'number' });
             input.get(InputIds.SetTotal).setRels([OutputIds.SetTotal]);
             input.add(InputIds.SetPageNum, '设置当前页码', { type: 'number' });
             output.add(OutputIds.SetPageNumFinish, '设置页码完成', { type: 'number' });
@@ -118,6 +121,7 @@ export default {
     {
       title: '添加列',
       type: 'button',
+      description: '添加新的一列',
       value: {
         set({ data, output, input, slot }: EditorResult<Data>) {
           const item: ColumnItem = {

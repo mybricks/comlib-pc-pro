@@ -10,9 +10,7 @@ export default {
     {
       title: '多选',
       type: 'Switch',
-      options: {
-        placeholder: '开启后支持多选'
-      },
+      description: '开启后下拉框支持多选',
       value: {
         get({ data, focusArea }: EditorResult<Data>) {
           return getCol(data, focusArea, 'multiple');
@@ -25,9 +23,7 @@ export default {
     {
       title: '搜索',
       type: 'Switch',
-      options: {
-        placeholder: '开启后支持搜索'
-      },
+      description: '开启后下拉框支持根据输入搜索',
       value: {
         get({ data, focusArea }: EditorResult<Data>) {
           return getCol(data, focusArea, 'showSearch');

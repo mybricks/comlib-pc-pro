@@ -10,6 +10,7 @@ export default (data: Data) => ({
     {
       title: '必填',
       type: 'Switch',
+      description: `该列必须有值才能保存`,
       ifVisible({ data, focusArea }: EditorResult<Data>) {
         return checkType(data, focusArea, [
           TypeEnum.Text,
@@ -68,6 +69,7 @@ export default (data: Data) => ({
     {
       title: '校验失败样式',
       type: 'Select',
+      description: `配置校验失败时样式`,
       ifVisible({ data, focusArea }: EditorResult<Data>) {
         return checkType(data, focusArea, [
           TypeEnum.Text,
@@ -97,6 +99,7 @@ export default (data: Data) => ({
     {
       title: '只读',
       type: 'Switch',
+      description: `开启后本列编辑态只读`,
       ifVisible({ data, focusArea }: EditorResult<Data>) {
         return checkType(data, focusArea, [], [TypeEnum.Option]);
       },

@@ -169,7 +169,7 @@ export default [
         },
         target: `.ant-space-item > span.cancel a:hover`,
         domTarget: '.ant-space-item > span.cancel a'
-      }),
+      })
     ]
   }
 ];

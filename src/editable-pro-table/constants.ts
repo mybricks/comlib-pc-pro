@@ -35,7 +35,13 @@ export const OUTPUTS = {
 
   EditTableData: 'editTableData',
 
-  StateSwitching: 'stateSwitching'
+  StateSwitching: 'stateSwitching',
+
+  SetDataSourceDone: 'value',
+  SetColConfigDone: 'colsCfg',
+  AddRowDone: 'addRow',
+
+  SetOpConfigDone: 'operationConfig'
 };
 
 export enum TypeEnum {

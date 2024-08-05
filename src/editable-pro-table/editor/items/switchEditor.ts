@@ -16,7 +16,7 @@ export default {
       value: {
         get({ data, focusArea }: EditorResult<Data>) {
           let openText = getCol(data, focusArea, 'openText');
-          return openText === undefined ?  '打开' : openText;
+          return openText === undefined ? '打开' : openText;
         },
         set({ data, focusArea }, val: string) {
           setCol(data, focusArea, 'openText', val);
@@ -51,6 +51,6 @@ export default {
           setCol(data, focusArea, 'defaultChecked', val);
         }
       }
-    },
+    }
   ]
 };

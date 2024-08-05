@@ -24,6 +24,7 @@ export default {
         {
           title: '枚举数据源',
           type: 'array',
+          description: '配置下拉框、多选框的默认数据源',
           options: {
             addText: '添加枚举值',
             editable: true,

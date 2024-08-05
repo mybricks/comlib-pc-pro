@@ -4,6 +4,7 @@ export const emptyEditor = [
   {
     title: '自定义空白状态',
     type: 'switch',
+    description: '开启后可以自定义没有数据时的空白状态',
     value: {
       get({ data }: EditorResult<Data>) {
         return data.isEmpty || false;
@@ -16,6 +17,7 @@ export const emptyEditor = [
   {
     title: '图片地址',
     type: 'ImageSelector',
+    description: '配置空状态图片',
     ifVisible({ data }: EditorResult<Data>) {
       return !!data.isEmpty;
     },
