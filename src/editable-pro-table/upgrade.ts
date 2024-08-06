@@ -126,13 +126,13 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
 
   const addOutputAndRel = (
     outputKey: string,
-    description: string,
+    title: string,
     inputKey: string,
     schema?: Record<string, any>
   ) => {
     if (!output.get(outputKey)) {
       const Input = input.get(inputKey);
-      output.add(outputKey, description, schema || Input?.schema || { type: 'any' });
+      output.add(outputKey, title, schema || Input?.schema || { type: 'any' });
       if (Input) {
         Input?.setRels([outputKey]);
       }
