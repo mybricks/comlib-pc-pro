@@ -843,14 +843,20 @@ export default function (props: RuntimeParams<Data>) {
         tempDataSource = [...pageDataSource];
       }
       if (tempDataSource && tempDataSource?.length > 0 && dataIndex && !isNullValue(value)) {
-        if (tempDataSource.some((item) => String(item[dataIndex]) == String(value))) {
+        // 如果是再次编辑
+        if (
+          tempDataSource.some(
+            (item) =>
+              String(item[dataIndex]) == String(value) && !editableKeys.includes(item[rowKey])
+          )
+        ) {
           return Promise.reject(new Error(`${dataIndex}值已经存在`));
         }
       }
       // 否则，返回成功的校验结果
       return Promise.resolve();
     },
-    [dataSource, pageDataSource, data.usePagination]
+    [dataSource, pageDataSource, data.usePagination, editableKeys]
   );
 
   return (
