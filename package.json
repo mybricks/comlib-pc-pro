@@ -22,9 +22,8 @@
   },
   "homepage": "https://github.com/mybricks/comlib-pc-pro#readme",
   "dependencies": {
-    "@ant-design/icons": "4.7.0",
-    "@ant-design/pro-components": "2.3.33",
-    "antd": "4.21.6"
+    "@ant-design/pro-components": "^2.7.15",
+    "antd": "^5.20.1"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.178",
