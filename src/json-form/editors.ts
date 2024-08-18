@@ -1,6 +1,5 @@
 import { FormProps } from 'antd';
-import { Data } from './runtime'
-import { InputIds, BasicColumSchema, GridColumSchema, OutputIds } from './constant';
+import { Data, InputIds, BasicColumSchema, GridColumSchema, OutputIds } from './constant';
 import { deepCopy } from '../utils';
 
 export default {
@@ -12,13 +11,13 @@ export default {
         return [
           { label: '基本表单', value: 'Form' },
           { label: '查询表单', value: 'QueryFilter' }
-        ]
+        ];
       },
       value: {
         get({ data, id, name }: EditorResult<Data>) {
-          return data.layoutType
+          return data.layoutType;
         },
-        set({ data, id, name }: EditorResult<Data>, value: Data["layoutType"]) {
+        set({ data, id, name }: EditorResult<Data>, value: Data['layoutType']) {
           data.layoutType = value;
         }
       }
@@ -47,7 +46,7 @@ export default {
         return !['QueryFilter', 'LightFilter'].includes(data.layoutType || 'Form');
       },
       value: {
-        get({ data, }: EditorResult<Data>) {
+        get({ data }: EditorResult<Data>) {
           return data.grid;
         },
         set({ data, input }: EditorResult<Data>, value: boolean) {
@@ -68,9 +67,9 @@ export default {
       type: 'Switch',
       value: {
         get({ data }: EditorResult<Data>) {
-          return !!data.submitter
+          return !!data.submitter;
         },
-        set({ data }: EditorResult<Data>, value: Data["submitter"]) {
+        set({ data }: EditorResult<Data>, value: Data['submitter']) {
           data.submitter = value;
         }
       }
@@ -95,6 +94,6 @@ export default {
       options: {
         outputId: OutputIds.OnValuesChange
       }
-    },
+    }
   ]
-}
+};

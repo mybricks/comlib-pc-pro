@@ -1,7 +1,7 @@
 {
   "title": "JSON表单",
   "namespace": "mybricks.pro-pc.json-form",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "JSON表单",
   "author": "MyBricks",
   "author_name": "MyBricks",
@@ -14,6 +14,7 @@
     {
       "id": "setColumns",
       "title": "输入Schema描述",
+      "rels": ["setColumns"],
       "schema": {
         "type": "array",
         "items": {
@@ -29,6 +30,9 @@
               "type": "string"
             },
             "dataIndex": {
+              "type": "string"
+            },
+            "width": {
               "type": "string"
             },
             "valueType": {
@@ -68,11 +72,83 @@
                 }
               ]
             },
+            "valueEnum": {
+              "type": "object",
+              "properties": {
+                "枚举映射": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "any"
+                    },
+                    "disabled": {
+                      "type": "boolean"
+                    },
+                    "checked": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            },
             "fieldProps": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "options": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": "any"
+                      },
+                      "disabled": {
+                        "type": "boolean"
+                      },
+                      "checked":  {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                },
+                "style": {
+                  "type": "object",
+                  "properties": {
+                    "width": "number"
+                  }
+                },
+                "其他需要直接传递给表单项内组件的配置": {
+                  "type": "any"
+                }
+              }
             },
             "formItemProps": {
-              "type": "object"
+              "type": "object",
+              "properties": {
+                "rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "required": {
+                        "type": "boolean"
+                      },
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "其他需要直接传递给表单项整体的配置": {
+                  "type": "any"
+                }
+              }
             },
             "dependencies": {
               "type": "array",
@@ -94,6 +170,7 @@
     {
       "id": "setFieldsValue",
       "title": "设置表单数据",
+      "rels": ["setFieldsValue"],
       "schema": {
         "type": "object",
         "properties": {}
@@ -103,15 +180,177 @@
     {
       "id": "submit",
       "title": "提交表单",
-      "rels": [
-        "onFinishForRels"
-      ],
+      "rels": ["onFinishForRels"],
       "schema": {
         "type": "any"
       }
     }
   ],
   "outputs": [
+    {
+      "id": "setColumns",
+      "title": "完成",
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "tooltip": {
+              "type": "string"
+            },
+            "dataIndex": {
+              "type": "string"
+            },
+            "width": {
+              "type": "string"
+            },
+            "valueType": {
+              "type": "enum",
+              "items": [
+                {
+                  "type": "string",
+                  "value": "text"
+                },
+                {
+                  "type": "string",
+                  "value": "radio"
+                },
+                {
+                  "type": "string",
+                  "value": "checkbox"
+                },
+                {
+                  "type": "string",
+                  "value": "select"
+                },
+                {
+                  "type": "string",
+                  "value": "date"
+                },
+                {
+                  "type": "string",
+                  "value": "treeSelect"
+                },
+                {
+                  "type": "string",
+                  "value": "group"
+                },
+                {
+                  "type": "string",
+                  "value": "其他各类表单项"
+                }
+              ]
+            },
+            "valueEnum": {
+              "type": "object",
+              "properties": {
+                "枚举映射": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "any"
+                    },
+                    "disabled": {
+                      "type": "boolean"
+                    },
+                    "checked": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            },
+            "fieldProps": {
+              "type": "object",
+              "properties": {
+                "options": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": "any"
+                      },
+                      "disabled": {
+                        "type": "boolean"
+                      },
+                      "checked":  {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                },
+                "style": {
+                  "type": "object",
+                  "properties": {
+                    "width": "number"
+                  }
+                },
+                "其他需要直接传递给表单项内组件的配置": {
+                  "type": "any"
+                }
+              }
+            },
+            "formItemProps": {
+              "type": "object",
+              "properties": {
+                "rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "required": {
+                        "type": "boolean"
+                      },
+                      "message": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "其他需要直接传递给表单项整体的配置": {
+                  "type": "any"
+                }
+              }
+            },
+            "dependencies": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "columns": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      },
+      "desc": "输入符合定义的Schema描述"
+    },
+    {
+      "id": "setFieldsValue",
+      "title": "完成",
+      "schema": {
+        "type": "object",
+        "properties": {}
+      },
+      "desc": "给表单设置数据"
+    },
     {
       "id": "onFinish",
       "title": "提交数据输出",

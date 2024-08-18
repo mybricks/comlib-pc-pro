@@ -1,26 +1,10 @@
 import React, { useRef, useLayoutEffect, useCallback, useState } from 'react';
-import type {
-  ProFormColumnsType,
-  ProFormInstance,
-  ProFormLayoutType,
-  SubmitterProps
-} from '@ant-design/pro-components';
+import type { ProFormColumnsType, ProFormInstance } from '@ant-design/pro-components';
 import { BetaSchemaForm } from '@ant-design/pro-components';
-import { Empty, FormProps } from 'antd';
+import { Empty } from 'antd';
 import styles from './styles.less';
-import { InputIds, OutputIds } from './constant';
-
-export interface Data {
-  layoutType: ProFormLayoutType;
-  grid: boolean;
-  submitter: false | SubmitterProps;
-  config: FormProps;
-}
-
-type DataItem = {
-  name: string;
-  state: string;
-};
+import { Data, DataItem, InputIds, OutputIds } from './constant';
+import { handleOutputFn } from '../utils';
 
 export default function (props: RuntimeParams<Data>) {
   const { env, inputs, outputs, data } = props;
@@ -28,19 +12,20 @@ export default function (props: RuntimeParams<Data>) {
   const [columns, setColumns] = useState<ProFormColumnsType<DataItem>[]>([]);
 
   useLayoutEffect(() => {
-    inputs[InputIds.Submit]((val, outputRels) => {
+    inputs[InputIds.Submit]((val: any, outputRels: any) => {
       formRef?.current?.validateFieldsReturnFormatValue?.().then((values) => {
-        console.log(values);
         outputRels[OutputIds.OnFinishForRels](values);
       });
     });
 
-    inputs[InputIds.SetFieldsValue]((val) => {
+    inputs[InputIds.SetFieldsValue]((val: any, outputRels: any) => {
       formRef?.current?.setFieldsValue(val);
+      handleOutputFn(outputRels, outputs, 'data', val);
     });
 
-    inputs[InputIds.SetColumns]((val) => {
+    inputs[InputIds.SetColumns]((val: Array<any>, outputRels: any) => {
       setColumns(val);
+      handleOutputFn(outputRels, outputs, 'data', val);
     });
   }, []);
 
