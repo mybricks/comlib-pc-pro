@@ -857,7 +857,9 @@ export default function (props: RuntimeParams<Data>) {
 
   // 实际的列
   const columns = useMemo(() => {
-    return getColumns(dataSource).filter((item) => item?.visible === true);
+    return getColumns(dataSource).filter(
+      (item) => item?.visible === true || item?.visible === undefined
+    );
   }, [data.columns, data.hideAllOperation]);
 
   return (

@@ -136,7 +136,8 @@ const getAddColumnEditor = ({ data, output, input, slot, env }: EditorResult<Dat
           get({ data }: EditorResult<Data>) {
             return [
               ...data.columns.map((item) => ({
-                ...item
+                ...item,
+                visible: item?.visible === undefined ? true : item?.visible
               }))
             ];
           },
