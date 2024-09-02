@@ -1,13 +1,13 @@
 import { ProColumns } from '@ant-design/pro-table';
 import moment from 'moment';
-import { runScript } from '../utils/runExpCodeScript';
-import { uuid } from '../utils';
+import { uuid, getTemplateRenderScript, runScript } from '../utils';
 import { ColumnItem, Data, DataSourceType, ROW_KEY, TypeEnum } from './constants';
+export * from '../utils';
 
 export const getThIdx = (focusArea) => {
   return focusArea?.dataset?.tableThIdx;
 };
-export function setCol(data: Data, focusArea, key, value) {
+export function setCol(data: Data, focusArea: any, key: string, value: any) {
   const idx = getThIdx(focusArea);
   const item = data.columns[idx];
   item[key] = value;
@@ -370,3 +370,39 @@ export const handleOutputFn = (
     outputFn(val);
   }
 };
+
+const findLabelByOptions = (value, options) => {
+  let res;
+  (Array.isArray(options) ? options : []).forEach((item) => {
+    if (res !== undefined) {
+      return;
+    } else if (item.value === value) {
+      res = item.label;
+    } else if (Array.isArray(item.children)) {
+      res = findLabelByOptions(value, item.children);
+    }
+  });
+  return res;
+};
+const getValueByOptions = (value, options) => {
+  if (!Array.isArray(value)) {
+    const temp = findLabelByOptions(value, options);
+    return temp === undefined ? value : temp;
+  } else {
+    return value.map((item) => getValueByOptions(item, options));
+  }
+};
+const runDisableScript = (disableScript, record) => {
+  if (disableScript && record) {
+    try {
+      const disabled = eval(getTemplateRenderScript(disableScript))(record);
+      return disabled;
+    } catch (e) {
+      console.error('动态禁用出错：' + e);
+      return true;
+    }
+  }
+  return undefined;
+};
+
+export { findLabelByOptions, getValueByOptions, runDisableScript };

@@ -3,8 +3,9 @@ import operationEditor from './editor/operationEditor';
 import itemsEditor from './editor/items';
 import baseEditor from './editor/baseEditor';
 import styleEditor from './editor/styleEditor';
-import { setDataSchema } from './schema';
 import { StylesEditor } from './editor/items/stylesEditor';
+import getAddColumnEditor from './editor/addColumn';
+import { setDataSchema } from './schema';
 
 export default {
   '@init': ({ data, input, output, slot }: EditorResult<Data>) => {
@@ -15,9 +16,9 @@ export default {
   },
   ':root': {
     title: '可编辑表格',
-    items: ({}: EditorResult<Data>, cate1, cate2) => {
+    items: (props: EditorResult<Data>, cate1, cate2) => {
       cate1.title = '常规';
-      cate1.items = [baseEditor];
+      cate1.items = [getAddColumnEditor(props), baseEditor];
 
       cate2.title = '高级';
       cate2.items = [...operationEditor];

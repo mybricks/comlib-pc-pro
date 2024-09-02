@@ -1,34 +1,9 @@
-import type { ProColumns } from '@ant-design/pro-table';
-import { uuid } from '../../utils';
-import {
-  ColumnItem,
-  ColumnsSchema,
-  Data,
-  INPUTS,
-  InputIds,
-  OutputIds,
-  ROW_KEY,
-  baseVerificationRules
-} from '../constants';
-import { setDataSchema } from '../schema';
+import { ColumnsSchema, Data, INPUTS, InputIds, OutputIds, ROW_KEY } from '../constants';
+import { setDataSchema, PageSchema } from '../schema';
 import { emptyEditor } from './empty';
 
-export const PageSchema = {
-  type: 'object',
-  properties: {
-    pageNum: {
-      type: 'number',
-      description: '表格当前页码'
-    },
-    pageSize: {
-      type: 'number',
-      description: '表格每页条数'
-    }
-  }
-};
-
 export default {
-  title: '基础配置',
+  title: '',
   items: [
     {
       title: '行唯一标识',
@@ -37,25 +12,16 @@ export default {
       options: {
         placeholder: ROW_KEY
       },
+      ifVisible({ data }: EditorResult<Data>) {
+        return typeof data?.hasUpdateRowKey === 'undefined';
+      },
       value: {
         get({ data }: EditorResult<Data>) {
           return data.rowKey;
         },
-        set({ data }: EditorResult<Data>, value: string) {
+        set({ data, output, input, slot }: EditorResult<Data>, value: string) {
           data.rowKey = value;
-        }
-      }
-    },
-    {
-      title: '新增按钮文案',
-      type: 'text',
-      description: '配置新增一行按钮的文本',
-      value: {
-        get({ data }: EditorResult<Data>) {
-          return data.creatorButtonText;
-        },
-        set({ data }: EditorResult<Data>, val: string) {
-          data.creatorButtonText = val;
+          setDataSchema({ data, output, input, slot });
         }
       }
     },
@@ -95,6 +61,19 @@ export default {
       }
     },
     {
+      title: '新增按钮文案',
+      type: 'text',
+      description: '配置新增一行按钮的文本',
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data.creatorButtonText;
+        },
+        set({ data }: EditorResult<Data>, val: string) {
+          data.creatorButtonText = val;
+        }
+      }
+    },
+    {
       title: '动态设置表头',
       type: 'Switch',
       description:
@@ -118,27 +97,27 @@ export default {
         }
       }
     },
-    {
-      title: '添加列',
-      type: 'button',
-      description: '添加新的一列',
-      value: {
-        set({ data, output, input, slot }: EditorResult<Data>) {
-          const item: ColumnItem = {
-            title: '新增',
-            dataIndex: `${uuid()}`,
-            valueType: 'text',
-            width: 140,
-            align: 'left',
-            key: uuid(),
-            fieldProps: {},
-            VerificationRules: baseVerificationRules
-          };
-          data.columns.splice(data.columns.length - 1, 0, item);
-          setDataSchema({ data, output, input, slot });
-        }
-      }
-    },
+    // {
+    //   title: '添加列',
+    //   type: 'button',
+    //   description: '添加新的一列',
+    //   value: {
+    //     set({ data, output, input, slot }: EditorResult<Data>) {
+    //       const item: ColumnItem = {
+    //         title: '新增',
+    //         dataIndex: `${uuid()}`,
+    //         valueType: 'text',
+    //         width: 140,
+    //         align: 'left',
+    //         key: uuid(),
+    //         fieldProps: {},
+    //         VerificationRules: baseVerificationRules
+    //       };
+    //       data.columns.splice(data.columns.length - 1, 0, item);
+    //       setDataSchema({ data, output, input, slot });
+    //     }
+    //   }
+    // },
     ...emptyEditor
   ]
 };

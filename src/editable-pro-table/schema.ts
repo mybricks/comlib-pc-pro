@@ -1,18 +1,24 @@
 import { ColumnItem, INPUTS, OUTPUTS, ROW_KEY, TypeEnum } from './constants';
 
 export function getColumnsDataSchema(columns: ColumnItem[], rowKey: string = ROW_KEY) {
+  // const {} = columns
   const dataSchema = {
     [rowKey]: {
       type: 'string',
-      title: '行唯一标识'
+      title: '行唯一标识',
+      description: '行标识字段，值需要全局唯一'
     }
   };
   columns.forEach((item) => {
-    if (item.valueType !== TypeEnum.Option) {
-      dataSchema[`${item.dataIndex}`] = {
+    const { dataIndex, title, valueType } = item;
+    if (valueType !== TypeEnum.Option) {
+      dataSchema[`${dataIndex}`] = {
         type: item?.dataSchema?.type || 'string',
         // @ts-ignore
-        title: item?.title
+        title: item?.title,
+        description: `表格列【${title}】的字段名为: ${dataIndex}${
+          dataIndex === rowKey ? '，行标识字段，值需要全局唯一' : ''
+        }`
       };
     }
   });
@@ -356,4 +362,18 @@ export const Schemas = {
       }
     }
   })
+};
+
+export const PageSchema = {
+  type: 'object',
+  properties: {
+    pageNum: {
+      type: 'number',
+      description: '表格当前页码'
+    },
+    pageSize: {
+      type: 'number',
+      description: '表格每页条数'
+    }
+  }
 };
