@@ -10,7 +10,7 @@ import {
   TypeEnumMap
 } from '../constants';
 import { uuid } from '../../utils';
-import { setDataSchema } from '../schema';
+import { setDataSchema, slotEditInput, slotEditOutput } from '../schema';
 
 const getAddColumnEditor = ({ data, output, input, slot, env }: EditorResult<Data>) => {
   return {
@@ -163,6 +163,30 @@ const getAddColumnEditor = ({ data, output, input, slot, env }: EditorResult<Dat
                 // @ts-ignore
                 item._renderKey = uuid(); // 新增一个随机的值renderKey刷新防止不更新
                 message.warn(`必须设置一个唯一key`);
+              }
+
+              const slotId = item?.slotId || uuid();
+              const slotEditId = item?.slotEditId || uuid();
+              if (valueType && (valueType as string) === TypeEnum.Slot) {
+                item.slotId = slotId;
+                item.slotEditId = slotEditId;
+                slot.add({
+                  id: slotId,
+                  title: `${title}列`,
+                  type: 'scope',
+                  inputs: slotEditInput
+                });
+                slot.add({
+                  id: slotEditId,
+                  title: `${title}列编辑态`,
+                  type: 'scope',
+                  inputs: slotEditInput,
+                  outputs: slotEditOutput
+                });
+              }
+              if ((valueType as string) !== TypeEnum.Slot && slotId && slot.get(slotId)) {
+                slot.remove(slotId);
+                slot.remove(slotEditId);
               }
             }
 

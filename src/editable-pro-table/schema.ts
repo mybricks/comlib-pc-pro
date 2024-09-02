@@ -377,3 +377,17 @@ export const PageSchema = {
     }
   }
 };
+
+export const slotEditInput = [
+  { id: INPUTS.SlotRowValue, title: '当前行数据', schema: { type: 'object' } },
+  { id: INPUTS.SlotColValue, title: '当前列数据', schema: { type: 'any' } },
+  { id: INPUTS.RowIndex, title: '当前行序号', schema: { type: 'number' } }
+];
+
+export const slotEditOutput = [
+  {
+    id: OUTPUTS.EditTableData,
+    title: '更新行数据',
+    schema: { type: 'object' }
+  }
+];

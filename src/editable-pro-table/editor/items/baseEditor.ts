@@ -1,6 +1,6 @@
 import { uuid } from '../../../utils';
 import { Data, TypeEnum, TypeEnumMap, INPUTS, OUTPUTS, getColumnItem } from '../../constants';
-import { setDataSchema } from '../../schema';
+import { setDataSchema, slotEditInput, slotEditOutput } from '../../schema';
 import { checkType, getCol, setCol } from '../../utils';
 
 export default {
@@ -67,28 +67,14 @@ export default {
               id: slotId,
               title: `${getCol(data, focusArea, 'title')}列`,
               type: 'scope',
-              inputs: [
-                { id: INPUTS.SlotRowValue, title: '当前行数据', schema: { type: 'object' } },
-                { id: INPUTS.SlotColValue, title: '当前列数据', schema: { type: 'any' } },
-                { id: INPUTS.RowIndex, title: '当前行序号', schema: { type: 'number' } }
-              ]
+              inputs: slotEditInput
             });
             slot.add({
               id: slotEditId,
               title: `${getCol(data, focusArea, 'title')}列编辑态`,
               type: 'scope',
-              inputs: [
-                { id: INPUTS.SlotRowValue, title: '当前行数据', schema: { type: 'object' } },
-                { id: INPUTS.SlotColValue, title: '当前列数据', schema: { type: 'any' } },
-                { id: INPUTS.RowIndex, title: '当前行序号', schema: { type: 'number' } }
-              ],
-              outputs: [
-                {
-                  id: OUTPUTS.EditTableData,
-                  title: '更新行数据',
-                  schema: { type: 'object' }
-                }
-              ]
+              inputs: slotEditInput,
+              outputs: slotEditOutput
             });
           }
           if (val !== TypeEnum.Slot && slotId && slot.get(slotId)) {
