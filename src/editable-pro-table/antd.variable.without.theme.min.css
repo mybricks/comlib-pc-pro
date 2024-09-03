@@ -14040,7 +14040,7 @@ _:-ms-fullscreen .ant-picker-range-wrapper .ant-picker-year-panel .ant-picker-ce
   transition: all 0.3s;
   position: relative;
   display: inline-flex;
-  /* width: 90px; */
+  width: 90px;
   padding: 0;
   -webkit-padding-start: 11px;
   padding-inline-start: 11px;
@@ -14300,7 +14300,7 @@ textarea.ant-input-number-affix-wrapper {
   background-image: none;
   transition: all 0.3s;
   display: inline-block;
-  /* width: 90px; */
+  width: 90px;
   margin: 0;
   padding: 0;
   border: 1px solid #d9d9d9;
