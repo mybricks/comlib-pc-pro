@@ -1,7 +1,7 @@
 {
   "title": "JSON表单",
   "namespace": "mybricks.pro-pc.json-form",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "JSON表单",
   "author": "MyBricks",
   "author_name": "MyBricks",
@@ -167,7 +167,7 @@
           }
         }
       },
-      "desc": "输入符合定义的Schema描述"
+      "desc": "输入符合定义的Schema描述，生成对应表单项"
     },
     {
       "id": "setFieldsValue",
@@ -185,7 +185,8 @@
       "rels": ["onFinishForRels"],
       "schema": {
         "type": "any"
-      }
+      },
+      "desc": "输出表单数据"
     }
   ],
   "outputs": [

@@ -3,10 +3,14 @@ import { Data, InputIds, BasicColumSchema, GridColumSchema, OutputIds } from './
 import { deepCopy } from '../utils';
 
 export default {
+  '@resize': {
+    options: ['width']
+  },
   ':root': [
     {
       title: '布局类型',
       type: 'Select',
+      description: `使用的表单布局模式`,
       options() {
         return [
           { label: '基本表单', value: 'Form' },
@@ -25,6 +29,7 @@ export default {
     {
       title: '表单项布局',
       type: 'Select',
+      description: `表单项的布局模式`,
       options: [
         { label: '水平', value: 'horizontal' },
         { label: '垂直', value: 'vertical' },
@@ -65,6 +70,7 @@ export default {
     {
       title: '显示操作按钮',
       type: 'Switch',
+      description: `是否显示下方的操作按钮`,
       value: {
         get({ data }: EditorResult<Data>) {
           return !!data.submitter;
@@ -77,12 +83,14 @@ export default {
     {
       title: '数据提交',
       type: '_Event',
+      description: `点击提交按钮事件`,
       options: {
         outputId: OutputIds.OnFinish
       }
     },
     {
       title: '重置输出',
+      description: `点击重置按钮事件`,
       type: '_Event',
       options: {
         outputId: OutputIds.OnReset
@@ -91,6 +99,7 @@ export default {
     {
       title: '数据变化',
       type: '_Event',
+      description: `数据变化时输出数据`,
       options: {
         outputId: OutputIds.OnValuesChange
       }

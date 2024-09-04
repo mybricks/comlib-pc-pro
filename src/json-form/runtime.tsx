@@ -47,6 +47,7 @@ export default function (props: RuntimeParams<Data>) {
   return (
     <>
       {columns?.length > 0 ? (
+        // @ts-ignore
         <BetaSchemaForm<DataItem>
           {...data.config}
           formRef={formRef}
