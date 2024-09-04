@@ -10,23 +10,26 @@ export default function (props: RuntimeParams<Data>) {
   const { env, inputs, outputs, data } = props;
   const formRef = useRef<ProFormInstance>();
   const [columns, setColumns] = useState<ProFormColumnsType<DataItem>[]>([]);
+  const { runtime } = env;
 
   useLayoutEffect(() => {
-    inputs[InputIds.Submit]((val: any, outputRels: any) => {
-      formRef?.current?.validateFieldsReturnFormatValue?.().then((values) => {
-        outputRels[OutputIds.OnFinishForRels](values);
+    if (runtime) {
+      inputs[InputIds.Submit]((val: any, outputRels: any) => {
+        formRef?.current?.validateFieldsReturnFormatValue?.().then((values) => {
+          outputRels[OutputIds.OnFinishForRels](values);
+        });
       });
-    });
 
-    inputs[InputIds.SetFieldsValue]((val: any, outputRels: any) => {
-      formRef?.current?.setFieldsValue(val);
-      handleOutputFn(outputRels, outputs, 'data', val);
-    });
+      inputs[InputIds.SetFieldsValue]((val: any, outputRels: any) => {
+        formRef?.current?.setFieldsValue(val);
+        handleOutputFn(outputRels, outputs, 'data', val);
+      });
 
-    inputs[InputIds.SetColumns]((val: Array<any>, outputRels: any) => {
-      setColumns(val);
-      handleOutputFn(outputRels, outputs, 'data', val);
-    });
+      inputs[InputIds.SetColumns]((val: Array<any>, outputRels: any) => {
+        setColumns(val);
+        handleOutputFn(outputRels, outputs, 'data', val);
+      });
+    }
   }, []);
 
   const onFinish = useCallback((values) => {
