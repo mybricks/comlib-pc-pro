@@ -1,8 +1,9 @@
 import { Action, Data, OUTPUTS, TypeEnum } from '../../constants';
 import { getColumnsDataSchema } from '../../schema';
-import { checkType, getSuggestions, run } from '../../utils';
-import { uuid } from '../../../utils';
+import { checkType, getSuggestions, run, uuid } from '../../utils';
 import VisibleOpt from '../../../components/editorRender/visibleOpt';
+
+const update = (data) => (data.columns = [...data.columns]);
 
 export default (data: Data, output) => ({
   title: '操作列配置',
@@ -20,6 +21,7 @@ export default (data: Data, output) => ({
         },
         set({ data }: EditorResult<Data>, val: boolean) {
           data.hideAllOperation = !!val;
+          data.columns[data.columns.length - 1].visible = !val;
         }
       }
     },
@@ -91,7 +93,7 @@ export default (data: Data, output) => ({
     },
     {
       title: '只读态操作',
-      description: '配置只读状态下操作列按钮',
+      // description: '配置只读状态下操作列按钮',
       ifVisible({ data }: EditorResult<Data>) {
         return !data.hideAllOperation;
       },
@@ -105,6 +107,7 @@ export default (data: Data, output) => ({
             },
             set({ data }: EditorResult<Data>, val: boolean) {
               data.hideModifyBtn = !!val;
+              update(data);
             }
           }
         },
@@ -120,6 +123,7 @@ export default (data: Data, output) => ({
             },
             set({ data }: EditorResult<Data>, val: string) {
               data.editText = val;
+              update(data);
             }
           }
         },
@@ -154,6 +158,7 @@ export default (data: Data, output) => ({
             },
             set({ data }: EditorResult<Data>, val: boolean) {
               data.hideDeleteBtn = !!val;
+              update(data);
             }
           }
         },
@@ -219,6 +224,7 @@ export default (data: Data, output) => ({
             },
             set({ data }: EditorResult<Data>, val: boolean) {
               data.hideNewBtn = !!val;
+              update(data);
             }
           }
         },
@@ -235,6 +241,7 @@ export default (data: Data, output) => ({
             },
             set({ data }: EditorResult<Data>, val: boolean) {
               data.hideAllAddChildBtn = !!val;
+              update(data);
             }
           }
         },
@@ -253,6 +260,7 @@ export default (data: Data, output) => ({
             },
             set({ data }: EditorResult<Data>, val: string) {
               data.addChildBtnLabel = val;
+              update(data);
             }
           }
         },
@@ -275,6 +283,7 @@ export default (data: Data, output) => ({
             },
             set({ data }: EditorResult<Data>, value: string) {
               data.addChildBtnScript = value;
+              update(data);
             }
           }
         }
@@ -282,7 +291,7 @@ export default (data: Data, output) => ({
     },
     {
       title: '编辑态操作',
-      description: '配置编辑状态下操作列按钮',
+      // description: '配置编辑状态下操作列按钮',
       ifVisible({ data }: EditorResult<Data>) {
         return !data.hideAllOperation;
       },

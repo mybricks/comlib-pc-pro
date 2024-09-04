@@ -240,6 +240,9 @@ export type ColumnItem = ProColumns<any> & {
   optionFilterProp?: string; // 搜索规则 默认 value
 
   errorType?: 'popover' | 'default'; // 校验失败提示类型
+
+  isRowKey?: boolean;
+  visible?: boolean;
 };
 export interface Data {
   headerTitle: string;
@@ -321,6 +324,8 @@ export interface Data {
 
   usePagination?: boolean;
   paginationConfig: PaginationData;
+
+  hasUpdateRowKey?: number;
 }
 
 export const OutputIds = {
@@ -438,7 +443,8 @@ export const getDefaultColumns: () => ProColumns<any>[] = () => [
     fixed: undefined,
     key: 'title',
     fieldProps: {},
-    VerificationRules: baseVerificationRules
+    VerificationRules: baseVerificationRules,
+    visible: true
   },
   {
     title: '描述',
@@ -449,7 +455,8 @@ export const getDefaultColumns: () => ProColumns<any>[] = () => [
     fixed: undefined,
     key: 'desc',
     fieldProps: {},
-    VerificationRules: baseVerificationRules
+    VerificationRules: baseVerificationRules,
+    visible: true
   },
   {
     title: '活动时间',
@@ -460,7 +467,8 @@ export const getDefaultColumns: () => ProColumns<any>[] = () => [
     fixed: undefined,
     key: 'createdAt',
     fieldProps: {},
-    VerificationRules: baseVerificationRules
+    VerificationRules: baseVerificationRules,
+    visible: true
   },
   {
     title: '操作',
@@ -468,7 +476,8 @@ export const getDefaultColumns: () => ProColumns<any>[] = () => [
     align: 'left',
     fixed: undefined,
     width: 200,
-    fieldProps: {}
+    fieldProps: {},
+    visible: true
   }
 ];
 
@@ -479,4 +488,27 @@ export const getColumnItem = (
 ): ColumnItem => {
   const key = focusArea.dataset[datasetKey];
   return data.columns[key] || {};
+};
+
+export const ColorMap = {
+  number: {
+    color: '#4460B8',
+    text: '数字'
+  },
+  boolean: {
+    color: '#ff0000',
+    text: '布尔'
+  },
+  string: {
+    color: '#88a409',
+    text: '字符'
+  },
+  object: {
+    color: '#9727d0',
+    text: '对象'
+  },
+  array: {
+    color: '#ce980f',
+    text: '数组'
+  }
 };

@@ -11,7 +11,7 @@ interface Props {
   parentSlot: any;
   containerRef?: React.RefObject<HTMLDivElement>;
 }
-export default (props: Props) => {
+export const Paginator = (props: Props) => {
   const { data, inputs, outputs, env, containerRef } = props;
   const {
     total,

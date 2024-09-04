@@ -13,9 +13,9 @@ import {
   InputNumber,
   Tooltip,
   ConfigProvider,
-  Image,
   Button,
-  Popconfirm
+  Popconfirm,
+  Empty
 } from 'antd';
 
 import { TableRowSelection } from 'antd/lib/table/interface';
@@ -31,7 +31,6 @@ import {
   getDefaultColumns,
   ROW_KEY
 } from './constants';
-import { isNullValue, uuid } from '../utils';
 import {
   addChildByKey,
   deleteItemByKey,
@@ -40,21 +39,21 @@ import {
   formatSubmitDataSource,
   replacePageElements,
   swapArr,
-  handleOutputFn
+  handleOutputFn,
+  getValueByOptions,
+  runDisableScript,
+  isNullValue,
+  uuid,
+  getTemplateRenderScript
 } from './utils';
+
+import { EditableProTable } from '@ant-design/pro-table';
+import { Actions, Paginator, CustomizeRenderEmpty } from './components';
+
 import styles from './style.less';
+import './antd.variable.without.theme.min.css';
 // @ts-ignore
 // import css from '@ant-design/pro-table/dist/table.min.css';
-import { getTemplateRenderScript } from '../utils/runExpCodeScript';
-
-// const hackTreeShaking = (v) => v;
-// hackTreeShaking(css);
-// @ts-ignore
-import { EditableProTable } from '@ant-design/pro-table';
-// const EditableProTable = React.lazy(() => import('./importTable'));
-import './antd.variable.without.theme.min.css';
-import { Actions } from './components/Actions';
-import Paginator from './components/Paginator';
 
 const { RangePicker } = DatePicker;
 export default function (props: RuntimeParams<Data>) {
@@ -90,11 +89,11 @@ export default function (props: RuntimeParams<Data>) {
       if (!data.fixedHeader && data.scroll) {
         data.scroll.y = undefined;
       }
-      inputs[INPUTS.SetColConfig]((val, relOutputs: any) => {
+      inputs[INPUTS.SetColConfig]((val: any, relOutputs: any) => {
         setColsCfg(val);
         handleOutputFn(relOutputs, outputs, OUTPUTS.SetColConfigDone, val);
       });
-      inputs[INPUTS.SetDataSource]((val, relOutputs: any) => {
+      inputs[INPUTS.SetDataSource]((val: any, relOutputs: any) => {
         if (useBackendPage && val && typeof val === 'object') {
           const dsKey = Object.keys(val);
           if (Array.isArray(val?.dataSource)) {
@@ -315,44 +314,11 @@ export default function (props: RuntimeParams<Data>) {
     }
   }, [data.fixedHeight, data.fixedHeader, data.scroll.y]);
 
-  const findLabelByOptions = (value, options) => {
-    let res;
-    (Array.isArray(options) ? options : []).forEach((item) => {
-      if (res !== undefined) {
-        return;
-      } else if (item.value === value) {
-        res = item.label;
-      } else if (Array.isArray(item.children)) {
-        res = findLabelByOptions(value, item.children);
-      }
-    });
-    return res;
-  };
-  const getValueByOptions = (value, options) => {
-    if (!Array.isArray(value)) {
-      const temp = findLabelByOptions(value, options);
-      return temp === undefined ? value : temp;
-    } else {
-      return value.map((item) => getValueByOptions(item, options));
-    }
-  };
   const renderTagList = (value) => {
     if (Array.isArray(value)) {
       return value.map((item) => <Tag key={`tag-${item}`}>{item}</Tag>);
     }
     return value;
-  };
-  const runDisableScript = (disableScript, record) => {
-    if (disableScript && record) {
-      try {
-        const disabled = eval(getTemplateRenderScript(disableScript))(record);
-        return disabled;
-      } catch (e) {
-        console.error('动态禁用出错：' + e);
-        return true;
-      }
-    }
-    return undefined;
   };
 
   // 前端分页
@@ -382,9 +348,6 @@ export default function (props: RuntimeParams<Data>) {
       <span>{value}</span>
     );
   }, []);
-
-  // TODO 为了让actions更新时重新渲染
-  const actions = data.actions;
 
   const getColumns = (dataSource: DataSourceType[]) => {
     const col = formatColumn(data, env, colsCfg, validateValueExisting);
@@ -816,13 +779,8 @@ export default function (props: RuntimeParams<Data>) {
   };
 
   const customizeRenderEmpty = useCallback(
-    () => (
-      <div className={`emptyNormal ${styles.emptyNormal}`}>
-        <Image src={data.image} className={`emptyImage ${styles.emptyImage}`} preview={false} />
-        <p className={`emptyDescription ${styles.emptyDescription}`}>{data.description}</p>
-      </div>
-    ),
-    []
+    () => CustomizeRenderEmpty(data.image, data.description, styles),
+    [data.image, data.description]
   );
 
   // 勾选配置
@@ -859,6 +817,51 @@ export default function (props: RuntimeParams<Data>) {
     [dataSource, pageDataSource, data.usePagination, editableKeys]
   );
 
+  const actionRender = useCallback(
+    (row, config, defaultDoms) => {
+      return [
+        !data.hideSaveBtn && defaultDoms.save && (
+          <Button type="link" size="small" className="save">
+            {data?.saveSecondConfirm ? (
+              <Popconfirm
+                title={data?.saveSecondConfirmText}
+                okText="确认"
+                cancelText="取消"
+                okButtonProps={{ danger: true }}
+                onConfirm={async () => {
+                  await actionRef?.current?.saveEditable(row[rowKey]);
+                }}
+              >
+                {data?.saveText}
+              </Popconfirm>
+            ) : (
+              defaultDoms.save
+            )}
+          </Button>
+        ),
+        !data.hideDeleteBtnInEdit && defaultDoms.delete && (
+          <Button type="link" size="small" className="delete">
+            {defaultDoms.delete}
+          </Button>
+        ),
+        !data.hideCancelBtn && defaultDoms.cancel && (
+          <Button type="link" size="small" className="cancel">
+            {defaultDoms.cancel}
+          </Button>
+        ),
+        ...Actions(props, row, editableKeys)
+      ].filter((item) => !!item);
+    },
+    [data.hideSaveBtn, data.hideDeleteBtnInEdit, data.hideCancelBtn, data.saveText]
+  );
+
+  // 实际的列
+  const columns = useMemo(() => {
+    return getColumns(dataSource).filter(
+      (item) => item?.visible === true || item?.visible === undefined
+    );
+  }, [data.columns, data.hideAllOperation]);
+
   return (
     <div
       className={`${styles['fz-editable-table']} ${
@@ -868,136 +871,107 @@ export default function (props: RuntimeParams<Data>) {
     >
       <Suspense fallback={<Spin tip="Loading..." />}>
         <ConfigProvider renderEmpty={data.isEmpty ? customizeRenderEmpty : void 0}>
-          <EditableProTable<DataSourceType>
-            rowKey={rowKey}
-            bordered={data.bordered}
-            onRow={(record) => {
-              return {
-                onClick: () => {
-                  if (env.edit || !data.clickChangeToedit) return;
-                  if (actionRef?.current?.preEditableKeys?.includes(record?.[rowKey])) {
-                    return;
+          {columns?.length > 0 ? (
+            <EditableProTable<DataSourceType>
+              rowKey={rowKey}
+              bordered={data.bordered}
+              onRow={(record) => {
+                return {
+                  onClick: () => {
+                    if (env.edit || !data.clickChangeToedit) return;
+                    if (actionRef?.current?.preEditableKeys?.includes(record?.[rowKey])) {
+                      return;
+                    }
+                    actionRef?.current?.startEditable?.(record?.[rowKey]);
                   }
-                  actionRef?.current?.startEditable?.(record?.[rowKey]);
+                };
+              }}
+              recordCreatorProps={
+                data.hideAddBtn
+                  ? false
+                  : {
+                      newRecordType: data.useAutoSave ? 'dataSource' : 'cache',
+                      creatorButtonText: data.creatorButtonText,
+                      record: () => ({ [rowKey]: uuid(), _add: true }),
+                      disabled: !!env?.edit
+                    }
+              }
+              value={useFrontPage ? pageDataSource : dataSource}
+              columns={columns}
+              onChange={(value) => {
+                if (useFrontPage) {
+                  setDataSource(replacePageElements(dataSource, value, data.paginationConfig));
+                } else {
+                  setDataSource(value as DataSourceType[]);
                 }
-              };
-            }}
-            recordCreatorProps={
-              data.hideAddBtn
-                ? false
-                : {
-                    newRecordType: data.useAutoSave ? 'dataSource' : 'cache',
-                    creatorButtonText: data.creatorButtonText,
-                    record: () => ({ [rowKey]: uuid(), _add: true }),
-                    disabled: !!env?.edit
+              }}
+              scroll={{
+                x: '100%',
+                y: data?.scroll?.y ? data?.scroll?.y : void 0
+              }}
+              actionRef={actionRef}
+              size={data.size || 'middle'}
+              rowSelection={data.useRowSelection && rowSelection}
+              tableAlertRender={false}
+              expandable={{
+                expandedRowKeys,
+                onExpand: (expanded: boolean, record: DataSourceType) => {
+                  const newExpandedRowKeys = expanded
+                    ? [...expandedRowKeys, record?.[rowKey]]
+                    : expandedRowKeys.filter((key) => key !== record?.[rowKey]);
+                  setExpandedRowKeys(newExpandedRowKeys);
+                }
+              }}
+              editable={{
+                type: data.editType || 'multiple',
+                editableKeys,
+                onChange: setEditableRowKeys,
+                onSave: (key, value) => {
+                  if (data.useSaveCallback) {
+                    outputs[OUTPUTS.SaveCallback](value);
                   }
-            }
-            value={useFrontPage ? pageDataSource : dataSource}
-            columns={getColumns(dataSource)}
-            onChange={(value) => {
-              if (useFrontPage) {
-                setDataSource(replacePageElements(dataSource, value, data.paginationConfig));
-              } else {
-                setDataSource(value as DataSourceType[]);
-              }
-            }}
-            scroll={{
-              x: '100%',
-              y: data?.scroll?.y ? data?.scroll?.y : void 0
-            }}
-            actionRef={actionRef}
-            size={data.size || 'middle'}
-            rowSelection={data.useRowSelection && rowSelection}
-            tableAlertRender={false}
-            expandable={{
-              expandedRowKeys,
-              onExpand: (expanded: boolean, record: DataSourceType) => {
-                const newExpandedRowKeys = expanded
-                  ? [...expandedRowKeys, record?.[rowKey]]
-                  : expandedRowKeys.filter((key) => key !== record?.[rowKey]);
-                setExpandedRowKeys(newExpandedRowKeys);
-              }
-            }}
-            editable={{
-              type: data.editType || 'multiple',
-              editableKeys,
-              onChange: setEditableRowKeys,
-              onSave: (key, value) => {
-                if (data.useSaveCallback) {
-                  outputs[OUTPUTS.SaveCallback](value);
+                  if (data?.useStateSwitching) {
+                    outputs[OUTPUTS.StateSwitching]({
+                      isEdit: false,
+                      value
+                    });
+                  }
+                  return Promise.resolve();
+                },
+                saveText: data?.saveText,
+                cancelText: data?.cancelText,
+                onCancel: (key, value, originRow) => {
+                  if (data?.useStateSwitching) {
+                    outputs[OUTPUTS.StateSwitching]({
+                      isEdit: false,
+                      value: originRow
+                    });
+                  }
+                  return Promise.resolve();
+                },
+                onDelete: (key, value) => {
+                  if (data.useDelCallback) {
+                    outputs[OUTPUTS.DelCallback](value);
+                  }
+                  return Promise.resolve();
+                },
+                actionRender,
+                onValuesChange: (record, recordList: DataSourceType[]) => {
+                  if (data.useAutoSave) {
+                    const cb = () =>
+                      setDataSource(
+                        recordList
+                          .filter((item) => !!item?._key)
+                          .map((item, index) => ({ ...item, index }))
+                      );
+                    data.debounceAutoSaveTime ? debounce(cb, data.debounceAutoSaveTime) : cb();
+                  }
                 }
-                if (data?.useStateSwitching) {
-                  outputs[OUTPUTS.StateSwitching]({
-                    isEdit: false,
-                    value
-                  });
-                }
-                return Promise.resolve();
-              },
-              saveText: data?.saveText,
-              cancelText: data?.cancelText,
-              onCancel: (key, value, originRow) => {
-                if (data?.useStateSwitching) {
-                  outputs[OUTPUTS.StateSwitching]({
-                    isEdit: false,
-                    value: originRow
-                  });
-                }
-                return Promise.resolve();
-              },
-              onDelete: (key, value) => {
-                if (data.useDelCallback) {
-                  outputs[OUTPUTS.DelCallback](value);
-                }
-                return Promise.resolve();
-              },
-              actionRender: (row, config, defaultDoms) => {
-                return [
-                  !data.hideSaveBtn && defaultDoms.save && (
-                    <Button type="link" size="small" className="save">
-                      {data?.saveSecondConfirm ? (
-                        <Popconfirm
-                          title={data?.saveSecondConfirmText}
-                          okText="确认"
-                          cancelText="取消"
-                          okButtonProps={{ danger: true }}
-                          onConfirm={async () => {
-                            await actionRef?.current?.saveEditable(row[rowKey]);
-                          }}
-                        >
-                          {data?.saveText}
-                        </Popconfirm>
-                      ) : (
-                        defaultDoms.save
-                      )}
-                    </Button>
-                  ),
-                  !data.hideDeleteBtnInEdit && defaultDoms.delete && (
-                    <Button type="link" size="small" className="delete">
-                      {defaultDoms.delete}
-                    </Button>
-                  ),
-                  !data.hideCancelBtn && defaultDoms.cancel && (
-                    <Button type="link" size="small" className="cancel">
-                      {defaultDoms.cancel}
-                    </Button>
-                  ),
-                  ...Actions(props, row, editableKeys)
-                ].filter((item) => !!item);
-              },
-              onValuesChange: (record, recordList: DataSourceType[]) => {
-                if (data.useAutoSave) {
-                  const cb = () =>
-                    setDataSource(
-                      recordList
-                        .filter((item) => !!item?._key)
-                        .map((item, index) => ({ ...item, index }))
-                    );
-                  data.debounceAutoSaveTime ? debounce(cb, data.debounceAutoSaveTime) : cb();
-                }
-              }
-            }}
-          />
+              }}
+            />
+          ) : (
+            <Empty description="请添加列或连接数据源" />
+          )}
           {data?.usePagination && (
             <Paginator
               env={env}

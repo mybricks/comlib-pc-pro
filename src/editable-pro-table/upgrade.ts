@@ -1,9 +1,9 @@
 import { Data, INPUTS, OUTPUTS, baseVerificationRules } from './constants';
+import { AlignTypeEnum, SizeTypeEnum } from './components/Paginator/constants';
+import { setDataSchema } from './schema';
+import { isNullValue } from './utils';
 
-import { AlignTypeEnum, SizeTypeEnum, Schemas } from './components/Paginator/constants';
-import { isNullValue } from '../utils';
-
-export default function ({ data, input, output }: UpgradeParams<Data>): boolean {
+export default function ({ data, input, output, slot }: UpgradeParams<Data>): boolean {
   //1.0.13 -> 1.0.14
   let key: Array<any> = [];
   key = data.columns.map((item) => {
@@ -122,6 +122,23 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
         temp[0].status = !!column.required;
         data.columns[index].VerificationRules = temp;
       }
+
+      let visible = column?.visible;
+      if (column?.valueType === 'option') {
+        visible = !data.hideAllOperation;
+      } else if (isNullValue(visible)) {
+        visible = true;
+      }
+
+      let isRowKey = column?.isRowKey;
+      if (column.dataIndex === data?.rowKey && data?.rowKey) {
+        isRowKey = true;
+      }
+      data.columns[index] = {
+        ...data.columns[index],
+        isRowKey,
+        visible
+      };
     });
 
   const addOutputAndRel = (
@@ -142,6 +159,12 @@ export default function ({ data, input, output }: UpgradeParams<Data>): boolean 
   addOutputAndRel(OUTPUTS.SetDataSourceDone, '数据', INPUTS.SetDataSource);
   addOutputAndRel(OUTPUTS.AddRowDone, '新增一行完成', INPUTS.AddRow);
   addOutputAndRel(OUTPUTS.SetColConfigDone, '设置列配置完成', INPUTS.SetColConfig);
+
+  if (isNullValue(data?.hasUpdateRowKey)) {
+    data.hasUpdateRowKey = 0;
+  }
+
+  setDataSchema({ data, output, input, slot });
 
   return true;
 }
