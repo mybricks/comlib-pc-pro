@@ -299,7 +299,7 @@ export default function (props: RuntimeParams<Data>) {
       }
 
       if (data.useChangeEvent && outputs[OUTPUTS.ChangeEvent]) {
-        debouncedChangeEventOutput(dataSource);
+        debouncedChangeEventOutput(formatDataSource(dataSource, data.columns, rowKey));
       }
     }
   }, [dataSource]);
