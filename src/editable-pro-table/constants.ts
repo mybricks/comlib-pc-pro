@@ -243,6 +243,9 @@ export type ColumnItem = ProColumns<any> & {
 
   isRowKey?: boolean;
   visible?: boolean;
+
+  dateOutputType?: string;
+  dateCustomFormatter?: string;
 };
 export interface Data {
   headerTitle: string;

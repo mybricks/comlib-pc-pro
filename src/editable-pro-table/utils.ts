@@ -80,6 +80,70 @@ export const addChildByKey = (
     })
     .filter(Boolean) as DataSourceType[];
 };
+
+//输出数据变形函数
+const transCalculation = (val, type: string, formatter: string) => {
+  let transValue = val || '';
+  if (val) {
+    switch (type) {
+      //1. 年-月-日 时:分:秒
+      case 'Y-MM-DD HH:mm:ss':
+        transValue = moment(val).format('YYYY-MM-DD HH:mm:ss');
+        break;
+      //2. 年-月-日 时:分
+      case 'Y-MM-DD HH:mm':
+        transValue = moment(val).format('Y-MM-DD HH:mm');
+        break;
+      //3. 年-月-日
+      case 'Y-MM-DD':
+        transValue = moment(val).format('Y-MM-DD');
+        break;
+      //4. 年-月
+      case 'Y-MM':
+        transValue = moment(val).format('Y-MM');
+        break;
+      //5. 年
+      case 'Y':
+        transValue = moment(val).format('Y');
+        break;
+      //6. 时间戳
+      case 'timeStamp':
+        transValue = Number(val);
+        break;
+      //7. 自定义
+      case 'custom':
+        if (formatter) {
+          let customDate = moment(val).format(formatter);
+          if (customDate.indexOf('Su')) {
+            customDate = customDate.replace('Su', '天');
+          }
+          if (customDate.indexOf('Mo')) {
+            customDate = customDate.replace('Mo', '一');
+          }
+          if (customDate.indexOf('Tu')) {
+            customDate = customDate.replace('Tu', '二');
+          }
+          if (customDate.indexOf('We')) {
+            customDate = customDate.replace('We', '三');
+          }
+          if (customDate.indexOf('Th')) {
+            customDate = customDate.replace('Th', '四');
+          }
+          if (customDate.indexOf('Fr')) {
+            customDate = customDate.replace('Fr', '五');
+          }
+          if (customDate.indexOf('Sa')) {
+            customDate = customDate.replace('Sa', '六');
+          }
+          transValue = customDate;
+        }
+        break;
+      default:
+        transValue = moment(val).format(type);
+    }
+  }
+  return transValue;
+};
 // 格式化数据
 export const formatDataSource = (
   ds: DataSourceType[],
@@ -90,18 +154,20 @@ export const formatDataSource = (
     .filter((item) => item.valueType === TypeEnum.Date || item.valueType === TypeEnum.DateRange)
     .map((item) => ({
       key: item.dataIndex as string,
-      format: item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD'
+      format: item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD',
+      type: item?.dateOutputType || (item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD'),
+      formatter: item?.dateCustomFormatter || 'Y-MM-DD'
     }));
   if (Array.isArray(ds)) {
     ds.forEach((item) => {
       if (item[rowKey] === undefined) {
         item[rowKey] = uuid();
       }
-      dateDataIndex.forEach(({ key, format }) => {
+      dateDataIndex.forEach(({ key, format, type, formatter }) => {
         if (item[key]) {
           item[key] = Array.isArray(item[key])
-            ? item[key].map((str) => moment(str, format))
-            : moment(item[key], format);
+            ? item[key].map((str) => transCalculation(moment(str, format), type, formatter))
+            : transCalculation(moment(item[key], format), type, formatter);
         }
       });
       if (item.children) {
