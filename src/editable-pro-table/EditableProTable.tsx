@@ -56,6 +56,11 @@ import './antd.variable.without.theme.min.css';
 // import css from '@ant-design/pro-table/dist/table.min.css';
 
 const { RangePicker } = DatePicker;
+
+const MyDatePicker = (props) => {
+  return <DatePicker {...props} value={moment(props.value)} />;
+};
+
 export default function (props: RuntimeParams<Data>) {
   const { data, slots, inputs, outputs, env, logger, title } = props;
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -571,17 +576,25 @@ export default function (props: RuntimeParams<Data>) {
           item.renderFormItem = (schema, config) => {
             const { entity } = schema as any;
             const { record } = config;
+
             return (
-              <DatePicker
+              <MyDatePicker
                 disabled={runDisableScript(disableScript, record || entity)}
                 placeholder={'请选择'}
                 showTime={item.showTime}
                 {...(item.fieldProps as any)}
               />
+              // <DatePicker
+              //   disabled={runDisableScript(disableScript, record || entity)}
+              //   placeholder={'请选择'}
+              //   showTime={item.showTime}
+              //   {...(item.fieldProps as any)}
+              // />
             );
           };
           item.render = (_, record, idx, action) => {
             const format = item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD';
+
             const value = record[`${item.dataIndex}`]
               ? moment(record[`${item.dataIndex}`]).format(format)
               : '-';
@@ -860,7 +873,7 @@ export default function (props: RuntimeParams<Data>) {
     return getColumns(dataSource).filter(
       (item) => item?.visible === true || item?.visible === undefined
     );
-  }, [data.columns, data.hideAllOperation]);
+  }, [dataSource, data.columns, data.hideAllOperation]);
 
   return (
     <div
