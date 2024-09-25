@@ -82,7 +82,7 @@ export const addChildByKey = (
 };
 
 //输出数据变形函数
-const transCalculation = (val, type: string, formatter: string) => {
+export const transCalculation = (val, type: string, formatter: string) => {
   let transValue = val || '';
   if (val) {
     switch (type) {
@@ -148,7 +148,8 @@ const transCalculation = (val, type: string, formatter: string) => {
 export const formatDataSource = (
   ds: DataSourceType[],
   columns: ColumnItem[],
-  rowKey: string = ROW_KEY
+  rowKey: string = ROW_KEY,
+  formatDate = false
 ) => {
   const dateDataIndex = columns
     .filter((item) => item.valueType === TypeEnum.Date || item.valueType === TypeEnum.DateRange)
@@ -166,8 +167,14 @@ export const formatDataSource = (
       dateDataIndex.forEach(({ key, format, type, formatter }) => {
         if (item[key]) {
           item[key] = Array.isArray(item[key])
-            ? item[key].map((str) => transCalculation(moment(str, format), type, formatter))
-            : transCalculation(moment(item[key], format), type, formatter);
+            ? item[key].map((str) =>
+                formatDate
+                  ? transCalculation(moment(str, format), type, formatter)
+                  : moment(str, format)
+              )
+            : formatDate
+            ? transCalculation(moment(item[key], format), type, formatter)
+            : moment(item[key], format);
         }
       });
       if (item.children) {

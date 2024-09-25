@@ -44,7 +44,8 @@ import {
   runDisableScript,
   isNullValue,
   uuid,
-  getTemplateRenderScript
+  getTemplateRenderScript,
+  transCalculation
 } from './utils';
 
 import { EditableProTable } from '@ant-design/pro-table';
@@ -104,8 +105,9 @@ export default function (props: RuntimeParams<Data>) {
           const dsKey = Object.keys(val);
           if (Array.isArray(val?.dataSource)) {
             const dataSource = formatDataSource(val?.dataSource, data.columns, rowKey);
+            const outputDataSource = formatDataSource(val?.dataSource, data.columns, rowKey, true);
             setDataSource(dataSource);
-            handleOutputFn(relOutputs, outputs, OUTPUTS.SetDataSourceDone, dataSource);
+            handleOutputFn(relOutputs, outputs, OUTPUTS.SetDataSourceDone, outputDataSource);
           } else {
             const arrayItemKey = dsKey.filter((key) => !!Array.isArray(val[key]));
             if (arrayItemKey.length === 1) {
@@ -133,8 +135,9 @@ export default function (props: RuntimeParams<Data>) {
         } else {
           if (Array.isArray(val)) {
             const dataSource = formatDataSource(val, data.columns, rowKey);
+            const outputDataSource = formatDataSource(val, data.columns, rowKey, true);
             setDataSource(dataSource);
-            handleOutputFn(relOutputs, outputs, OUTPUTS.SetDataSourceDone, dataSource);
+            handleOutputFn(relOutputs, outputs, OUTPUTS.SetDataSourceDone, outputDataSource);
           } else {
             console.error('可编辑表格：输入数据格式非法，输入数据必须是数组');
             logger?.error?.('输入数据格式非法，输入数据必须是数组');
@@ -305,7 +308,7 @@ export default function (props: RuntimeParams<Data>) {
       }
 
       if (data.useChangeEvent && outputs[OUTPUTS.ChangeEvent]) {
-        debouncedChangeEventOutput(formatDataSource(dataSource, data.columns, rowKey));
+        debouncedChangeEventOutput(formatDataSource(dataSource, data.columns, rowKey, true));
       }
     }
   }, [dataSource]);
@@ -594,12 +597,16 @@ export default function (props: RuntimeParams<Data>) {
             );
           };
           item.render = (_, record, idx, action) => {
-            const format = item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD';
+            const type =
+              item?.dateOutputType || (item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD');
 
             const value = record[`${item.dataIndex}`]
-              ? moment(record[`${item.dataIndex}`]).format(format)
-              // : '-';
-              : '';
+              ? transCalculation(
+                  record[`${item.dataIndex}`],
+                  type,
+                  item?.dateCustomFormatter || 'Y-MM-DD'
+                )
+              : '-';
 
             return columnsRender(value, item.ellipsis);
           };
@@ -714,11 +721,12 @@ export default function (props: RuntimeParams<Data>) {
             );
           };
           item.render = (_, record, idx, action) => {
-            const value = Array.isArray(record[`${item.dataIndex}`])
-              ? record[`${item.dataIndex}`].map((time) => moment(time).format(format)).join(' 至 ')
-              // : '-';
-              : '';
             const format = item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD';
+            const value = Array.isArray(record[`${item.dataIndex}`])
+              ? record[`${item.dataIndex}`]
+                  .map((time: string | moment.MomentInput) => moment(time).format(format))
+                  .join(' 至 ')
+              : '-';
             return columnsRender(value, item.ellipsis);
           };
           break;
