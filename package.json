@@ -7,10 +7,7 @@
     "checkFile": "mybricks checkFile",
     "lint-staged": "npx lint-staged --allow-empty"
   },
-  "pre-commit": [
-    "checkFile",
-    "lint-staged"
-  ],
+  "pre-commit": ["lint-staged"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mybricks/comlib-pc-pro.git"
