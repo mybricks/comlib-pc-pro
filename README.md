@@ -11,6 +11,7 @@ PC扩展组件库，基于Antd ProComponents进行的封装开发
 ### 环境
 
 [Vscode开发插件](https://marketplace.visualstudio.com/items?itemName=Mybricks.Mybricks)
+[开发文档](https://docs.mybricks.world/)
 
 ### 安装依赖 
 
