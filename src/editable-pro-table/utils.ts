@@ -12,6 +12,8 @@ export function setCol(data: Data, focusArea: any, key: string, value: any) {
   const item = data.columns[idx];
   item[key] = value;
   data.columns[idx] = { ...item };
+
+  data.columns = [...data.columns];
 }
 export function getCol(data: Data, focusArea, key) {
   const idx = getThIdx(focusArea);

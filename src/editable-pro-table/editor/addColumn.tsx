@@ -167,15 +167,22 @@ const getAddColumnEditor = ({ data, output, input, slot, env }: EditorResult<Dat
 
               const slotId = item?.slotId || uuid();
               const slotEditId = item?.slotEditId || uuid();
-              if (valueType && (valueType as string) === TypeEnum.Slot) {
+              if (
+                valueType &&
+                (valueType as string) === TypeEnum.Slot &&
+                !slot.get(slotId) &&
+                !slot.get(slotEditId)
+              ) {
                 item.slotId = slotId;
                 item.slotEditId = slotEditId;
+
                 slot.add({
                   id: slotId,
                   title: `${title}列`,
                   type: 'scope',
                   inputs: slotEditInput
                 });
+
                 slot.add({
                   id: slotEditId,
                   title: `${title}列编辑态`,

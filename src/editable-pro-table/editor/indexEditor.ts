@@ -20,6 +20,8 @@ export default {
           const item = data.columns[idx];
           data.columns.splice(idx, 1);
           data.columns.splice(idx - 1, 0, item);
+
+          data.columns = [...data.columns];
         }
       }
     },
@@ -37,6 +39,8 @@ export default {
           const item = data.columns[idx];
           data.columns.splice(idx, 1);
           data.columns.splice(idx + 1, 0, item);
+
+          data.columns = [...data.columns];
         }
       }
     },
@@ -50,6 +54,8 @@ export default {
           data.columns[idx].slotId && slot.remove(data.columns[idx].slotId);
           data.columns[idx].slotEditId && slot.remove(data.columns[idx].slotEditId);
           data.columns.splice(idx, 1);
+
+          data.columns = [...data.columns];
         }
       }
     }

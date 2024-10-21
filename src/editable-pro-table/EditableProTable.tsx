@@ -598,8 +598,8 @@ export default function (props: RuntimeParams<Data>) {
 
             const value = record[`${item.dataIndex}`]
               ? moment(record[`${item.dataIndex}`]).format(format)
-              // : '-';
-              : '';
+              : // : '-';
+                '';
 
             return columnsRender(value, item.ellipsis);
           };
@@ -716,8 +716,8 @@ export default function (props: RuntimeParams<Data>) {
           item.render = (_, record, idx, action) => {
             const value = Array.isArray(record[`${item.dataIndex}`])
               ? record[`${item.dataIndex}`].map((time) => moment(time).format(format)).join(' 至 ')
-              // : '-';
-              : '';
+              : // : '-';
+                '';
             const format = item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD';
             return columnsRender(value, item.ellipsis);
           };
