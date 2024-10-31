@@ -2,6 +2,8 @@ import { ProColumns } from '@ant-design/pro-table';
 import moment from 'moment';
 import { uuid, getTemplateRenderScript, runScript } from '../utils';
 import { ColumnItem, Data, DataSourceType, ROW_KEY, TypeEnum } from './constants';
+import { runJs } from '../../package/com-utils';
+
 export * from '../utils';
 
 export const getThIdx = (focusArea) => {
@@ -289,6 +291,18 @@ export const formatColumn = (
                   validateValueExisting(value, item.dataIndex);
               }
               break;
+
+            // 代码校验
+            case 'code':
+              if (rules.status) {
+                temp.validator = (rule: any, value: any) => {
+                  return new Promise((resolve, reject) => {
+                    runJs(rules.code, [value, { success: resolve, error: reject }]);
+                  });
+                };
+              }
+              break;
+
             default:
               break;
           }

@@ -1,5 +1,7 @@
 import { Data, TypeEnum } from '../../constants';
 import { checkType, getCol, getSuggestions, run, setCol } from '../../utils';
+import { baseVerificationRules } from '../../constants';
+import { defaultValidatorExample } from '../../../utils';
 
 export default (data: Data) => ({
   title: '状态配置',
@@ -62,6 +64,69 @@ export default (data: Data) => ({
             JSON.stringify(getCol(data, focusArea, 'VerificationRules'))
           );
           newVerificationRules[1].status = value;
+          setCol(data, focusArea, 'VerificationRules', newVerificationRules);
+        }
+      }
+    },
+    {
+      title: '代码校验',
+      type: 'Switch',
+      ifVisible({ data, focusArea }: EditorResult<Data>) {
+        return !!getCol(data, focusArea, 'VerificationRules');
+      },
+      value: {
+        get({ data, focusArea }) {
+          return getCol(data, focusArea, 'VerificationRules')?.[2]?.status || false;
+        },
+        set({ data, focusArea }, value) {
+          const newVerificationRules = JSON.parse(
+            JSON.stringify(getCol(data, focusArea, 'VerificationRules'))
+          );
+
+          // 兼容
+          if (!newVerificationRules[2]) {
+            newVerificationRules[2] = {
+              ...baseVerificationRules[2]
+            };
+          }
+
+          newVerificationRules[2].status = value;
+          setCol(data, focusArea, 'VerificationRules', newVerificationRules);
+        }
+      }
+    },
+    {
+      title: '编辑校验代码',
+      type: 'Code',
+      description: `编辑校验代码，支持自定义校验逻辑`,
+      ifVisible({ data, focusArea }: EditorResult<Data>) {
+        return !!getCol(data, focusArea, 'VerificationRules')?.[2]?.status;
+      },
+      options: {
+        babel: true,
+        comments: defaultValidatorExample,
+        theme: 'light',
+        minimap: {
+          enabled: false
+        },
+        lineNumbers: 'on',
+        eslint: {
+          parserOptions: {
+            ecmaVersion: '2020',
+            sourceType: 'module'
+          }
+        },
+        autoSave: true
+      },
+      value: {
+        get({ data, focusArea }: EditorResult<Data>) {
+          return getCol(data, focusArea, 'VerificationRules')?.[2]?.code || '';
+        },
+        set({ data, focusArea }: EditorResult<Data>, value: string) {
+          const newVerificationRules = JSON.parse(
+            JSON.stringify(getCol(data, focusArea, 'VerificationRules'))
+          );
+          newVerificationRules[2].code = value;
           setCol(data, focusArea, 'VerificationRules', newVerificationRules);
         }
       }

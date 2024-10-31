@@ -45,6 +45,16 @@ const isNullValue = (value: any) => {
   return value === null || value === undefined || value === '';
 };
 
+export const defaultValidatorExample =
+  encodeURIComponent(`export default function(value,  { success, error }) {
+  if (!value) {
+    error("内容不能为空");
+  } else {
+    success();
+  }
+}
+`);
+
 export { uuid, unitConversion, deepCopy, isNullValue };
 export * from './upgrade';
 export * from './runExpCodeScript';

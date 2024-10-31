@@ -2,6 +2,7 @@ import { ProColumns } from '@ant-design/pro-table';
 import { ButtonType } from 'antd/lib/button';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { Data as PaginationData } from './components/Paginator/constants';
+import { defaultValidatorExample } from './utils';
 
 export const INPUTS = {
   SetDataSource: 'value',
@@ -187,6 +188,7 @@ export const ROW_KEY = '_key';
 export enum RuleKeys {
   REQUIRED = 'required',
   REPEAT = 'repeat',
+  CODE = 'code',
   CUSTOM_EVENT = 'customEvent'
 }
 
@@ -210,6 +212,13 @@ export const baseVerificationRules: Array<VerificationRuleType> = [
     key: RuleKeys.REPEAT,
     title: '值不重复',
     message: '该字段值不能重复',
+    status: false
+  },
+  {
+    key: RuleKeys.CODE,
+    title: '代码校验',
+    message: '代码校验失败',
+    code: defaultValidatorExample,
     status: false
   }
 ];
