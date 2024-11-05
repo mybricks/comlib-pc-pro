@@ -22,7 +22,9 @@ export const INPUTS = {
   SlotColValue: 'slotColValue',
   RowIndex: 'rowIndex',
 
-  DynamicColumns: 'dynamicColumns'
+  DynamicColumns: 'dynamicColumns',
+
+  CancelRow: 'cancelRow',
 };
 
 export const OUTPUTS = {
@@ -42,7 +44,9 @@ export const OUTPUTS = {
   SetColConfigDone: 'colsCfg',
   AddRowDone: 'addRow',
 
-  SetOpConfigDone: 'operationConfig'
+  SetOpConfigDone: 'operationConfig',
+
+  CancelRowDone: 'cancelRow',
 };
 
 export enum TypeEnum {

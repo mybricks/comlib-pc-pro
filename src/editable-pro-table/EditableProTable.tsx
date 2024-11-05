@@ -66,6 +66,7 @@ export default function (props: RuntimeParams<Data>) {
   const { data, slots, inputs, outputs, env, logger, title } = props;
   const wrapRef = useRef<HTMLDivElement>(null);
   const actionRef = useRef<ActionType>();
+  const defaultDomsRef = useRef<any>({});
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([]);
   const [dataSource, setDataSource] = useState<DataSourceType[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
@@ -95,6 +96,27 @@ export default function (props: RuntimeParams<Data>) {
       if (!data.fixedHeader && data.scroll) {
         data.scroll.y = undefined;
       }
+      inputs[INPUTS.CancelRow]((val, relOutputs: any) => {
+        setEditableRowKeys((keys) => {
+          const defaultDoms = defaultDomsRef.current;
+          // @ts-ignore
+          const newLineRecord = actionRef.current?.newLineRecord;
+
+          keys.forEach((key) => {
+            if (newLineRecord?.defaultValue._key === key) {
+              // 删除
+              defaultDoms[key]?.cancel.props.onDelete(key);
+            } else {
+              // 取消
+              actionRef.current?.cancelEditable(key);
+            }
+          });
+
+          return [];
+        });
+
+        handleOutputFn(relOutputs, outputs, OUTPUTS.CancelRowDone, val);
+      });
       inputs[INPUTS.SetColConfig]((val: any, relOutputs: any) => {
         setColsCfg(val);
         handleOutputFn(relOutputs, outputs, OUTPUTS.SetColConfigDone, val);
@@ -835,6 +857,7 @@ export default function (props: RuntimeParams<Data>) {
 
   const actionRender = useCallback(
     (row, config, defaultDoms) => {
+      defaultDomsRef.current[row._key] = defaultDoms;
       return [
         !data.hideSaveBtn && defaultDoms.save && (
           <Button type="link" size="small" className="save">
@@ -877,6 +900,15 @@ export default function (props: RuntimeParams<Data>) {
       (item) => item?.visible === true || item?.visible === undefined
     );
   }, [dataSource, data.columns, data.hideAllOperation]);
+
+  useEffect(() => {
+    Object.keys(defaultDomsRef.current).forEach((key) => {
+      if (!editableKeys.includes(key)) {
+        // 没有删除
+        delete defaultDomsRef.current[key];
+      }
+    });
+  }, [editableKeys]);
 
   return (
     <div

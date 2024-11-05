@@ -3,7 +3,7 @@
   "namespace": "mybricks.pro-pc.editable-pro-table",
   "author": "MyBricks",
   "author_name": "MyBricks",
-  "version": "1.0.50",
+  "version": "1.0.51",
   "description": "",
   "icon": "./icon.svg",
   "data": "./data.json",
@@ -53,6 +53,14 @@
       "id": "addRow",
       "title": "新增一行",
       "rels": ["addRow"],
+      "schema": {
+        "type": "any"
+      }
+    },
+    {
+      "id": "cancelRow",
+      "title": "取消当前编辑行",
+      "rels": ["cancelRow"],
       "schema": {
         "type": "any"
       }
@@ -112,6 +120,13 @@
     {
       "id": "addRow",
       "title": "新增一行完成",
+      "schema": {
+        "type": "any"
+      }
+    },
+    {
+      "id": "cancelRow",
+      "title": "取消当前编辑行完成",
       "schema": {
         "type": "any"
       }

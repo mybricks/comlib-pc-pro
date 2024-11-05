@@ -164,6 +164,13 @@ export default function ({ data, input, output, slot }: UpgradeParams<Data>): bo
     data.hasUpdateRowKey = 0;
   }
 
+  if (!input.get(INPUTS.CancelRow)) {
+    input.add(INPUTS.CancelRow, '取消当前编辑行', { type: 'any' }, '取消当前编辑行');
+    const getTagsInput = input.get(INPUTS.CancelRow);
+    getTagsInput.setRels([OUTPUTS.CancelRowDone]);
+    addOutputAndRel(OUTPUTS.CancelRowDone, '取消当前编辑行完成', INPUTS.CancelRow);
+  }
+
   setDataSchema({ data, output, input, slot });
 
   return true;
