@@ -159,7 +159,6 @@ export default function ({ data, input, output, slot }: UpgradeParams<Data>): bo
   addOutputAndRel(OUTPUTS.SetDataSourceDone, '数据', INPUTS.SetDataSource);
   addOutputAndRel(OUTPUTS.AddRowDone, '新增一行完成', INPUTS.AddRow);
   addOutputAndRel(OUTPUTS.SetColConfigDone, '设置列配置完成', INPUTS.SetColConfig);
-  addOutputAndRel(OUTPUTS.SetColValueDone, '设置列值完成', INPUTS.SetColValue);
 
   if (isNullValue(data?.hasUpdateRowKey)) {
     data.hasUpdateRowKey = 0;
@@ -170,6 +169,29 @@ export default function ({ data, input, output, slot }: UpgradeParams<Data>): bo
     const getTagsInput = input.get(INPUTS.CancelRow);
     getTagsInput.setRels([OUTPUTS.CancelRowDone]);
     addOutputAndRel(OUTPUTS.CancelRowDone, '取消当前编辑行完成', INPUTS.CancelRow);
+  }
+
+  if (!input.get(INPUTS.SetColValue)) {
+    input.add(INPUTS.SetColValue, '修改列值', { 
+      "type": "object",
+      "properties": {
+        "dataIndex": {
+          "type": "string",
+          "desc": "目标列的字段"
+        },
+        "value": {
+          "type": "any",
+          "desc": "值"
+        },
+        "rowKey": {
+          "type": "string",
+          "desc": "当前行的key"
+        }
+      } 
+    }, '修改列值');
+    const setColValueInput = input.get(INPUTS.SetColValue);
+    setColValueInput.setRels([OUTPUTS.SetColValueDone]);
+    addOutputAndRel(OUTPUTS.SetColValueDone, '设置列值完成', INPUTS.SetColValue);
   }
 
   setDataSchema({ data, output, input, slot });
