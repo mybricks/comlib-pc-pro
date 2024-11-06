@@ -42,6 +42,28 @@
       }
     },
     {
+      "id": "colValue",
+      "title": "修改列值",
+      "rels": ["colValue"],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "dataIndex": {
+            "type": "string",
+            "desc": "目标列的字段"
+          },
+          "value": {
+            "type": "any",
+            "desc": "值"
+          },
+          "rowKey": {
+            "type": "string",
+            "desc": "当前行的key"
+          }
+        }
+      }
+    },
+    {
       "id": "submit",
       "title": "提交数据",
       "rels": ["submit"],
@@ -115,6 +137,23 @@
       "title": "设置列配置完成",
       "schema": {
         "type": "any"
+      }
+    },
+    {
+      "id": "colValue",
+      "title": "设置列值完成",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "dataIndex": {
+            "type": "string",
+            "desc": "目标列的字段"
+          },
+          "value": {
+            "type": "any",
+            "desc": "值"
+          }
+        }
       }
     },
     {

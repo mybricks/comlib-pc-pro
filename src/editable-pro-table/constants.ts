@@ -8,6 +8,7 @@ export const INPUTS = {
   SetDataSource: 'value',
   Submit: 'submit',
   SetColConfig: 'colsCfg',
+  SetColValue: 'colValue',
   SetOpConfig: 'operationConfig',
 
   AddRow: 'addRow',
@@ -36,12 +37,15 @@ export const OUTPUTS = {
 
   ChangeEvent: 'changeEvent',
 
+  ColumnChangeEvent: 'columnChangeEvent',
+
   EditTableData: 'editTableData',
 
   StateSwitching: 'stateSwitching',
 
   SetDataSourceDone: 'value',
   SetColConfigDone: 'colsCfg',
+  SetColValueDone: 'colValue',
   AddRowDone: 'addRow',
 
   SetOpConfigDone: 'operationConfig',
@@ -299,6 +303,8 @@ export interface Data {
   useDelCallback?: boolean;
 
   useChangeEvent?: boolean;
+
+  useColumnChangeEvent?: boolean;
 
   clickChangeToedit?: boolean;
 

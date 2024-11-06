@@ -12,6 +12,7 @@ import selectEditor from './selectEditor';
 import proEditor from './proEditor';
 import PaginatorEditor from './paginator';
 import { uuid } from '../../../utils';
+import columnEvents from './columnEvents';
 
 export const COLUMN_EDITORS_CLASS_KEY =
   '.ant-table-thead .ant-table-cell:not(.ant-table-selection-column):not(.ant-table-cell-scrollbar):not(.ant-table-row-expand-icon-cell):not(.column-draggle)';
@@ -76,7 +77,8 @@ export default {
         operationRowEditor(data, output),
         switchEditor,
         dateEditor,
-        selectEditor
+        selectEditor,
+        columnEvents
       ];
 
       return {

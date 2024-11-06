@@ -345,6 +345,20 @@ export const Schemas = {
       properties: getColumnsDataSchema(data.columns, data.rowKey)
     }
   }),
+  ColumnChangeEvent: () => ({
+    title: '列值',
+    type: 'object',
+    properties: {
+      rowKey: {
+        desc: '当前行的key',
+        type: 'string'
+      },
+      value: {
+        desc: '值',
+        type: 'any'
+      }
+    }
+  }),
   StateSwitching: (data) => ({
     type: 'object',
     properties: {

@@ -159,6 +159,7 @@ export default function ({ data, input, output, slot }: UpgradeParams<Data>): bo
   addOutputAndRel(OUTPUTS.SetDataSourceDone, '数据', INPUTS.SetDataSource);
   addOutputAndRel(OUTPUTS.AddRowDone, '新增一行完成', INPUTS.AddRow);
   addOutputAndRel(OUTPUTS.SetColConfigDone, '设置列配置完成', INPUTS.SetColConfig);
+  addOutputAndRel(OUTPUTS.SetColValueDone, '设置列值完成', INPUTS.SetColValue);
 
   if (isNullValue(data?.hasUpdateRowKey)) {
     data.hasUpdateRowKey = 0;

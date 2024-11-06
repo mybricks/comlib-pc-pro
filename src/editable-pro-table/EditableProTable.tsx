@@ -67,6 +67,7 @@ export default function (props: RuntimeParams<Data>) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const actionRef = useRef<ActionType>();
   const defaultDomsRef = useRef<any>({});
+  const editableFormRef = useRef<any>();
   const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([]);
   const [dataSource, setDataSource] = useState<DataSourceType[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
@@ -120,6 +121,14 @@ export default function (props: RuntimeParams<Data>) {
       inputs[INPUTS.SetColConfig]((val: any, relOutputs: any) => {
         setColsCfg(val);
         handleOutputFn(relOutputs, outputs, OUTPUTS.SetColConfigDone, val);
+      });
+      inputs[INPUTS.SetColValue]((val: any, relOutputs: any) => {
+        const value = val?.value;
+        const dataIndex = val?.dataIndex;
+        const key = val?.rowKey;
+
+        editableFormRef.current?.setRowData?.(key, { [dataIndex]: value });
+        handleOutputFn(relOutputs, outputs, OUTPUTS.SetColValueDone, val);
       });
       inputs[INPUTS.SetDataSource]((val: any, relOutputs: any) => {
         if (useBackendPage && val && typeof val === 'object') {
@@ -377,6 +386,15 @@ export default function (props: RuntimeParams<Data>) {
     );
   }, []);
 
+  const handleValueChange = debounce((value, schema, config) => {
+    if (schema.useColumnChangeEvent) {
+      outputs[OUTPUTS.ColumnChangeEvent]({
+        value,
+        rowKey: config?.record?.[rowKey]
+      });
+    }
+  }, 200);
+
   const getColumns = (dataSource: DataSourceType[]) => {
     const col = formatColumn(data, env, colsCfg, validateValueExisting);
     return col.map((item, colIdx) => {
@@ -606,6 +624,7 @@ export default function (props: RuntimeParams<Data>) {
                 placeholder={'请选择'}
                 showTime={item.showTime}
                 {...(item.fieldProps as any)}
+                onChange={(value) => handleValueChange(value, schema, config)}
               />
               // <DatePicker
               //   disabled={runDisableScript(disableScript, record || entity)}
@@ -640,6 +659,7 @@ export default function (props: RuntimeParams<Data>) {
                 optionFilterProp={item.optionFilterProp}
                 disabled={runDisableScript(disableScript, record || entity)}
                 {...(item.fieldProps as any)}
+                onChange={(value) => handleValueChange(value, schema, config)}
               />
             );
           };
@@ -661,6 +681,7 @@ export default function (props: RuntimeParams<Data>) {
                 optionFilterProp={item.optionFilterProp}
                 disabled={runDisableScript(disableScript, record || entity)}
                 {...(item.fieldProps as any)}
+                onChange={(value) => handleValueChange(value, schema, config)}
               />
             );
           };
@@ -693,6 +714,7 @@ export default function (props: RuntimeParams<Data>) {
                 treeNodeFilterProp="label"
                 disabled={runDisableScript(disableScript, record || entity)}
                 {...(item.fieldProps as any)}
+                onChange={(value) => handleValueChange(value, schema, config)}
               />
             );
           };
@@ -710,6 +732,7 @@ export default function (props: RuntimeParams<Data>) {
               <Checkbox.Group
                 disabled={runDisableScript(disableScript, record || entity)}
                 {...(item.fieldProps as any)}
+                onChange={(value) => handleValueChange(value, schema, config)}
               />
             );
           };
@@ -732,6 +755,7 @@ export default function (props: RuntimeParams<Data>) {
                 showTime={item.showTime}
                 disabled={runDisableScript(disableScript, record || entity)}
                 {...(item.fieldProps as any)}
+                onChange={(value) => handleValueChange(value, schema, config)}
               />
             );
           };
@@ -752,6 +776,7 @@ export default function (props: RuntimeParams<Data>) {
               <Input
                 disabled={runDisableScript(disableScript, record || entity)}
                 {...(item.fieldProps as any)}
+                onInput={(e) => handleValueChange(e.target.value, schema, config)}
               />
             );
           };
@@ -768,6 +793,7 @@ export default function (props: RuntimeParams<Data>) {
               <InputNumber
                 disabled={runDisableScript(disableScript, record || entity)}
                 {...(item.fieldProps as any)}
+                onChange={(value) => handleValueChange(value, schema)}
               />
             );
           };
@@ -791,6 +817,7 @@ export default function (props: RuntimeParams<Data>) {
                 defaultChecked={defaultChecked}
                 disabled={runDisableScript(disableScript, record || entity)}
                 {...(item.fieldProps as any)}
+                onChange={(value) => handleValueChange(value, schema)}
               />
             );
           };
@@ -922,6 +949,7 @@ export default function (props: RuntimeParams<Data>) {
           {columns?.length > 0 ? (
             <EditableProTable<DataSourceType>
               rowKey={rowKey}
+              editableFormRef={editableFormRef}
               bordered={data.bordered}
               onRow={(record) => {
                 return {
