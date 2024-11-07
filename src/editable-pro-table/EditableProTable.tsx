@@ -793,7 +793,7 @@ export default function (props: RuntimeParams<Data>) {
               <InputNumber
                 disabled={runDisableScript(disableScript, record || entity)}
                 {...(item.fieldProps as any)}
-                onChange={(value) => handleValueChange(value, schema)}
+                onChange={(value) => handleValueChange(value, schema, config)}
               />
             );
           };
@@ -817,7 +817,7 @@ export default function (props: RuntimeParams<Data>) {
                 defaultChecked={defaultChecked}
                 disabled={runDisableScript(disableScript, record || entity)}
                 {...(item.fieldProps as any)}
-                onChange={(value) => handleValueChange(value, schema)}
+                onChange={(value) => handleValueChange(value, schema, config)}
               />
             );
           };
