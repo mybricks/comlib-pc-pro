@@ -26,6 +26,8 @@ export const INPUTS = {
   DynamicColumns: 'dynamicColumns',
 
   CancelRow: 'cancelRow',
+
+  EditableRows: 'editableRows',
 };
 
 export const OUTPUTS = {
@@ -51,6 +53,8 @@ export const OUTPUTS = {
   SetOpConfigDone: 'operationConfig',
 
   CancelRowDone: 'cancelRow',
+
+  EditableRowsDone: 'editableRows',
 };
 
 export enum TypeEnum {

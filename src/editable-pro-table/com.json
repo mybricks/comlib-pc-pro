@@ -3,7 +3,7 @@
   "namespace": "mybricks.pro-pc.editable-pro-table",
   "author": "MyBricks",
   "author_name": "MyBricks",
-  "version": "1.0.53",
+  "version": "1.0.54",
   "description": "",
   "icon": "./icon.svg",
   "data": "./data.json",
@@ -85,6 +85,17 @@
       "rels": ["cancelRow"],
       "schema": {
         "type": "any"
+      }
+    },
+    {
+      "id": "editableRows",
+      "title": "设置正在编辑的行(key)",
+      "rels": ["editableRows"],
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
       }
     }
   ],
@@ -168,6 +179,16 @@
       "title": "取消当前编辑行完成",
       "schema": {
         "type": "any"
+      }
+    },
+    {
+      "id": "editableRows",
+      "title": "设置正在编辑的行完成",
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
       }
     }
   ],

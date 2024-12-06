@@ -97,6 +97,10 @@ export default function (props: RuntimeParams<Data>) {
       if (!data.fixedHeader && data.scroll) {
         data.scroll.y = undefined;
       }
+      inputs[INPUTS.EditableRows]((val, relOutputs: any) => {
+        setEditableRowKeys(val || []);
+        handleOutputFn(relOutputs, outputs, OUTPUTS.EditableRowsDone, val);
+      });
       inputs[INPUTS.CancelRow]((val, relOutputs: any) => {
         setEditableRowKeys((keys) => {
           const defaultDoms = defaultDomsRef.current;
