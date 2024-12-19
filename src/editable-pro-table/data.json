@@ -17,6 +17,7 @@
   "description": "暂无数据",
   "actions": [],
   "rowKey": "_key",
+  "onlyOneAlertMessage": "只能添加一行",
   "useStateSwitching": false,
   "deleteSecondConfirmText": "确定要删除这条数据吗？",
   "saveSecondConfirmText": "确定要保存吗？",

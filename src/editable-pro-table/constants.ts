@@ -317,6 +317,7 @@ export interface Data {
   fixedHeight?: boolean | undefined;
 
   editType: 'single' | 'multiple'; // 可编辑表格的类型，单行编辑或者多行编辑
+  onlyOneAlertMessage: string, //只能新增一行的提示文案
 
   saveText: string; // 保存按钮文案
   deleteText: string; // 删除按钮文案

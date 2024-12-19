@@ -107,7 +107,23 @@ export default [
             data.editType = val ? 'single' : 'multiple';
           }
         }
-      }
+      },
+      {
+        title: '只能新增一行的提示文案',
+        type: 'text',
+        description: '配置新增一行按钮的toast提示文案',
+        ifVisible({ data }: EditorResult<Data>) {
+          return data.editType === 'single';
+        },
+        value: {
+          get({ data }: EditorResult<Data>) {
+            return data.onlyOneAlertMessage;
+          },
+          set({ data }: EditorResult<Data>, val: string) {
+            data.onlyOneAlertMessage = val;
+          }
+        }
+      },
     ]
   },
   {
@@ -220,6 +236,7 @@ export default [
           }
         }
       },
+
       {
         title: '数据变化事件',
         type: '_Event',
