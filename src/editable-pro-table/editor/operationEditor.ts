@@ -109,9 +109,9 @@ export default [
         }
       },
       {
-        title: '只能新增一行的提示文案',
+        title: '单行编辑的提示文案',
         type: 'text',
-        description: '配置新增一行按钮的toast提示文案',
+        description: '配置单行编辑的toast提示文案',
         ifVisible({ data }: EditorResult<Data>) {
           return data.editType === 'single';
         },
