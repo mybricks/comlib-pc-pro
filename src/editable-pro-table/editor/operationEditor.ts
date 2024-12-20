@@ -111,7 +111,7 @@ export default [
       {
         title: '单行编辑的提示文案',
         type: 'text',
-        description: '配置单行编辑的toast提示文案',
+        description: '配置单行编辑的toast提示文案，同新增一行提示',
         ifVisible({ data }: EditorResult<Data>) {
           return data.editType === 'single';
         },

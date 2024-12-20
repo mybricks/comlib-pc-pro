@@ -1047,7 +1047,8 @@ export default function (props: RuntimeParams<Data>) {
                     data.debounceAutoSaveTime ? debounce(cb, data.debounceAutoSaveTime) : cb();
                   }
                 },
-                onlyOneLineEditorAlertMessage: data?.onlyOneAlertMessage
+                onlyOneLineEditorAlertMessage: data?.onlyOneAlertMessage,
+                onlyAddOneLineAlertMessage: data?.onlyOneAlertMessage
               }}
             />
           ) : (
