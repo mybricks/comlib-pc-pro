@@ -196,15 +196,49 @@ export const getAllDsKey = (ds: DataSourceType[], rowKey: string = ROW_KEY): str
   }
   return keys;
 };
+
+// 时间转换
+const dateFormat = (date: any, format: any) => {
+  if (format === "timeStamp") {
+    return moment(date).valueOf()
+  } else {
+    return moment(date).format(format)
+  }
+}
+
 // 格式化提交输出的数据
-export const formatSubmitDataSource = (ds: DataSourceType[]) => {
+export const formatSubmitDataSource = (ds: DataSourceType[], columns: ColumnItem[],) => {
   if (!Array.isArray(ds)) {
     return ds;
   }
+  const dateDataIndex = columns
+    .filter((item) => item.valueType === TypeEnum.Date || item.valueType === TypeEnum.DateRange)
+    .map((item) => {
+      return {
+        key: item.dataIndex,
+        format: item.dateCustomFormatter || "Y-MM-DD"
+      }
+    });
+  
+
+
   return ds.map((item) => {
-    const { _add, children, ...res } = item;
+    const { _add, children, ...other } = item;
+
+    const res = {
+      ...other
+    }
+
+    dateDataIndex.forEach(({ key, format }: any) => {
+      if (res[key]) {
+        res[key] = Array.isArray(res[key])
+          ? res[key].map((str) => dateFormat(str, format))
+          : dateFormat(res[key], format);
+      }
+    });
+
     if (children) {
-      return { ...res, children: formatSubmitDataSource(children) };
+      return { ...res, children: formatSubmitDataSource(children, columns) };
     }
     return { ...res };
   });

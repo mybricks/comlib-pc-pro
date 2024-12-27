@@ -264,7 +264,8 @@ export default function (props: RuntimeParams<Data>) {
             selectedRows: formatSubmitDataSource(
               dataSource.filter((item) => {
                 return selectedRowKeys.includes(item[rowKey]);
-              })
+              }),
+              data.columns
             )
           });
       });
@@ -280,7 +281,7 @@ export default function (props: RuntimeParams<Data>) {
   useEffect(() => {
     if (env.runtime) {
       inputs[INPUTS.Submit]((val, relOutputs) => {
-        relOutputs[OUTPUTS.Submit](formatSubmitDataSource(dataSource));
+        relOutputs[OUTPUTS.Submit](formatSubmitDataSource(dataSource, data.columns));
       });
       inputs[INPUTS.AddRow] &&
         inputs[INPUTS.AddRow]((val: any, relOutputs) => {
@@ -627,6 +628,12 @@ export default function (props: RuntimeParams<Data>) {
                 disabled={runDisableScript(disableScript, record || entity)}
                 placeholder={'请选择'}
                 showTime={item.showTime}
+                picker={item.datePicker || 'date'}
+                format={
+                  item.dateCustomShowFormatter === 'timeStamp'
+                    ? null
+                    : item.dateCustomShowFormatter || 'Y-MM-DD'
+                }
                 {...(item.fieldProps as any)}
                 onChange={(value) => handleValueChange(value, schema, config)}
               />
@@ -639,14 +646,27 @@ export default function (props: RuntimeParams<Data>) {
             );
           };
           item.render = (_, record, idx, action) => {
-            const format = item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD';
+            const dateCustomShowFormatter = item.dateCustomShowFormatter || 'Y-MM-DD';
 
-            const value = record[`${item.dataIndex}`]
-              ? moment(record[`${item.dataIndex}`]).format(format)
-              : // : '-';
-                '';
+            let oriValue = record[`${item.dataIndex}`];
 
-            return columnsRender(value, item.ellipsis);
+            if (oriValue) {
+              if (dateCustomShowFormatter === 'timeStamp') {
+                oriValue = moment(oriValue).valueOf();
+              } else {
+                oriValue = moment(oriValue).format(dateCustomShowFormatter);
+              }
+            }
+
+            return columnsRender(oriValue, item.ellipsis);
+            // const format = item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD';
+
+            // const value = record[`${item.dataIndex}`]
+            //   ? moment(record[`${item.dataIndex}`]).format(format)
+            //   : // : '-';
+            //     '';
+
+            // return columnsRender(value, item.ellipsis);
           };
           break;
         case TypeEnum.Select:
