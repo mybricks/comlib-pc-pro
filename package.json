@@ -1,13 +1,15 @@
 {
   "name": "@mybricks/comlib-pc-pro",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "PC扩展组件库",
   "scripts": {
     "start": "mybricks dev",
     "checkFile": "mybricks checkFile",
     "lint-staged": "npx lint-staged --allow-empty"
   },
-  "pre-commit": ["lint-staged"],
+  "pre-commit": [
+    "lint-staged"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mybricks/comlib-pc-pro.git"
@@ -21,7 +23,8 @@
   "dependencies": {
     "@ant-design/icons": "4.7.0",
     "@ant-design/pro-components": "2.3.33",
-    "antd": "4.21.6"
+    "antd": "4.21.6",
+    "vditor": "^3.10.9"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.178",

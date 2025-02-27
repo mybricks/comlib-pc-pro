@@ -1,0 +1,32 @@
+{
+  "title": "Markdown",
+  "namespace": "mybricks.pro-pc.markdown",
+  "version": "1.0.0",
+  "description": "Markdown",
+  "author": "MyBricks",
+  "author_name": "MyBricks",
+  "runtime": "./runtime.tsx",
+  "data":"./data.json",
+  "editors": "./editors.ts",
+  "inputs": [
+    {
+      "id": "setContent",
+      "title": "内容",
+      "rels": ["setContent"],
+      "schema": {
+        "type": "string"
+      },
+      "desc": "输入Markdown内容"
+    }
+  ],
+  "outputs": [
+    {
+      "id": "setContent",
+      "title": "完成",
+      "schema": {
+        "type": "string"
+      },
+      "desc": "输入内容完成"
+    }
+  ]
+}
