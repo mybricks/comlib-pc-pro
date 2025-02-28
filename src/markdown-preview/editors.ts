@@ -8,13 +8,18 @@ export default {
     options: ['width', 'height']
   },
   ':root': {
-    items: ({}, cate1, cate2) => {
+    items: ({ }, cate1, cate2) => {
       cate1.title = 'Markdown';
       cate1.items = [
         {
           title: '初始内容',
           type: 'textarea',
           description: '初始时的markdown内容',
+          options: {
+            style:{
+              height: 400
+            }
+          },
           value: {
             get({ data }) {
               return data.content
