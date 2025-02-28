@@ -1,6 +1,6 @@
 {
-  "title": "Markdown",
-  "namespace": "mybricks.pro-pc.markdown",
+  "title": "Markdown预览",
+  "namespace": "mybricks.pro-pc.markdown-preview",
   "version": "1.0.1",
   "description": "Markdown",
   "author": "MyBricks",
@@ -11,17 +11,26 @@
   "inputs": [
     {
       "id": "setContent",
-      "title": "内容",
-      "rels": ["setContent"],
+      "title": "设置内容",
+      "rels": ["setContentFinish"],
       "schema": {
         "type": "string"
       },
       "desc": "输入Markdown内容"
+    },
+    {
+      "id": "appendContent",
+      "title": "增加内容",
+      "rels": ["setContentFinish"],
+      "schema": {
+        "type": "string"
+      },
+      "desc": "追加Markdown内容"
     }
   ],
   "outputs": [
     {
-      "id": "setContent",
+      "id": "setContentFinish",
       "title": "完成",
       "schema": {
         "type": "string"

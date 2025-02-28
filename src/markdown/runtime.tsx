@@ -1,7 +1,7 @@
 import React, { useRef, useLayoutEffect, useEffect, useState, useMemo } from 'react';
 
-import Vditor from 'vditor/src/index';
-//import Vditor from 'vditor'
+//import Vditor from 'vditor/src/index';
+import Vditor from 'vditor';
 import 'vditor/dist/index.css';
 
 export default function ({ env, inputs, outputs, data }) {
@@ -27,13 +27,13 @@ export default function ({ env, inputs, outputs, data }) {
         height: '100%',
         //mode: 'wysiwyg',
         toolbarConfig: { hide: data.hideToolbar },
-        toolbar: ['bold'],
+        toolbar: ['bold', 'preview'],
         after: () => {
-          vditor.setValue('`Vditor` 最小代码示例');
+          vditor.setValue(data.content);
+
+          vditorRef.current = vditor;
         }
       });
-
-      vditorRef.current = vditor;
 
       //注册输入项
       inputs['setContent']((val) => {

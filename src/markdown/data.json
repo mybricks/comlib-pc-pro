@@ -1,3 +1,4 @@
 {
-    "hideToolbar": false
+    "content":"这是一段**markdown**内容",
+    "readOnly": false
 }

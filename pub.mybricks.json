@@ -9,8 +9,10 @@
     "./src/editable-pro-table/com.json",
     "./src/json-form/com.json",
     "./src/logic-form/com.json",
-     "./src/markdown/com.json"
+     "./src/markdown/com.json",
+     "./src/markdown-preview/com.json"
   ],
   "externals": [],
-  "tags": "react"
+  "tags": "react",
+  "designerUrl":"https://f2.eckwai.com/kos/nlav12333/mybricks/designer-spa/3.9.201/index.min.js"
 }
