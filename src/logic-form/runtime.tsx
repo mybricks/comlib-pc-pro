@@ -84,7 +84,7 @@ export default function (props: RuntimeParams<Data>) {
   const [operatorsMap, setOperatorsMap] = useState(defaultOperators);
   const [logicConditions, setLogicConditions] = useState<Condition>(getBaseCondition());
   const logicConditionsRef = useRef<Condition>({ ...getBaseCondition() });
-
+  const [disabled, setDisabled] = useState<boolean>(false);
   useLayoutEffect(() => {
     inputs[InputIds.Submit]((val, outputRels) => {
       let success: boolean = true;
@@ -143,6 +143,16 @@ export default function (props: RuntimeParams<Data>) {
       }
       onTriggerChange();
       outputRels[OutputIds.AddGroupDone](val);
+    });
+
+    inputs[InputIds.SetDisabled]?.((val, outputRels) => {
+      setDisabled(true);
+      outputRels[OutputIds.SetDisabledDone](true);
+    });
+
+    inputs[InputIds.SetEnabled]?.((val, outputRels) => {
+      setDisabled(false);
+      outputRels[OutputIds.SetEnabled](false);
     });
   }, []);
 
@@ -309,42 +319,48 @@ export default function (props: RuntimeParams<Data>) {
     return <div className={styles.order}>{index + 1}</div>;
   }, []);
 
-  const Divider = useCallback(({ parentConditionChain, condition, index, showOrder = true }) => {
-    let orderJSX: any = null;
-    if (data.showConditionOrder && parentConditionChain.length) {
-      orderJSX = (
-        <div className={styles.orderBox}>
-          <Order index={index} />
-        </div>
-      );
-    }
+  const Divider = useCallback(
+    ({ parentConditionChain, condition, index, showOrder = true }) => {
+      let orderJSX: any = null;
+      if (data.showConditionOrder && parentConditionChain.length) {
+        orderJSX = (
+          <div className={styles.orderBox}>
+            <Order index={index} />
+          </div>
+        );
+      }
 
-    let joinerJSX: any = null;
-    if (condition.conditions?.length > 1 || data.showJoinerWhenOnlyOneCondition) {
-      joinerJSX = (
+      let joinerJSX: any = null;
+      if (condition.conditions?.length > 1 || data.showJoinerWhenOnlyOneCondition) {
+        joinerJSX = (
+          <div
+            className={styles.whereJoiner}
+            style={{ pointerEvents: disabled ? 'none' : 'auto' }}
+            onClick={(e: any) => {
+              condition.whereJoiner =
+                condition.whereJoiner === SQLWhereJoiner.AND
+                  ? SQLWhereJoiner.OR
+                  : SQLWhereJoiner.AND;
+              onTriggerChange();
+            }}
+          >
+            {condition.whereJoiner === SQLWhereJoiner.AND ? '且' : '或'}
+          </div>
+        );
+      }
+
+      return (
         <div
-          className={styles.whereJoiner}
-          onClick={() => {
-            condition.whereJoiner =
-              condition.whereJoiner === SQLWhereJoiner.AND ? SQLWhereJoiner.OR : SQLWhereJoiner.AND;
-            onTriggerChange();
-          }}
+          className={`${styles.dividerLine} ${joinerJSX ? '' : styles.hidden}`}
+          style={{ marginLeft: marginEm * parentConditionChain.length + 'px' }}
         >
-          {condition.whereJoiner === SQLWhereJoiner.AND ? '且' : '或'}
+          {showOrder && orderJSX}
+          {joinerJSX}
         </div>
       );
-    }
-
-    return (
-      <div
-        className={`${styles.dividerLine} ${joinerJSX ? '' : styles.hidden}`}
-        style={{ marginLeft: marginEm * parentConditionChain.length + 'px' }}
-      >
-        {showOrder && orderJSX}
-        {joinerJSX}
-      </div>
-    );
-  }, []);
+    },
+    [disabled]
+  );
 
   const renderConditions = useCallback(
     ({
@@ -477,65 +493,69 @@ export default function (props: RuntimeParams<Data>) {
                 >
                   {getFormItem(curOperator, condition)}
                 </Form.Item>
-                <Form.Item className={styles.operatorBox}>
-                  {index === 0 ? (
-                    !data.useDeepestLevel || parentConditionChain?.length < data.deepestLevel ? (
-                      <Dropdown
-                        placement="bottomRight"
-                        overlay={
-                          <Menu>
-                            <Menu.Item
-                              key="condition"
-                              onClick={() => addCondition({ parentConditionChain })}
-                            >
-                              条件
-                            </Menu.Item>
-                            <Menu.Item
-                              key="group"
-                              onClick={() => addCondition({ group: true, parentConditionChain })}
-                            >
-                              条件组
-                            </Menu.Item>
-                          </Menu>
-                        }
-                      >
-                        <span className={styles.icon}>
+                {!disabled ? (
+                  <Form.Item className={styles.operatorBox}>
+                    {index === 0 ? (
+                      !data.useDeepestLevel || parentConditionChain?.length < data.deepestLevel ? (
+                        <Dropdown
+                          placement="bottomRight"
+                          overlay={
+                            <Menu>
+                              <Menu.Item
+                                key="condition"
+                                onClick={() => addCondition({ parentConditionChain })}
+                              >
+                                条件
+                              </Menu.Item>
+                              <Menu.Item
+                                key="group"
+                                onClick={() => addCondition({ group: true, parentConditionChain })}
+                              >
+                                条件组
+                              </Menu.Item>
+                            </Menu>
+                          }
+                        >
+                          <span className={styles.icon}>
+                            <PlusOutlined />
+                          </span>
+                        </Dropdown>
+                      ) : (
+                        <span
+                          className={`${styles.icon}`}
+                          onClick={() => addCondition({ parentConditionChain })}
+                        >
                           <PlusOutlined />
                         </span>
-                      </Dropdown>
-                    ) : (
-                      <span
-                        className={`${styles.icon}`}
-                        onClick={() => addCondition({ parentConditionChain })}
-                      >
-                        <PlusOutlined />
-                      </span>
-                    )
-                  ) : null}
-                  <span
-                    className={styles.icon}
-                    onClick={() => removeCondition({ index, parentConditionChain })}
-                  >
-                    <DeleteOutlined />
-                  </span>
-                </Form.Item>
+                      )
+                    ) : null}
+                    <span
+                      className={styles.icon}
+                      onClick={() => removeCondition({ index, parentConditionChain })}
+                    >
+                      <DeleteOutlined />
+                    </span>
+                  </Form.Item>
+                ) : null}
               </div>
             );
           })
           .filter(Boolean) || []
       );
     },
-    [fieldList, operatorsMap]
+    [fieldList, operatorsMap, disabled]
   );
   if (env.edit) {
     return (
-      <Form form={form}>{renderConditions({ conditions: [conditionsWhenEdit as Condition] })}</Form>
+      <Form form={form} disabled={disabled}>
+        {renderConditions({ conditions: [conditionsWhenEdit as Condition] })}
+      </Form>
     );
   }
   return (
     <>
       {logicConditions?.conditions?.length ? (
-        <Form form={form}>
+        <Form form={form} disabled={disabled}>
           {renderConditions({
             conditions: logicConditionsRef.current ? [logicConditionsRef.current] : []
           })}

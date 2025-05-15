@@ -1,7 +1,7 @@
 {
   "title": "逻辑表单",
   "namespace": "mybricks.pro-pc.logic-form",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "逻辑表单",
   "author": "MyBricks",
   "author_name": "MyBricks",
@@ -175,6 +175,24 @@
       "desc": "在最外层添加一个条件组"
     },
     {
+      "id": "setDisabled",
+      "title": "设置禁用",
+      "schema": {
+        "type": "any"
+      },
+      "rels": ["setDisabledDone"],
+      "desc": "禁用逻辑表单项及操作项"
+    },
+    {
+      "id": "setEnabled",
+      "title": "设置启用",
+      "schema": {
+        "type": "any"
+      },
+      "rels": ["setEnabledDone"],
+      "desc": "启用逻辑表单项及操作项"
+    },
+    {
       "id": "submit",
       "title": "提交表单",
       "rels": [
@@ -260,6 +278,20 @@
             }
           }
         }
+      }
+    },
+    {
+      "id": "setEnabledDone",
+      "title": "设置启用完成",
+      "schema": {
+        "type": "any"
+      }
+    },
+    {
+      "id": "setDisabledDone",
+      "title": "设置禁用完成",
+      "schema": {
+        "type": "any"
       }
     },
     {
