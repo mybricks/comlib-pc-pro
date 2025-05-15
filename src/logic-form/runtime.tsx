@@ -152,7 +152,7 @@ export default function (props: RuntimeParams<Data>) {
 
     inputs[InputIds.SetEnabled]?.((val, outputRels) => {
       setDisabled(false);
-      outputRels[OutputIds.SetEnabled](false);
+      outputRels[OutputIds.SetEnabledDone](false);
     });
   }, []);
 

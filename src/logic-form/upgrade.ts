@@ -70,6 +70,26 @@ export default function ({ data, input, output, style }: UpgradeParams<Data>): b
       }
     }
   };
+
+  if (!input.get(InputIds.SetDisabled)) {
+    input.add(InputIds.SetDisabled, '设置禁用', { type: 'any' });
+  }
+  if (!output.get(OutputIds.SetDisabledDone)) {
+    output.add(OutputIds.SetDisabledDone, '设置禁用完成', {"type": "any"});
+  }
+
+  input.get(InputIds.SetDisabled).setRels([OutputIds.SetDisabledDone])
+
+  if (!input.get(InputIds.SetEnabled)) {
+    input.add(InputIds.SetEnabled, '设置启用', { type: 'any' });
+  }
+  if (!output.get(OutputIds.SetEnabledDone)) {
+    output.add(OutputIds.SetEnabledDone, '设置启用完成', {"type": "any"});
+  }
+  input.get(InputIds.SetEnabled).setRels([OutputIds.SetEnabledDone])
+
+
+
   if (!input.get(InputIds.SetOperatorsMap)) {
     input.add(InputIds.SetOperatorsMap, '设置运算符', operatorMapSchema);
   }
