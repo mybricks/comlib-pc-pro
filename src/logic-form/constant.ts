@@ -136,7 +136,7 @@ export const OutputIds = {
 	OnFinishForRels: 'onFinishForRels',
 	AddGroupDone: 'addGroupDone',
 	SetOperatorsMapDone: 'setOperatorsMapDone',
-	SetEnabled:'setEnabled',
+	SetEnabledDone:'setEnabledDone',
 	SetDisabledDone:'setDisabledDone'
 }
 export interface Data {
