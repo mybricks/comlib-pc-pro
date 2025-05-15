@@ -127,13 +127,17 @@ export const InputIds = {
 	SetLogicConditions: 'setLogicConditions',
 	SetFields: 'setFields',
 	SetOperatorsMap: 'setOperatorsMap',
-	AddGroup: 'addGroup'
+	AddGroup: 'addGroup',
+	SetDisabled:'setDisabled',
+	SetEnabled: 'setEnabled'
 }
 
 export const OutputIds = {
 	OnFinishForRels: 'onFinishForRels',
 	AddGroupDone: 'addGroupDone',
 	SetOperatorsMapDone: 'setOperatorsMapDone',
+	SetEnabled:'setEnabled',
+	SetDisabledDone:'setDisabledDone'
 }
 export interface Data {
 	useDeepestLevel: boolean;
