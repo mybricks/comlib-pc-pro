@@ -17,3 +17,14 @@ export function dfs(cb: Function, childKey: string, nodes?: { [key: string]: any
     dfs(cb, childKey, node[childKey]);
   }
 }
+
+export function isEmpty (value){
+  return (
+    value === undefined ||
+    value === null ||
+    (typeof value === 'string' && value.trim() === '') ||
+    (Array.isArray(value) && value.length === 0) ||
+    (typeof value === 'number' && isNaN(value))
+  );
+};
+
