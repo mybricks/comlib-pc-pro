@@ -1,11 +1,4 @@
-import React, {
-  useRef,
-  useLayoutEffect,
-  useCallback,
-  useState,
-  useMemo,
-  ReactElement
-} from 'react';
+import React, { useRef, useLayoutEffect, useCallback, useState, useMemo } from 'react';
 import {
   DatePicker,
   DatePickerProps,
@@ -25,12 +18,11 @@ import {
   FieldDBType,
   InputIds,
   OutputIds,
-  SQLOperator,
   SQLWhereJoiner,
   defaultOperators,
   conditionsWhenEdit
 } from './constant';
-import { getFieldConditionAry, dfs } from './util';
+import { getFieldConditionAry, dfs, isEmpty } from './util';
 import { uuid } from '../utils';
 
 import styles from './styles.less';
@@ -51,6 +43,7 @@ export interface Condition {
   whereJoiner?: SQLWhereJoiner;
   validateStatus?: 'success' | 'warning' | 'error' | 'validating';
   errorMsg?: string;
+  notNeedValue?: boolean;
 }
 
 interface Field {
@@ -90,7 +83,7 @@ export default function (props: RuntimeParams<Data>) {
       let success: boolean = true;
       dfs(
         (node: Condition) => {
-          if (!node.conditions && !node.value) {
+          if (!node.conditions && isEmpty(node.value) && !node?.notNeedValue) {
             node.validateStatus = 'error';
             node.errorMsg = '内容不能为空';
             success = false;
@@ -466,6 +459,7 @@ export default function (props: RuntimeParams<Data>) {
 
                       if (curOperator?.notNeedValue) {
                         condition.value = undefined;
+                        condition.notNeedValue = true;
                       }
 
                       onTriggerChange();
