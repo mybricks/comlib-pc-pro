@@ -28,6 +28,8 @@ export const INPUTS = {
   CancelRow: 'cancelRow',
 
   EditableRows: 'editableRows',
+
+  GetValue: 'getValue',
 };
 
 export const OUTPUTS = {
@@ -55,6 +57,8 @@ export const OUTPUTS = {
   CancelRowDone: 'cancelRow',
 
   EditableRowsDone: 'editableRows',
+
+  GetValue: 'getValue',
 };
 
 export enum TypeEnum {

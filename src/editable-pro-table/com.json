@@ -3,7 +3,7 @@
   "namespace": "mybricks.pro-pc.editable-pro-table",
   "author": "MyBricks",
   "author_name": "MyBricks",
-  "version": "1.0.57",
+  "version": "1.0.59",
   "description": "",
   "icon": "./icon.svg",
   "data": "./data.json",
@@ -31,6 +31,14 @@
             }
           }
         }
+      }
+    },
+    {
+      "id": "getValue",
+      "title": "获取数据",
+      "rels": ["getValue"],
+      "schema": {
+        "type": "any"
       }
     },
     {
@@ -125,6 +133,28 @@
       "id": "value",
       "title": "数据",
       "desc": "关联输入项【输入数据】，获取表格数据，并输出数据内容",
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "desc": {
+              "type": "string"
+            },
+            "createdAt": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "getValue",
+      "title": "获取数据完成",
+      "desc": "关联输入项【获取数据】",
       "schema": {
         "type": "array",
         "items": {

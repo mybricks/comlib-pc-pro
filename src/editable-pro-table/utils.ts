@@ -482,6 +482,7 @@ export const handleOutputFn = (
   val: any
 ) => {
   const outputFn = relOutputs?.[OutputId] || outputs[OutputId];
+  console.log(outputFn, '====')
   if (outputFn) {
     outputFn(val);
   }
