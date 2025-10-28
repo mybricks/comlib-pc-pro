@@ -178,13 +178,16 @@ export default function ({ data, input, output, slot }: UpgradeParams<Data>): bo
     addOutputAndRel(OUTPUTS.SubmitWithCheckSuccess, '提交数据输出', INPUTS.SubmitWithCheck);
     addOutputAndRel(OUTPUTS.SubmitWithCheckError, '校验失败输出', INPUTS.SubmitWithCheck);
   }
+  if (input.get(INPUTS.SubmitWithCheck).rels?.length !== 2) {
+    input.get(INPUTS.SubmitWithCheck).setRels([OUTPUTS.SubmitWithCheckSuccess, OUTPUTS.SubmitWithCheckError])
+  }
 
   if (!input.get(INPUTS.EditableRows)) {
-    input.add(INPUTS.EditableRows, '设置正在编辑的行', { 
-      type: 'array', 
+    input.add(INPUTS.EditableRows, '设置正在编辑的行', {
+      type: 'array',
       items: {
         type: "string"
-      } 
+      }
     }, '设置正在编辑的行');
     const getTagsInput = input.get(INPUTS.EditableRows);
     getTagsInput.setRels([OUTPUTS.EditableRowsDone]);
@@ -192,7 +195,7 @@ export default function ({ data, input, output, slot }: UpgradeParams<Data>): bo
   }
 
   if (!input.get(INPUTS.SetColValue)) {
-    input.add(INPUTS.SetColValue, '修改列值', { 
+    input.add(INPUTS.SetColValue, '修改列值', {
       "type": "object",
       "properties": {
         "dataIndex": {
@@ -207,7 +210,7 @@ export default function ({ data, input, output, slot }: UpgradeParams<Data>): bo
           "type": "string",
           "desc": "当前行的key"
         }
-      } 
+      }
     }, '修改列值');
     const setColValueInput = input.get(INPUTS.SetColValue);
     setColValueInput.setRels([OUTPUTS.SetColValueDone]);
