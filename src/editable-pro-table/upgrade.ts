@@ -171,11 +171,12 @@ export default function ({ data, input, output, slot }: UpgradeParams<Data>): bo
     addOutputAndRel(OUTPUTS.CancelRowDone, '取消当前编辑行完成', INPUTS.CancelRow);
   }
 
-  if (!input.get(INPUTS.GetValue)) {
-    input.add(INPUTS.GetValue, '获取数据', { type: 'any' }, '获取数据');
-    const getTagsInput = input.get(INPUTS.CancelRow);
-    getTagsInput.setRels([OUTPUTS.CancelRowDone]);
-    addOutputAndRel(OUTPUTS.GetValue, '获取数据完成', INPUTS.GetValue);
+  if (!input.get(INPUTS.SubmitWithCheck)) {
+    input.add(INPUTS.SubmitWithCheck, '提交数据(校验)', { type: 'any' }, '提交数据(校验)');
+    const submitCheckInput = input.get(INPUTS.SubmitWithCheck);
+    submitCheckInput.setRels([OUTPUTS.SubmitWithCheckSuccess, OUTPUTS.SubmitWithCheckError]);
+    addOutputAndRel(OUTPUTS.SubmitWithCheckSuccess, '提交数据输出', INPUTS.SubmitWithCheck);
+    addOutputAndRel(OUTPUTS.SubmitWithCheckError, '校验失败输出', INPUTS.SubmitWithCheck);
   }
 
   if (!input.get(INPUTS.EditableRows)) {

@@ -30,6 +30,8 @@ export const INPUTS = {
   EditableRows: 'editableRows',
 
   GetValue: 'getValue',
+
+  SubmitWithCheck: 'submitWithCheck'
 };
 
 export const OUTPUTS = {
@@ -59,6 +61,9 @@ export const OUTPUTS = {
   EditableRowsDone: 'editableRows',
 
   GetValue: 'getValue',
+
+  SubmitWithCheckSuccess: 'submitWithCheckSuccess',
+  SubmitWithCheckError: 'submitWithCheckError'
 };
 
 export enum TypeEnum {
