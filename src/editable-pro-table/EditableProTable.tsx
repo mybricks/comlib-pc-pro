@@ -15,7 +15,8 @@ import {
   ConfigProvider,
   Button,
   Popconfirm,
-  Empty
+  Empty,
+  Form
 } from 'antd';
 
 import { TableRowSelection } from 'antd/lib/table/interface';
@@ -65,6 +66,7 @@ const MyDatePicker = (props) => {
 export default function (props: RuntimeParams<Data>) {
   const { data, slots, inputs, outputs, env, logger, title } = props;
   const wrapRef = useRef<HTMLDivElement>(null);
+  const [form] = Form.useForm();
   const actionRef = useRef<ActionType>();
   const defaultDomsRef = useRef<any>({});
   const editableFormRef = useRef<any>();
@@ -231,19 +233,6 @@ export default function (props: RuntimeParams<Data>) {
     }
   }, []);
 
-  useEffect(() => {
-    if (!env.edit) {
-      inputs[INPUTS.GetValue]((val, relOutputs: any) => {
-        handleOutputFn(
-          relOutputs,
-          outputs,
-          OUTPUTS.GetValue,
-          useFrontPage ? pageDataSource : dataSource
-        );
-      });
-    }
-  }, [useFrontPage, pageDataSource, dataSource]);
-
   // 动态设置勾选项
   useEffect(() => {
     if (data.useSetSelectedRowKeys && inputs[INPUTS.SetRowSelect]) {
@@ -295,6 +284,16 @@ export default function (props: RuntimeParams<Data>) {
     if (env.runtime) {
       inputs[INPUTS.Submit]((val, relOutputs) => {
         relOutputs[OUTPUTS.Submit](formatSubmitDataSource(dataSource, data.columns));
+      });
+      inputs[INPUTS.SubmitWithCheck]((val, relOutputs) => {
+        form
+          .validateFields()
+          .then((res) => {
+            relOutputs[OUTPUTS.SubmitWithCheckSuccess](res);
+          })
+          .catch((err) => {
+            relOutputs[OUTPUTS.SubmitWithCheckError](err.errorFields);
+          });
       });
       inputs[INPUTS.AddRow] &&
         inputs[INPUTS.AddRow]((val: any, relOutputs) => {
@@ -1038,6 +1037,7 @@ export default function (props: RuntimeParams<Data>) {
               editable={{
                 type: data.editType || 'multiple',
                 editableKeys,
+                form,
                 onChange: setEditableRowKeys,
                 onSave: (key, value) => {
                   if (data.useSaveCallback) {

@@ -3,7 +3,7 @@
   "namespace": "mybricks.pro-pc.editable-pro-table",
   "author": "MyBricks",
   "author_name": "MyBricks",
-  "version": "1.0.59",
+  "version": "1.0.60",
   "description": "",
   "icon": "./icon.svg",
   "data": "./data.json",
@@ -31,14 +31,6 @@
             }
           }
         }
-      }
-    },
-    {
-      "id": "getValue",
-      "title": "获取数据",
-      "rels": ["getValue"],
-      "schema": {
-        "type": "any"
       }
     },
     {
@@ -75,6 +67,14 @@
       "id": "submit",
       "title": "提交数据",
       "rels": ["submit"],
+      "schema": {
+        "type": "any"
+      }
+    },
+    {
+      "id": "submitWithCheck",
+      "title": "提交数据(校验)",
+      "rels": ["submitWithCheckSuccess", "submitWithCheckError"],
       "schema": {
         "type": "any"
       }
@@ -130,31 +130,40 @@
       }
     },
     {
-      "id": "value",
-      "title": "数据",
-      "desc": "关联输入项【输入数据】，获取表格数据，并输出数据内容",
+      "id": "submitWithCheckSuccess",
+      "title": "提交数据输出",
+      "desc": "输出所有字段的当前值。格式为{[key]: {field: 'xxx'}}",
+      "schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "id": "submitWithCheckError",
+      "title": "校验失败输出",
+      "desc": "输出校验失败信息",
       "schema": {
         "type": "array",
         "items": {
           "type": "object",
           "properties": {
-            "title": {
-              "type": "string"
+            "name": {
+              "type": "array"
             },
-            "desc": {
-              "type": "string"
+            "errors": {
+              "type": "array"
             },
-            "createdAt": {
-              "type": "string"
+            "warnings": {
+              "type": "array"
             }
           }
         }
       }
     },
     {
-      "id": "getValue",
-      "title": "获取数据完成",
-      "desc": "关联输入项【获取数据】",
+      "id": "value",
+      "title": "数据",
+      "desc": "关联输入项【输入数据】，获取表格数据，并输出数据内容",
       "schema": {
         "type": "array",
         "items": {
