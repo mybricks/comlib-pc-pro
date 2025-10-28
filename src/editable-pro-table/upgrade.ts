@@ -171,6 +171,13 @@ export default function ({ data, input, output, slot }: UpgradeParams<Data>): bo
     addOutputAndRel(OUTPUTS.CancelRowDone, '取消当前编辑行完成', INPUTS.CancelRow);
   }
 
+  if (!input.get(INPUTS.GetValue)) {
+    input.add(INPUTS.GetValue, '获取数据', { type: 'any' }, '获取数据');
+    const getTagsInput = input.get(INPUTS.CancelRow);
+    getTagsInput.setRels([OUTPUTS.CancelRowDone]);
+    addOutputAndRel(OUTPUTS.GetValue, '获取数据完成', INPUTS.GetValue);
+  }
+
   if (!input.get(INPUTS.EditableRows)) {
     input.add(INPUTS.EditableRows, '设置正在编辑的行', { 
       type: 'array', 

@@ -231,6 +231,19 @@ export default function (props: RuntimeParams<Data>) {
     }
   }, []);
 
+  useEffect(() => {
+    if (!env.edit) {
+      inputs[INPUTS.GetValue]((val, relOutputs: any) => {
+        handleOutputFn(
+          relOutputs,
+          outputs,
+          OUTPUTS.GetValue,
+          useFrontPage ? pageDataSource : dataSource
+        );
+      });
+    }
+  }, [useFrontPage, pageDataSource, dataSource]);
+
   // 动态设置勾选项
   useEffect(() => {
     if (data.useSetSelectedRowKeys && inputs[INPUTS.SetRowSelect]) {
