@@ -104,6 +104,7 @@ export default function (props: RuntimeParams<Data>) {
         handleOutputFn(relOutputs, outputs, OUTPUTS.EditableRowsDone, val);
       });
       inputs[INPUTS.CancelRow]((val, relOutputs: any) => {
+        form.resetFields();
         setEditableRowKeys((keys) => {
           const defaultDoms = defaultDomsRef.current;
           // @ts-ignore
@@ -118,7 +119,6 @@ export default function (props: RuntimeParams<Data>) {
               actionRef.current?.cancelEditable(key);
             }
           });
-
           return [];
         });
 
