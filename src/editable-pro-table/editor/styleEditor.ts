@@ -37,6 +37,18 @@ export default {
       }
     },
     {
+      title: '全部内容省略展示',
+      type: 'Switch',
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return !!data.ellipsis;
+        },
+        set({ data }: EditorResult<Data>, value: boolean) {
+          data.ellipsis = value;
+        }
+      }
+    },
+    {
       title: '固定表头',
       type: 'Switch',
       description: '设置表头固定，只滚动数据行。必须同时设置【每一列的宽度】',

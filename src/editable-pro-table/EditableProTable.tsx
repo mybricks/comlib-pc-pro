@@ -394,7 +394,7 @@ export default function (props: RuntimeParams<Data>) {
   ]);
 
   const columnsRender = useCallback((value, ellipsis) => {
-    return ellipsis ? (
+    return data.ellipsis || ellipsis ? (
       <Tooltip placement="topLeft" title={value}>
         <span className={styles.ellipsisWrap}>{value}</span>
       </Tooltip>

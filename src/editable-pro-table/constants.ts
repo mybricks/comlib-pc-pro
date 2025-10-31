@@ -362,6 +362,8 @@ export interface Data {
   paginationConfig: PaginationData;
 
   hasUpdateRowKey?: number;
+
+  ellipsis?: boolean;
 }
 
 export const OutputIds = {
