@@ -81,6 +81,14 @@ export default function (props: RuntimeParams<Data>) {
 
   const rowKey = data.rowKey || ROW_KEY;
 
+  // useEffect(() => {
+  //   if(data.ellipsis) {
+  //     data.columns.forEach(item => {
+  //       item.ellipsis = true
+  //     })
+  //   }
+  // }, [])
+
   const useFrontPage = useMemo(() => {
     return env.runtime && data.usePagination && data.paginationConfig?.useFrontPage;
   }, [env.runtime, data.usePagination, data.paginationConfig?.useFrontPage]);
@@ -394,7 +402,7 @@ export default function (props: RuntimeParams<Data>) {
   ]);
 
   const columnsRender = useCallback((value, ellipsis) => {
-    return data.ellipsis || ellipsis ? (
+    return ellipsis ? (
       <Tooltip placement="topLeft" title={value}>
         <span className={styles.ellipsisWrap}>{value}</span>
       </Tooltip>
@@ -875,7 +883,10 @@ export default function (props: RuntimeParams<Data>) {
         default:
           break;
       }
-      return item;
+      return {
+        ...item,
+        ellipsis: data.ellipsis || item.ellipsis
+      };
     });
   };
 
@@ -962,7 +973,7 @@ export default function (props: RuntimeParams<Data>) {
     return getColumns(dataSource).filter(
       (item) => item?.visible === true || item?.visible === undefined
     );
-  }, [dataSource, data.columns, data.hideAllOperation]);
+  }, [dataSource, data.columns, data.hideAllOperation, data.ellipsis]);
 
   useEffect(() => {
     Object.keys(defaultDomsRef.current).forEach((key) => {
