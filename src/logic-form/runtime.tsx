@@ -43,6 +43,10 @@ export interface Condition {
   whereJoiner?: SQLWhereJoiner;
   validateStatus?: 'success' | 'warning' | 'error' | 'validating';
   errorMsg?: string;
+  fieldValidateStatus?: 'success' | 'warning' | 'error' | 'validating';
+  fieldErrorMsg?: string;
+  operatorValidateStatus?: 'success' | 'warning' | 'error' | 'validating';
+  operatorErrorMsg?: string;
   notNeedValue?: boolean;
 }
 
@@ -83,10 +87,22 @@ export default function (props: RuntimeParams<Data>) {
       let success: boolean = true;
       dfs(
         (node: Condition) => {
-          if (!node.conditions && isEmpty(node.value) && !node?.notNeedValue) {
-            node.validateStatus = 'error';
-            node.errorMsg = '内容不能为空';
-            success = false;
+          if (!node.conditions) {
+            if (isEmpty(node.fieldId)) {
+              node.fieldValidateStatus = 'error';
+              node.fieldErrorMsg = '请选择字段';
+              success = false;
+            }
+            if (isEmpty(node.operator)) {
+              node.operatorValidateStatus = 'error';
+              node.operatorErrorMsg = '请选择操作符';
+              success = false;
+            }
+            if (isEmpty(node.value) && !node?.notNeedValue) {
+              node.validateStatus = 'error';
+              node.errorMsg = '内容不能为空';
+              success = false;
+            }
           }
         },
         'conditions',
@@ -166,6 +182,26 @@ export default function (props: RuntimeParams<Data>) {
     } else {
       delete condition.validateStatus;
       delete condition.errorMsg;
+    }
+  }, []);
+
+  const validateField = useCallback((value, condition) => {
+    if (!value) {
+      condition.fieldValidateStatus = 'error';
+      condition.fieldErrorMsg = '请选择字段';
+    } else {
+      delete condition.fieldValidateStatus;
+      delete condition.fieldErrorMsg;
+    }
+  }, []);
+
+  const validateOperator = useCallback((value, condition) => {
+    if (!value) {
+      condition.operatorValidateStatus = 'error';
+      condition.operatorErrorMsg = '请选择操作符';
+    } else {
+      delete condition.operatorValidateStatus;
+      delete condition.operatorErrorMsg;
     }
   }, []);
 
@@ -424,6 +460,8 @@ export default function (props: RuntimeParams<Data>) {
                   initialValue={condition.fieldId}
                   name={[...parentNames, condition.id, 'fieldId']}
                   required
+                  validateStatus={condition.fieldValidateStatus}
+                  help={condition.fieldErrorMsg}
                 >
                   <Select
                     key={condition.id}
@@ -431,11 +469,14 @@ export default function (props: RuntimeParams<Data>) {
                     value={condition.fieldId}
                     placeholder="请选择字段"
                     onChange={(value) => {
+                      validateField(value, condition);
                       const curField = fieldList.find((f) => f.id === value);
 
                       if (curField) {
                         condition.fieldId = value;
                         condition.fieldName = curField.name;
+                      } else {
+                        condition.fieldId = value;
                       }
                       onTriggerChange();
                     }}
@@ -453,12 +494,18 @@ export default function (props: RuntimeParams<Data>) {
                   className={styles.operatorFormItem}
                   initialValue={condition.operator}
                   name={[...parentNames, condition.id, 'operator']}
+                  required
+                  validateStatus={condition.operatorValidateStatus}
+                  help={condition.operatorErrorMsg}
                 >
                   <Select
                     key={`${condition.id}-operator`}
+                    allowClear
                     value={condition.operator}
                     className={styles.operatorSelect}
+                    placeholder="请选择操作符"
                     onChange={(value) => {
+                      validateOperator(value, condition);
                       condition.operator = value;
                       const curOperator = operators.find((op) => op.value === value);
 
