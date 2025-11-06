@@ -245,6 +245,7 @@ export default function (props: RuntimeParams<Data>) {
       } else if (operator?.useTags) {
         return (
           <Select
+            key={condition.id}
             allowClear
             placeholder="请输入内容"
             mode="tags"
@@ -261,6 +262,7 @@ export default function (props: RuntimeParams<Data>) {
       } else {
         let node = (
           <Input
+            key={condition.id}
             allowClear
             placeholder="请输入内容"
             className={styles.valueInput}
@@ -278,6 +280,7 @@ export default function (props: RuntimeParams<Data>) {
           const { format } = fieldProps;
           node = (
             <DatePicker
+              key={condition.id}
               allowClear
               showTime
               placeholder="请选择时间"
@@ -397,7 +400,7 @@ export default function (props: RuntimeParams<Data>) {
                   conditions: condition.conditions,
                   parentConditionChain: [...parentConditionChain, condition],
                   parentNames: parentNames.length
-                    ? [...parentNames, String(index), 'conditions']
+                    ? [...parentNames, condition.id, 'conditions']
                     : ['conditions'],
                   parentIndex: index,
                   parentLayer: parentLayer + 1
@@ -411,7 +414,7 @@ export default function (props: RuntimeParams<Data>) {
               </div>
             ) : (
               <div
-                key={index}
+                key={condition.id}
                 className={styles.condition}
                 style={{ marginLeft: marginEm * parentConditionChain.length + 'px' }}
               >
@@ -419,10 +422,11 @@ export default function (props: RuntimeParams<Data>) {
                 <Form.Item
                   className={styles.fieldFormItem}
                   initialValue={condition.fieldId}
-                  name={[...parentNames, index, 'fieldId']}
+                  name={[...parentNames, condition.id, 'fieldId']}
                   required
                 >
                   <Select
+                    key={condition.id}
                     allowClear
                     value={condition.fieldId}
                     placeholder="请选择字段"
@@ -448,9 +452,10 @@ export default function (props: RuntimeParams<Data>) {
                 <Form.Item
                   className={styles.operatorFormItem}
                   initialValue={condition.operator}
-                  name={[...parentNames, index, 'operator']}
+                  name={[...parentNames, condition.id, 'operator']}
                 >
                   <Select
+                    key={`${condition.id}-operator`}
                     value={condition.operator}
                     className={styles.operatorSelect}
                     onChange={(value) => {
@@ -465,9 +470,9 @@ export default function (props: RuntimeParams<Data>) {
                       onTriggerChange();
                     }}
                   >
-                    {operators.map((operator, idx) => {
+                    {operators.map((operator) => {
                       return (
-                        <Select.Option key={idx} value={operator.value}>
+                        <Select.Option key={operator.value} value={operator.value}>
                           {operator.label}
                         </Select.Option>
                       );
