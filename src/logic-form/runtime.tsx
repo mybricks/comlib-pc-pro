@@ -43,6 +43,10 @@ export interface Condition {
   whereJoiner?: SQLWhereJoiner;
   validateStatus?: 'success' | 'warning' | 'error' | 'validating';
   errorMsg?: string;
+  fieldValidateStatus?: 'success' | 'warning' | 'error' | 'validating';
+  fieldErrorMsg?: string;
+  operatorValidateStatus?: 'success' | 'warning' | 'error' | 'validating';
+  operatorErrorMsg?: string;
   notNeedValue?: boolean;
 }
 
@@ -83,10 +87,22 @@ export default function (props: RuntimeParams<Data>) {
       let success: boolean = true;
       dfs(
         (node: Condition) => {
-          if (!node.conditions && isEmpty(node.value) && !node?.notNeedValue) {
-            node.validateStatus = 'error';
-            node.errorMsg = '内容不能为空';
-            success = false;
+          if (!node.conditions) {
+            if (isEmpty(node.fieldId)) {
+              node.fieldValidateStatus = 'error';
+              node.fieldErrorMsg = '请选择字段';
+              success = false;
+            }
+            if (isEmpty(node.operator)) {
+              node.operatorValidateStatus = 'error';
+              node.operatorErrorMsg = '请选择操作符';
+              success = false;
+            }
+            if (isEmpty(node.value) && !node?.notNeedValue) {
+              node.validateStatus = 'error';
+              node.errorMsg = '内容不能为空';
+              success = false;
+            }
           }
         },
         'conditions',
@@ -169,6 +185,26 @@ export default function (props: RuntimeParams<Data>) {
     }
   }, []);
 
+  const validateField = useCallback((value, condition) => {
+    if (!value) {
+      condition.fieldValidateStatus = 'error';
+      condition.fieldErrorMsg = '请选择字段';
+    } else {
+      delete condition.fieldValidateStatus;
+      delete condition.fieldErrorMsg;
+    }
+  }, []);
+
+  const validateOperator = useCallback((value, condition) => {
+    if (!value) {
+      condition.operatorValidateStatus = 'error';
+      condition.operatorErrorMsg = '请选择操作符';
+    } else {
+      delete condition.operatorValidateStatus;
+      delete condition.operatorErrorMsg;
+    }
+  }, []);
+
   const onEmptyAdd = useCallback(() => {
     if (env.edit) {
       return;
@@ -245,6 +281,7 @@ export default function (props: RuntimeParams<Data>) {
       } else if (operator?.useTags) {
         return (
           <Select
+            key={condition.id}
             allowClear
             placeholder="请输入内容"
             mode="tags"
@@ -261,6 +298,7 @@ export default function (props: RuntimeParams<Data>) {
       } else {
         let node = (
           <Input
+            key={condition.id}
             allowClear
             placeholder="请输入内容"
             className={styles.valueInput}
@@ -278,6 +316,7 @@ export default function (props: RuntimeParams<Data>) {
           const { format } = fieldProps;
           node = (
             <DatePicker
+              key={condition.id}
               allowClear
               showTime
               placeholder="请选择时间"
@@ -397,7 +436,7 @@ export default function (props: RuntimeParams<Data>) {
                   conditions: condition.conditions,
                   parentConditionChain: [...parentConditionChain, condition],
                   parentNames: parentNames.length
-                    ? [...parentNames, String(index), 'conditions']
+                    ? [...parentNames, condition.id, 'conditions']
                     : ['conditions'],
                   parentIndex: index,
                   parentLayer: parentLayer + 1
@@ -411,7 +450,7 @@ export default function (props: RuntimeParams<Data>) {
               </div>
             ) : (
               <div
-                key={index}
+                key={condition.id}
                 className={styles.condition}
                 style={{ marginLeft: marginEm * parentConditionChain.length + 'px' }}
               >
@@ -419,19 +458,25 @@ export default function (props: RuntimeParams<Data>) {
                 <Form.Item
                   className={styles.fieldFormItem}
                   initialValue={condition.fieldId}
-                  name={[...parentNames, index, 'fieldId']}
+                  name={[...parentNames, condition.id, 'fieldId']}
                   required
+                  validateStatus={condition.fieldValidateStatus}
+                  help={condition.fieldErrorMsg}
                 >
                   <Select
+                    key={condition.id}
                     allowClear
                     value={condition.fieldId}
                     placeholder="请选择字段"
                     onChange={(value) => {
+                      validateField(value, condition);
                       const curField = fieldList.find((f) => f.id === value);
 
                       if (curField) {
                         condition.fieldId = value;
                         condition.fieldName = curField.name;
+                      } else {
+                        condition.fieldId = value;
                       }
                       onTriggerChange();
                     }}
@@ -448,12 +493,19 @@ export default function (props: RuntimeParams<Data>) {
                 <Form.Item
                   className={styles.operatorFormItem}
                   initialValue={condition.operator}
-                  name={[...parentNames, index, 'operator']}
+                  name={[...parentNames, condition.id, 'operator']}
+                  required
+                  validateStatus={condition.operatorValidateStatus}
+                  help={condition.operatorErrorMsg}
                 >
                   <Select
+                    key={`${condition.id}-operator`}
+                    allowClear
                     value={condition.operator}
                     className={styles.operatorSelect}
+                    placeholder="请选择操作符"
                     onChange={(value) => {
+                      validateOperator(value, condition);
                       condition.operator = value;
                       const curOperator = operators.find((op) => op.value === value);
 
@@ -465,9 +517,9 @@ export default function (props: RuntimeParams<Data>) {
                       onTriggerChange();
                     }}
                   >
-                    {operators.map((operator, idx) => {
+                    {operators.map((operator) => {
                       return (
-                        <Select.Option key={idx} value={operator.value}>
+                        <Select.Option key={operator.value} value={operator.value}>
                           {operator.label}
                         </Select.Option>
                       );
