@@ -533,4 +533,14 @@ const getColumnDateFormatOfForm = (item: ColumnItem) => {
   }
 }
 
-export { findLabelByOptions, getValueByOptions, runDisableScript, getColumnDateFormatOfForm };
+const getColumnDateFormatOfShow = (item: ColumnItem) => {
+  if(item?.dateShowType === 'custom'){
+    return item?.dateCustomShowFormatter || 'Y-MM-DD'
+  } else if(item?.dateShowType === 'timeStamp'){
+    return null;
+  } else {
+    return item?.dateShowType || 'Y-MM-DD'
+  }
+}
+
+export { findLabelByOptions, getValueByOptions, runDisableScript, getColumnDateFormatOfForm, getColumnDateFormatOfShow };

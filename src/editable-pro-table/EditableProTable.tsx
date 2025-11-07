@@ -1,6 +1,7 @@
 import React, { Suspense, useRef, useCallback, useEffect, useState, useMemo } from 'react';
 import moment from 'moment';
-import { getColumnDateFormatOfForm } from './utils';
+import { Moment } from 'moment';
+import { getColumnDateFormatOfForm, getColumnDateFormatOfShow } from './utils';
 import {
   Spin,
   DatePicker,
@@ -648,11 +649,13 @@ export default function (props: RuntimeParams<Data>) {
               <MyDatePicker
                 disabled={runDisableScript(disableScript, record || entity)}
                 placeholder={'请选择'}
-                showTime={item.showTime}
                 picker={item.datePicker || 'date'}
-                format={getColumnDateFormatOfForm(item)}
+                format={getColumnDateFormatOfShow(item)}
                 {...(item.fieldProps as any)}
-                onChange={(value) => handleValueChange(value, schema, config)}
+                onChange={(value: Moment | null) => {
+                  let val = value ? value.format(getColumnDateFormatOfForm(item) as string) : null;
+                  handleValueChange(val, schema, config);
+                }}
               />
               // <DatePicker
               //   disabled={runDisableScript(disableScript, record || entity)}
@@ -771,14 +774,24 @@ export default function (props: RuntimeParams<Data>) {
           item.renderFormItem = (schema, config) => {
             const { entity } = schema as any;
             const { record } = config;
+            const _val = record[`${item.key}`] as any[];
+            const value = _val ? _val.map((item) => moment(item)) : null;
             return (
-              <RangePicker
-                placeholder={['开始日期', '结束日期']}
-                showTime={item.showTime}
-                disabled={runDisableScript(disableScript, record || entity)}
-                {...(item.fieldProps as any)}
-                onChange={(value) => handleValueChange(value, schema, config)}
-              />
+              <>
+                <RangePicker
+                  placeholder={['开始日期', '结束日期']}
+                  format={getColumnDateFormatOfShow(item)}
+                  value={value}
+                  disabled={runDisableScript(disableScript, record || entity)}
+                  {...(item.fieldProps as any)}
+                  onChange={(value: any[] | Moment[]) => {
+                    let val = value.map((item) =>
+                      item ? item.format(getColumnDateFormatOfForm(item) as string) : null
+                    );
+                    handleValueChange(val, schema, config);
+                  }}
+                />
+              </>
             );
           };
           item.render = (_, record, idx, action) => {
