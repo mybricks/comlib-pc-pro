@@ -158,20 +158,21 @@ export const formatDataSource = (
     .filter((item) => item.valueType === TypeEnum.Date || item.valueType === TypeEnum.DateRange)
     .map((item) => ({
       key: item.dataIndex as string,
-      format: item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD',
-      type: item?.dateOutputType || (item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD'),
-      formatter: item?.dateCustomFormatter || 'Y-MM-DD'
+      // format: item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD',
+      // type: item?.dateOutputType || (item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD'),
+      type: item?.dateShowType || 'Y-MM-DD', // 日期展示格式
+      formatter: item?.dateCustomShowFormatter || 'Y-MM-DD' // 自定义展示格式化模板
     }));
   if (Array.isArray(ds)) {
     ds.forEach((item) => {
       if (item[rowKey] === undefined) {
         item[rowKey] = uuid();
       }
-      dateDataIndex.forEach(({ key, format, type, formatter }) => {
+      dateDataIndex.forEach(({ key, type, formatter }) => {
         if (item[key]) {
           item[key] = Array.isArray(item[key])
-            ? item[key].map((str) => transCalculation(moment(str, format), type, formatter))
-            : transCalculation(moment(item[key], format), type, formatter);
+            ? item[key].map((str) => transCalculation(str, type, formatter))
+            : transCalculation(item[key], type, formatter);
         }
       });
       if (item.children) {
@@ -522,4 +523,14 @@ const runDisableScript = (disableScript, record) => {
   return undefined;
 };
 
-export { findLabelByOptions, getValueByOptions, runDisableScript };
+const getColumnDateFormatOfForm = (item: ColumnItem) => {
+  if(item?.dateOutputType === 'custom'){
+    return item?.dateCustomFormatter || 'Y-MM-DD'
+  } else if(item?.dateOutputType === 'timeStamp'){
+    return null;
+  } else {
+    return item?.dateOutputType || 'Y-MM-DD'
+  }
+}
+
+export { findLabelByOptions, getValueByOptions, runDisableScript, getColumnDateFormatOfForm };

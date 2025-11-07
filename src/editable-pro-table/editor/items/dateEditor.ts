@@ -13,6 +13,7 @@ export default {
       description: '设置日期选择类型，可选的日期类型',
       options: [
         { label: '日期', value: 'date' },
+        { label: '日期+时间', value: 'datetime' },
         { label: '周', value: 'week' },
         { label: '月份', value: 'month' },
         { label: '季度', value: 'quarter' },
@@ -86,19 +87,19 @@ export default {
         }
       }
     },
-    {
-      title: '选择时间',
-      type: 'Switch',
-      description: '开启后支持选择时间',
-      value: {
-        get({ data, focusArea }: EditorResult<Data>) {
-          return getCol(data, focusArea, 'showTime');
-        },
-        set({ data, focusArea }, val: boolean) {
-          setCol(data, focusArea, 'showTime', val);
-        }
-      }
-    },
+    // {
+    //   title: '选择时间',
+    //   type: 'Switch',
+    //   description: '开启后支持选择时间',
+    //   value: {
+    //     get({ data, focusArea }: EditorResult<Data>) {
+    //       return getCol(data, focusArea, 'showTime');
+    //     },
+    //     set({ data, focusArea }, val: boolean) {
+    //       setCol(data, focusArea, 'showTime', val);
+    //     }
+    //   }
+    // },
     {
       title: '输出日期格式化模板',
       type: 'Select',

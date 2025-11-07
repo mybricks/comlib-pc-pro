@@ -1,5 +1,6 @@
 import React, { Suspense, useRef, useCallback, useEffect, useState, useMemo } from 'react';
 import moment from 'moment';
+import { getColumnDateFormatOfForm } from './utils';
 import {
   Spin,
   DatePicker,
@@ -649,11 +650,7 @@ export default function (props: RuntimeParams<Data>) {
                 placeholder={'请选择'}
                 showTime={item.showTime}
                 picker={item.datePicker || 'date'}
-                format={
-                  item.dateCustomShowFormatter === 'timeStamp'
-                    ? null
-                    : item.dateCustomShowFormatter || 'Y-MM-DD'
-                }
+                format={getColumnDateFormatOfForm(item)}
                 {...(item.fieldProps as any)}
                 onChange={(value) => handleValueChange(value, schema, config)}
               />
@@ -666,27 +663,8 @@ export default function (props: RuntimeParams<Data>) {
             );
           };
           item.render = (_, record, idx, action) => {
-            const dateCustomShowFormatter = item.dateCustomShowFormatter || 'Y-MM-DD';
-
             let oriValue = record[`${item.dataIndex}`];
-
-            if (oriValue) {
-              if (dateCustomShowFormatter === 'timeStamp') {
-                oriValue = moment(oriValue).valueOf();
-              } else {
-                oriValue = moment(oriValue).format(dateCustomShowFormatter);
-              }
-            }
-
             return columnsRender(oriValue, item.ellipsis);
-            // const format = item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD';
-
-            // const value = record[`${item.dataIndex}`]
-            //   ? moment(record[`${item.dataIndex}`]).format(format)
-            //   : // : '-';
-            //     '';
-
-            // return columnsRender(value, item.ellipsis);
           };
           break;
         case TypeEnum.Select:
