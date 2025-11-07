@@ -276,6 +276,8 @@ export type ColumnItem = ProColumns<any> & {
 
   dateOutputType?: string;
   dateCustomFormatter?: string;
+  dateShowType?: string;
+  dateCustomShowFormatter?: string;
 };
 export interface Data {
   headerTitle: string;
