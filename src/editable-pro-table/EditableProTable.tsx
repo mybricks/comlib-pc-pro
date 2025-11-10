@@ -1,7 +1,7 @@
 import React, { Suspense, useRef, useCallback, useEffect, useState, useMemo } from 'react';
 import moment from 'moment';
 import { Moment } from 'moment';
-import { getColumnDateFormatOfForm, getColumnDateFormatOfShow } from './utils';
+import { formatFormObj, getColumnDateFormatOfForm, getColumnDateFormatOfShow } from './utils';
 import {
   Spin,
   DatePicker,
@@ -300,7 +300,12 @@ export default function (props: RuntimeParams<Data>) {
         form
           .validateFields()
           .then((res) => {
-            relOutputs[OUTPUTS.SubmitWithCheckSuccess](res);
+            const keys = Object.keys(res || {});
+            const result = {};
+            keys.forEach((key) => {
+              result[key] = formatFormObj({ ...res[key] }, columns);
+            });
+            relOutputs[OUTPUTS.SubmitWithCheckSuccess](result);
           })
           .catch((err) => {
             relOutputs[OUTPUTS.SubmitWithCheckError](err.errorFields);

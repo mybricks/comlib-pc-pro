@@ -182,6 +182,30 @@ export const formatDataSource = (
   }
   return ds;
 };
+export const formatFormObj = (data: any, columns: any) => {
+  if (typeof data === 'object') {
+    const dateDataIndex = columns
+      .filter((item) => item.valueType === TypeEnum.Date || item.valueType === TypeEnum.DateRange)
+      .map((item) => ({
+        key: item.dataIndex as string,
+        // format: item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD',
+        // type: item?.dateOutputType || (item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD'),
+        type: item?.dateShowType || 'Y-MM-DD', // 日期展示格式
+        formatter: item?.dateCustomShowFormatter || 'Y-MM-DD' // 自定义展示格式化模板
+      }));
+    dateDataIndex.forEach(({ key, type, formatter }) => {
+      if (data[key]) {
+        data[key] = Array.isArray(data[key])
+          ? data[key].map((str) => transCalculation(str, type, formatter))
+          : transCalculation(data[key], type, formatter);
+      }
+    });
+    if (data.children) {
+      formatFormObj(data.children, columns);
+    }
+  }
+  return data;
+}
 // 获取数据下的所有key
 export const getAllDsKey = (ds: DataSourceType[], rowKey: string = ROW_KEY): string[] => {
   const keys: Array<any> = [];
@@ -220,7 +244,7 @@ export const formatSubmitDataSource = (ds: DataSourceType[], columns: ColumnItem
         format: item.dateCustomFormatter || "Y-MM-DD"
       }
     });
-  
+
 
 
   return ds.map((item) => {
@@ -524,9 +548,9 @@ const runDisableScript = (disableScript, record) => {
 };
 
 const getColumnDateFormatOfForm = (item: ColumnItem) => {
-  if(item?.dateOutputType === 'custom'){
+  if (item?.dateOutputType === 'custom') {
     return item?.dateCustomFormatter || 'Y-MM-DD'
-  } else if(item?.dateOutputType === 'timeStamp'){
+  } else if (item?.dateOutputType === 'timeStamp') {
     return null;
   } else {
     return item?.dateOutputType || 'Y-MM-DD'
@@ -534,9 +558,9 @@ const getColumnDateFormatOfForm = (item: ColumnItem) => {
 }
 
 const getColumnDateFormatOfShow = (item: ColumnItem) => {
-  if(item?.dateShowType === 'custom'){
+  if (item?.dateShowType === 'custom') {
     return item?.dateCustomShowFormatter || 'Y-MM-DD'
-  } else if(item?.dateShowType === 'timeStamp'){
+  } else if (item?.dateShowType === 'timeStamp') {
     return null;
   } else {
     return item?.dateShowType || 'Y-MM-DD'
