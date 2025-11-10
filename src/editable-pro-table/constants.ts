@@ -278,6 +278,9 @@ export type ColumnItem = ProColumns<any> & {
   dateCustomFormatter?: string;
   dateShowType?: string;
   dateCustomShowFormatter?: string;
+  
+  //内容类型
+  contentType?: ContentTypeEnum;
 };
 export interface Data {
   headerTitle: string;
@@ -552,3 +555,12 @@ export const ColorMap = {
     text: '数组'
   }
 };
+
+export enum ContentTypeEnum {
+  Text = 'text',
+  Image = 'image',
+  Link = 'link',
+  SlotItem = 'slotItem',
+  Group = 'group',
+  Switch = 'switch'
+}
