@@ -1,9 +1,25 @@
 import { uuid } from '../../../utils';
 import { Data, TypeEnum, TypeEnumMap, INPUTS, OUTPUTS, getColumnItem } from '../../constants';
-import { setDataSchema, slotEditInput, slotEditOutput } from '../../schema';
-import { checkType, getCol, setCol } from '../../utils';
+import { setDataSchema, slotEditInput, slotEditOutput, getColumnsDataSchema } from '../../schema';
 
-export default {
+import { checkType, getCol, setCol } from '../../utils';
+import createDataFormatEditor from '../../../utils/dataFormatter';
+import noneFormatter from '../../../utils/dataFormatter/formatters/none';
+
+const formatCode = encodeURIComponent(`
+/**
+ * 输入参数：
+ *  - 当前列数据： value 
+ *  - 当前行号：   index
+ *  - 当前行数据:  rowRecord
+ **/
+({ value, index, rowRecord }) => {
+  return value
+}`);
+//TODO
+
+export default function baseEditor({data}) {
+  return {
   title: '基础配置',
   items: [
     {
@@ -86,6 +102,64 @@ export default {
         }
       }
     },
+    createDataFormatEditor({
+      title: '格式转化',
+      formatters: [
+        {
+          formatter: 'KEYMAP',
+          options: {
+            locale: true,
+          }
+        },
+        {
+          formatter: 'EXPRESSION',
+          description: '表达式输出内容为字符串，在花括号内可以引用变量并进行简单处理',
+          options: {
+            placeholder: '如：当前是第{index+1}行，列数据为{value}, 行数据为{rowRecord}',
+            suggestions: [
+              {
+                label: 'value',
+                detail: '当前列数据'
+              },
+              {
+                label: 'rowRecord',
+                detail: '当前行数据',
+                properties:  getColumnsDataSchema(data.columns, data.rowKey)
+              },
+              {
+                label: 'index',
+                detail: '当前行序号'
+              }
+            ]
+          }
+        },
+        {
+          formatter: 'TIMETEMPLATE',
+          defaultValue: 'YYYY-MM-DD HH:mm:ss'
+        },
+        {
+          formatter: 'CUSTOMTIME',
+          defaultValue: 'YYYY-MM-DD HH:mm:ss'
+        },
+        {
+          formatter: 'CUSTOMSCRIPT',
+          defaultValue: formatCode
+        }
+      ],
+      value: {
+        get({ data, focusArea }) {
+          if (!focusArea) return;
+          return getCol(data, focusArea, 'formatData') || {
+            formatterName: noneFormatter.name,
+            values: {}
+          };
+        },
+        set({ data, focusArea }, value) {
+          if (!focusArea) return;
+          setCol(data, focusArea, 'formatData', value);
+        }
+      }
+    }),
     {
       title: '列数据类型',
       type: '_schema',
@@ -104,5 +178,6 @@ export default {
         }
       }
     }
-  ]
-};
+    ]
+  };
+}

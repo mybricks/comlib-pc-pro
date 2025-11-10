@@ -1,4 +1,4 @@
-import { ColumnItem, INPUTS, OUTPUTS, ROW_KEY, TypeEnum } from './constants';
+import { ColumnItem, INPUTS, OUTPUTS, ROW_KEY, TypeEnum, ContentTypeEnum, Data } from './constants';
 
 export function getColumnsDataSchema(columns: ColumnItem[], rowKey: string = ROW_KEY) {
   // const {} = columns

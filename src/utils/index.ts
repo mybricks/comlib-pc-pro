@@ -55,6 +55,15 @@ export const defaultValidatorExample =
 }
 `);
 
+/**
+ * 判断是否为空 undefined、null、空字符串返回true
+ * @param value 入参
+ */
+export function isEmpty(value: unknown): value is undefined | null | '' {
+  return value === undefined || value === null || value === ''
+}
+
+
 export { uuid, unitConversion, deepCopy, isNullValue };
 export * from './upgrade';
 export * from './runExpCodeScript';

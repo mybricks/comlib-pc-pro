@@ -49,6 +49,7 @@ import {
   uuid,
   getTemplateRenderScript
 } from './utils';
+import { genFormatting } from '../utils/dataFormatter';
 
 import { EditableProTable } from '@ant-design/pro-table';
 import { Actions, Paginator, CustomizeRenderEmpty } from './components';
@@ -422,6 +423,28 @@ export default function (props: RuntimeParams<Data>) {
     }
   }, 200);
 
+  // 结果格式化展示值
+  const handleFormtShowValue = (oriValue, record, columnItem, colIdx) => {
+    if (columnItem?.formatData && !env.edit) {
+      // 格式化数据时，如果是表达式传入index、行数据、当前cell数据
+      const valueToBeFormat = ['EXPRESSION', 'CUSTOMSCRIPT'].includes(
+        columnItem?.formatData?.formatterName
+      )
+        ? {
+            index: colIdx,
+            rowRecord: record,
+            value: oriValue
+          }
+        : oriValue;
+      if (columnItem?.formatData?.formatterName === 'KEYMAP') {
+        oriValue = env.i18n(genFormatting(columnItem.formatData)(valueToBeFormat));
+      } else {
+        oriValue = genFormatting(columnItem.formatData)(valueToBeFormat);
+      }
+    }
+    return oriValue;
+  };
+
   const getColumns = (dataSource: DataSourceType[]) => {
     const col = formatColumn(data, env, colsCfg, validateValueExisting);
     return col.map((item, colIdx) => {
@@ -588,6 +611,7 @@ export default function (props: RuntimeParams<Data>) {
               inputValues: extractValues(record),
               key: `${record?._key}`
             };
+            const showValue = handleFormtShowValue(renderValue, record, item, colIdx);
             // 禁用或者编辑态插槽没有组件，则显示只读态插槽
             if (
               disabled ||
@@ -595,7 +619,7 @@ export default function (props: RuntimeParams<Data>) {
             ) {
               return (
                 <>
-                  {(item.slotId && slots[item.slotId] && slots[item.slotId].render(renderValue)) ||
+                  {(item.slotId && slots[item.slotId] && slots[item.slotId].render(showValue)) ||
                     null}
                 </>
               );
@@ -604,7 +628,7 @@ export default function (props: RuntimeParams<Data>) {
               <>
                 {(item?.slotEditId &&
                   slots[item.slotEditId] &&
-                  slots[item.slotEditId].render(renderValue)) ||
+                  slots[item.slotEditId].render(showValue)) ||
                   null}
               </>
             );
@@ -667,7 +691,8 @@ export default function (props: RuntimeParams<Data>) {
           };
           item.render = (_, record, idx, action) => {
             let oriValue = record[`${item.dataIndex}`];
-            return columnsRender(oriValue, item.ellipsis);
+            const showValue = handleFormtShowValue(oriValue, record, item, idx);
+            return columnsRender(showValue, item.ellipsis);
           };
           break;
         case TypeEnum.Select:
@@ -691,7 +716,8 @@ export default function (props: RuntimeParams<Data>) {
           item.render = (_, record, idx, action) => {
             const options = (item.fieldProps as any).options;
             const value = renderTagList(getValueByOptions(record[`${item.dataIndex}`], options));
-            return columnsRender(value, item.ellipsis);
+            const showValue = handleFormtShowValue(value, record, item, idx);
+            return columnsRender(showValue, item.ellipsis);
           };
           break;
         case TypeEnum.Cascader:
@@ -722,7 +748,8 @@ export default function (props: RuntimeParams<Data>) {
                   : strList.join('/')
               );
             }
-            return columnsRender(returnDom, item.ellipsis);
+            const showValue = handleFormtShowValue(returnDom, record, item, idx);
+            return columnsRender(showValue, item.ellipsis);
           };
           break;
         case TypeEnum.TreeSelect as any:
@@ -746,6 +773,7 @@ export default function (props: RuntimeParams<Data>) {
           item.render = (_, record, idx, action) => {
             const options = (item.fieldProps as any).treeData;
             const value = renderTagList(getValueByOptions(record[`${item.dataIndex}`], options));
+            const showValue = handleFormtShowValue(value, record, item, idx);
             return columnsRender(value, item.ellipsis);
           };
           break;
@@ -763,9 +791,10 @@ export default function (props: RuntimeParams<Data>) {
           };
           item.render = (_, record, idx, action) => {
             const value = record[`${item.dataIndex}`];
+            const showValue = handleFormtShowValue(value, record, item, idx);
             return (
               <div>
-                <Checkbox.Group {...(item.fieldProps as any)} disabled={true} value={value} />
+                <Checkbox.Group {...(item.fieldProps as any)} disabled={true} value={showValue} />
               </div>
             );
           };
@@ -797,10 +826,10 @@ export default function (props: RuntimeParams<Data>) {
           item.render = (_, record, idx, action) => {
             const value = Array.isArray(record[`${item.dataIndex}`])
               ? record[`${item.dataIndex}`].map((time) => moment(time).format(format)).join(' 至 ')
-              : // : '-';
-                '';
+              : '';
             const format = item.showTime ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD';
-            return columnsRender(value, item.ellipsis);
+            const showValue = handleFormtShowValue(value, record, item, idx);
+            return columnsRender(showValue, item.ellipsis);
           };
           break;
         case TypeEnum.Text:
@@ -817,7 +846,8 @@ export default function (props: RuntimeParams<Data>) {
           };
           item.render = (_, record, idx, action) => {
             const value = record[`${item.dataIndex}`];
-            return columnsRender(value, item.ellipsis);
+            const showValue = handleFormtShowValue(value, record, item, idx);
+            return columnsRender(showValue, item.ellipsis);
           };
           break;
         case TypeEnum.Number:
@@ -834,7 +864,8 @@ export default function (props: RuntimeParams<Data>) {
           };
           item.render = (_, record, idx, action) => {
             const value = record[`${item.dataIndex}`];
-            return columnsRender(value, item.ellipsis);
+            const showValue = handleFormtShowValue(value, record, item, idx);
+            return columnsRender(showValue, item.ellipsis);
           };
           break;
         case TypeEnum.Switch:
@@ -858,11 +889,12 @@ export default function (props: RuntimeParams<Data>) {
           };
           item.render = (_, record, idx, action) => {
             const value = record[`${item.dataIndex}`];
+            const showValue = handleFormtShowValue(value, record, item, idx);
             return (
               <div>
                 <Switch
                   {...(item.fieldProps as any)}
-                  checked={value}
+                  checked={showValue}
                   onClick={() => {
                     return;
                   }}

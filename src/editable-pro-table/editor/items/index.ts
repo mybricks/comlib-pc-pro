@@ -22,7 +22,7 @@ export default {
     items: ({ data, output }: EditorResult<Data>, cate1, cate2) => {
       cate1.title = '常规';
       cate1.items = [
-        baseEditor,
+        baseEditor({data}),
         {
           title: '枚举数据源',
           type: 'array',
