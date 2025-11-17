@@ -10,7 +10,8 @@
     "./src/json-form/com.json",
     "./src/logic-form/com.json",
     "./src/markdown/com.json",
-    "./src/markdown-preview/com.json"
+    "./src/markdown-preview/com.json",
+    "./src/markdown/com.json"
   ],
   "externals": [],
   "tags": "react",
