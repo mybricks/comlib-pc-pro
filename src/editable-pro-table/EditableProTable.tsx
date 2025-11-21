@@ -299,12 +299,13 @@ export default function (props: RuntimeParams<Data>) {
       inputs[INPUTS.SubmitWithCheck]((val, relOutputs) => {
         form
           .validateFields()
-          .then((res) => {
+          .then(async (res) => {
             const keys = Object.keys(res || {});
             const result = {};
-            keys.forEach((key) => {
+            for (const key of keys) {
               result[key] = formatFormObj({ ...res[key] }, columns);
-            });
+              await actionRef?.current?.saveEditable(key);
+            }
             relOutputs[OUTPUTS.SubmitWithCheckSuccess](result);
           })
           .catch((err) => {
