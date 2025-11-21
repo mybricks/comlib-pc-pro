@@ -10,11 +10,12 @@
     "./src/json-form/com.json",
     "./src/logic-form/com.json",
     "./src/markdown/com.json",
-    "./src/markdown-preview/com.json"
+    "./src/markdown-preview/com.json",
+    "./src/markdown/com.json"
   ],
   "externals": [],
   "tags": "react",
   "designerUrl": "https://f2.eckwai.com/kos/nlav12333/mybricks/designer-spa/3.9.382/index.min.js",
   "userName": "yangzai",
-  "version": "1.1.43"
+  "version": "1.1.44"
 }
