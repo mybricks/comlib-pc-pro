@@ -92,405 +92,403 @@ export default (data: Data, output) => ({
       }
     },
     {
-      title: '只读态操作',
-      // description: '配置只读状态下操作列按钮',
+      title: '只读态-隐藏编辑按钮',
+      type: 'switch',
       ifVisible({ data }: EditorResult<Data>) {
         return !data.hideAllOperation;
       },
-      items: [
-        {
-          title: '隐藏编辑按钮',
-          type: 'switch',
-          value: {
-            get({ data }: EditorResult<Data>) {
-              return data.hideModifyBtn;
-            },
-            set({ data }: EditorResult<Data>, val: boolean) {
-              data.hideModifyBtn = !!val;
-              update(data);
-            }
-          }
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data.hideModifyBtn;
         },
-        {
-          title: '编辑按钮文案',
-          type: 'text',
-          ifVisible({ data }: EditorResult<Data>) {
-            return !data.hideModifyBtn;
-          },
-          value: {
-            get({ data }: EditorResult<Data>) {
-              return data?.editText;
-            },
-            set({ data }: EditorResult<Data>, val: string) {
-              data.editText = val;
-              update(data);
-            }
-          }
-        },
-        {
-          title: '动态显示编辑按钮表达式',
-          description: `通过表格行字段值，动态控制编辑按钮按钮的显隐，不设置则默认显示。表达式支持（{}, =, <, >, ||, &&）, 例：{title} === '1'`,
-          type: 'EXPRESSION',
-          options: {
-            autoSize: true,
-            placeholder: `例：{title} === '1'`,
-            suggestions: getSuggestions(data),
-            runCode: run
-          },
-          ifVisible({ data }: EditorResult<Data>) {
-            return !data.hideModifyBtn;
-          },
-          value: {
-            get({ data }: EditorResult<Data>) {
-              return data?.dynamicDisplayModifyBtnScript;
-            },
-            set({ data }: EditorResult<Data>, val: string) {
-              data.dynamicDisplayModifyBtnScript = val;
-            }
-          }
-        },
-        {
-          title: '隐藏删除按钮',
-          type: 'switch',
-          value: {
-            get({ data }: EditorResult<Data>) {
-              return data.hideDeleteBtn;
-            },
-            set({ data }: EditorResult<Data>, val: boolean) {
-              data.hideDeleteBtn = !!val;
-              update(data);
-            }
-          }
-        },
-        {
-          title: '动态显示删除按钮表达式',
-          description: `通过表格行字段值，动态控制删除按钮按钮的显隐，不设置则默认显示。表达式支持（{}, =, <, >, ||, &&）, 例：{title} === '1'`,
-          type: 'EXPRESSION',
-          options: {
-            autoSize: true,
-            placeholder: `例：{title} === '1'`,
-            suggestions: getSuggestions(data),
-            runCode: run
-          },
-          ifVisible({ data }: EditorResult<Data>) {
-            return !data.hideDeleteBtn;
-          },
-          value: {
-            get({ data }: EditorResult<Data>) {
-              return data?.dynamicDisplayDeleteBtnScript;
-            },
-            set({ data }: EditorResult<Data>, val: string) {
-              data.dynamicDisplayDeleteBtnScript = val;
-            }
-          }
-        },
-        {
-          title: '删除二次确认',
-          type: 'switch',
-          ifVisible({ data }: EditorResult<Data>) {
-            return !data.hideDeleteBtn;
-          },
-          value: {
-            get({ data }: EditorResult<Data>) {
-              return !!data?.deleteSecondConfirm;
-            },
-            set({ data }: EditorResult<Data>, val: boolean) {
-              data.deleteSecondConfirm = !!val;
-            }
-          }
-        },
-        {
-          title: '删除二次确认文案',
-          type: 'text',
-          ifVisible({ data }: EditorResult<Data>) {
-            return !data.hideDeleteBtn && data?.deleteSecondConfirm;
-          },
-          value: {
-            get({ data }: EditorResult<Data>) {
-              return data?.deleteSecondConfirmText;
-            },
-            set({ data }: EditorResult<Data>, val: string) {
-              data.deleteSecondConfirmText = val;
-            }
-          }
-        },
-        {
-          title: '隐藏添加按钮',
-          type: 'switch',
-          description: `开启后，会隐藏所有表格行操作列的新增按钮`,
-          value: {
-            get({ data }: EditorResult<Data>) {
-              return data.hideNewBtn;
-            },
-            set({ data }: EditorResult<Data>, val: boolean) {
-              data.hideNewBtn = !!val;
-              update(data);
-            }
-          }
-        },
-        {
-          title: '隐藏添加子项按钮',
-          description: `开启后，会隐藏所有表格行的添加子项按钮`,
-          type: 'switch',
-          value: {
-            get({ data }: EditorResult<Data>) {
-              if (data.hideAllAddChildBtn === undefined) {
-                data.hideAllAddChildBtn = true;
-              }
-              return data.hideAllAddChildBtn;
-            },
-            set({ data }: EditorResult<Data>, val: boolean) {
-              data.hideAllAddChildBtn = !!val;
-              update(data);
-            }
-          }
-        },
-        {
-          title: '添加子项按钮文案',
-          type: 'text',
-          ifVisible({ data }: EditorResult<Data>) {
-            return !data.hideAllAddChildBtn;
-          },
-          value: {
-            get({ data }: EditorResult<Data>) {
-              if (!data.addChildBtnLabel) {
-                data.addChildBtnLabel = '添加子项';
-              }
-              return data.addChildBtnLabel;
-            },
-            set({ data }: EditorResult<Data>, val: string) {
-              data.addChildBtnLabel = val;
-              update(data);
-            }
-          }
-        },
-        {
-          title: '添加子项按钮显示',
-          description: `通过表格行字段值，动态控制添加子项按钮的显隐，不设置则默认显示。表达式支持（{}, =, <, >, ||, &&）, 例：{title} === '1'`,
-          type: 'EXPRESSION',
-          ifVisible({ data }: EditorResult<Data>) {
-            return !data.hideAllAddChildBtn;
-          },
-          options: {
-            autoSize: true,
-            placeholder: `例：{title} === '1'`,
-            suggestions: getSuggestions(data),
-            runCode: run
-          },
-          value: {
-            get({ data }: EditorResult<Data>) {
-              return data?.addChildBtnScript;
-            },
-            set({ data }: EditorResult<Data>, value: string) {
-              data.addChildBtnScript = value;
-              update(data);
-            }
-          }
+        set({ data }: EditorResult<Data>, val: boolean) {
+          data.hideModifyBtn = !!val;
+          update(data);
         }
-      ]
+      }
     },
     {
-      title: '编辑态操作',
-      // description: '配置编辑状态下操作列按钮',
+      title: '只读态-编辑按钮文案',
+      type: 'text',
+      ifVisible({ data }: EditorResult<Data>) {
+        return !data.hideAllOperation && !data.hideModifyBtn;
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data?.editText;
+        },
+        set({ data }: EditorResult<Data>, val: string) {
+          data.editText = val;
+          update(data);
+        }
+      }
+    },
+    {
+      title: '只读态-动态显示编辑按钮表达式',
+      description: `通过表格行字段值，动态控制编辑按钮按钮的显隐，不设置则默认显示。表达式支持（{}, =, <, >, ||, &&）, 例：{title} === '1'`,
+      type: 'EXPRESSION',
+      options: {
+        autoSize: true,
+        placeholder: `例：{title} === '1'`,
+        suggestions: getSuggestions(data),
+        runCode: run
+      },
+      ifVisible({ data }: EditorResult<Data>) {
+        return !data.hideAllOperation && !data.hideModifyBtn;
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data?.dynamicDisplayModifyBtnScript;
+        },
+        set({ data }: EditorResult<Data>, val: string) {
+          data.dynamicDisplayModifyBtnScript = val;
+        }
+      }
+    },
+    {
+      title: '只读态-隐藏删除按钮',
+      type: 'switch',
       ifVisible({ data }: EditorResult<Data>) {
         return !data.hideAllOperation;
       },
-      items: [
-        {
-          title: '隐藏保存按钮',
-          type: 'switch',
-          value: {
-            get({ data }: EditorResult<Data>) {
-              return data.hideSaveBtn;
-            },
-            set({ data }: EditorResult<Data>, val: boolean) {
-              data.hideSaveBtn = !!val;
-            }
-          }
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data.hideDeleteBtn;
         },
-        {
-          title: '保存按钮文案',
-          type: 'text',
-          ifVisible({ data }: EditorResult<Data>) {
-            return !data.hideSaveBtn;
-          },
-          value: {
-            get({ data }: EditorResult<Data>) {
-              return data?.saveText;
-            },
-            set({ data }: EditorResult<Data>, val: string) {
-              data.saveText = val;
-            }
-          }
-        },
-        {
-          title: '保存二次确认',
-          type: 'switch',
-          ifVisible({ data }: EditorResult<Data>) {
-            return !data.hideSaveBtn;
-          },
-          value: {
-            get({ data }: EditorResult<Data>) {
-              return !!data?.saveSecondConfirm;
-            },
-            set({ data }: EditorResult<Data>, val: boolean) {
-              data.saveSecondConfirm = !!val;
-            }
-          }
-        },
-        {
-          title: '保存二次确认文案',
-          type: 'text',
-          ifVisible({ data }: EditorResult<Data>) {
-            return !data.hideSaveBtn && data?.saveSecondConfirm;
-          },
-          value: {
-            get({ data }: EditorResult<Data>) {
-              return data?.saveSecondConfirmText;
-            },
-            set({ data }: EditorResult<Data>, val: string) {
-              data.saveSecondConfirmText = val;
-            }
-          }
-        },
-        {
-          title: '隐藏删除按钮',
-          type: 'switch',
-          value: {
-            get({ data }: EditorResult<Data>) {
-              return data.hideDeleteBtnInEdit;
-            },
-            set({ data }: EditorResult<Data>, val: boolean) {
-              data.hideDeleteBtnInEdit = !!val;
-            }
-          }
-        },
-        {
-          title: '删除按钮文案',
-          type: 'text',
-          ifVisible({ data }: EditorResult<Data>) {
-            return !data.hideDeleteBtnInEdit;
-          },
-          value: {
-            get({ data }: EditorResult<Data>) {
-              return data?.deleteText;
-            },
-            set({ data }: EditorResult<Data>, val: string) {
-              data.deleteText = val;
-            }
-          }
-        },
-        {
-          title: '隐藏取消按钮',
-          type: 'switch',
-          value: {
-            get({ data }: EditorResult<Data>) {
-              return data.hideCancelBtn;
-            },
-            set({ data }: EditorResult<Data>, val: boolean) {
-              data.hideCancelBtn = !!val;
-            }
-          }
-        },
-        {
-          title: '取消按钮文案',
-          type: 'text',
-          ifVisible({ data }: EditorResult<Data>) {
-            return !data.hideCancelBtn;
-          },
-          value: {
-            get({ data }: EditorResult<Data>) {
-              return data?.cancelText;
-            },
-            set({ data }: EditorResult<Data>, val: string) {
-              data.cancelText = val;
-            }
-          }
+        set({ data }: EditorResult<Data>, val: boolean) {
+          data.hideDeleteBtn = !!val;
+          update(data);
         }
-      ]
+      }
     },
     {
-      title: '回调事件',
-      items: [
-        {
-          title: '保存回调',
-          type: 'switch',
-          value: {
-            get({ data }: EditorResult<Data>) {
-              return data.useSaveCallback;
-            },
-            set({ data, output }: EditorResult<Data>, val: boolean) {
-              data.useSaveCallback = !!val;
-              const hasEvent = output.get(OUTPUTS.SaveCallback);
-              const schema = {
-                type: 'object',
-                properties: {
-                  index: {
-                    type: 'number',
-                    title: '行索引'
-                  },
-                  ...getColumnsDataSchema(data.columns, data.rowKey)
-                }
-              };
-              if (val && !hasEvent) {
-                output.add(OUTPUTS.SaveCallback, '保存回调', schema);
-              }
-              if (!val && hasEvent) {
-                output.remove(OUTPUTS.SaveCallback);
-              }
+      title: '只读态-动态显示删除按钮表达式',
+      description: `通过表格行字段值，动态控制删除按钮按钮的显隐，不设置则默认显示。表达式支持（{}, =, <, >, ||, &&）, 例：{title} === '1'`,
+      type: 'EXPRESSION',
+      options: {
+        autoSize: true,
+        placeholder: `例：{title} === '1'`,
+        suggestions: getSuggestions(data),
+        runCode: run
+      },
+      ifVisible({ data }: EditorResult<Data>) {
+        return !data.hideAllOperation && !data.hideDeleteBtn;
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data?.dynamicDisplayDeleteBtnScript;
+        },
+        set({ data }: EditorResult<Data>, val: string) {
+          data.dynamicDisplayDeleteBtnScript = val;
+        }
+      }
+    },
+    {
+      title: '只读态-删除二次确认',
+      type: 'switch',
+      ifVisible({ data }: EditorResult<Data>) {
+        return !data.hideAllOperation && !data.hideDeleteBtn;
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return !!data?.deleteSecondConfirm;
+        },
+        set({ data }: EditorResult<Data>, val: boolean) {
+          data.deleteSecondConfirm = !!val;
+        }
+      }
+    },
+    {
+      title: '只读态-删除二次确认文案',
+      type: 'text',
+      ifVisible({ data }: EditorResult<Data>) {
+        return !data.hideAllOperation && !data.hideDeleteBtn && data?.deleteSecondConfirm;
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data?.deleteSecondConfirmText;
+        },
+        set({ data }: EditorResult<Data>, val: string) {
+          data.deleteSecondConfirmText = val;
+        }
+      }
+    },
+    {
+      title: '只读态-隐藏添加按钮',
+      type: 'switch',
+      ifVisible({ data }: EditorResult<Data>) {
+        return !data.hideAllOperation;
+      },
+      description: `开启后，会隐藏所有表格行操作列的新增按钮`,
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data.hideNewBtn;
+        },
+        set({ data }: EditorResult<Data>, val: boolean) {
+          data.hideNewBtn = !!val;
+          update(data);
+        }
+      }
+    },
+    {
+      title: '只读态-隐藏添加子项按钮',
+      description: `开启后，会隐藏所有表格行的添加子项按钮`,
+      type: 'switch',
+      ifVisible({ data }: EditorResult<Data>) {
+        return !data.hideAllOperation;
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          if (data.hideAllAddChildBtn === undefined) {
+            data.hideAllAddChildBtn = true;
+          }
+          return data.hideAllAddChildBtn;
+        },
+        set({ data }: EditorResult<Data>, val: boolean) {
+          data.hideAllAddChildBtn = !!val;
+          update(data);
+        }
+      }
+    },
+    {
+      title: '只读态-添加子项按钮文案',
+      type: 'text',
+      ifVisible({ data }: EditorResult<Data>) {
+        return !data.hideAllOperation && !data.hideAllAddChildBtn;
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          if (!data.addChildBtnLabel) {
+            data.addChildBtnLabel = '添加子项';
+          }
+          return data.addChildBtnLabel;
+        },
+        set({ data }: EditorResult<Data>, val: string) {
+          data.addChildBtnLabel = val;
+          update(data);
+        }
+      }
+    },
+    {
+      title: '只读态-添加子项按钮显示',
+      description: `通过表格行字段值，动态控制添加子项按钮的显隐，不设置则默认显示。表达式支持（{}, =, <, >, ||, &&）, 例：{title} === '1'`,
+      type: 'EXPRESSION',
+      ifVisible({ data }: EditorResult<Data>) {
+        return !data.hideAllOperation && !data.hideAllAddChildBtn;
+      },
+      options: {
+        autoSize: true,
+        placeholder: `例：{title} === '1'`,
+        suggestions: getSuggestions(data),
+        runCode: run
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data?.addChildBtnScript;
+        },
+        set({ data }: EditorResult<Data>, value: string) {
+          data.addChildBtnScript = value;
+          update(data);
+        }
+      }
+    },
+    {
+      title: '编辑态-隐藏保存按钮',
+      type: 'switch',
+      ifVisible({ data }: EditorResult<Data>) {
+        return !data.hideAllOperation;
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data.hideSaveBtn;
+        },
+        set({ data }: EditorResult<Data>, val: boolean) {
+          data.hideSaveBtn = !!val;
+        }
+      }
+    },
+    {
+      title: '编辑态-保存按钮文案',
+      type: 'text',
+      ifVisible({ data }: EditorResult<Data>) {
+        return !data.hideAllOperation && !data.hideSaveBtn;
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data?.saveText;
+        },
+        set({ data }: EditorResult<Data>, val: string) {
+          data.saveText = val;
+        }
+      }
+    },
+    {
+      title: '编辑态-保存二次确认',
+      type: 'switch',
+      ifVisible({ data }: EditorResult<Data>) {
+        return !data.hideAllOperation && !data.hideSaveBtn;
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return !!data?.saveSecondConfirm;
+        },
+        set({ data }: EditorResult<Data>, val: boolean) {
+          data.saveSecondConfirm = !!val;
+        }
+      }
+    },
+    {
+      title: '编辑态-保存二次确认文案',
+      type: 'text',
+      ifVisible({ data }: EditorResult<Data>) {
+        return !data.hideAllOperation && !data.hideSaveBtn && data?.saveSecondConfirm;
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data?.saveSecondConfirmText;
+        },
+        set({ data }: EditorResult<Data>, val: string) {
+          data.saveSecondConfirmText = val;
+        }
+      }
+    },
+    {
+      title: '编辑态-隐藏删除按钮',
+      type: 'switch',
+      ifVisible({ data }: EditorResult<Data>) {
+        return !data.hideAllOperation;
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data.hideDeleteBtnInEdit;
+        },
+        set({ data }: EditorResult<Data>, val: boolean) {
+          data.hideDeleteBtnInEdit = !!val;
+        }
+      }
+    },
+    {
+      title: '编辑态-删除按钮文案',
+      type: 'text',
+      ifVisible({ data }: EditorResult<Data>) {
+        return !data.hideAllOperation && !data.hideDeleteBtnInEdit;
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data?.deleteText;
+        },
+        set({ data }: EditorResult<Data>, val: string) {
+          data.deleteText = val;
+        }
+      }
+    },
+    {
+      title: '编辑态-隐藏取消按钮',
+      type: 'switch',
+      ifVisible({ data }: EditorResult<Data>) {
+        return !data.hideAllOperation;
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data.hideCancelBtn;
+        },
+        set({ data }: EditorResult<Data>, val: boolean) {
+          data.hideCancelBtn = !!val;
+        }
+      }
+    },
+    {
+      title: '编辑态-取消按钮文案',
+      type: 'text',
+      ifVisible({ data }: EditorResult<Data>) {
+        return !data.hideAllOperation && !data.hideCancelBtn;
+      },
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data?.cancelText;
+        },
+        set({ data }: EditorResult<Data>, val: string) {
+          data.cancelText = val;
+        }
+      }
+    },
+    {
+      title: '保存回调',
+      type: 'switch',
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data.useSaveCallback;
+        },
+        set({ data, output }: EditorResult<Data>, val: boolean) {
+          data.useSaveCallback = !!val;
+          const hasEvent = output.get(OUTPUTS.SaveCallback);
+          const schema = {
+            type: 'object',
+            properties: {
+              index: {
+                type: 'number',
+                title: '行索引'
+              },
+              ...getColumnsDataSchema(data.columns, data.rowKey)
             }
+          };
+          if (val && !hasEvent) {
+            output.add(OUTPUTS.SaveCallback, '保存回调', schema);
           }
-        },
-        {
-          title: '保存回调事件',
-          type: '_Event',
-          ifVisible({ data }: EditorResult<Data>) {
-            return !!data.useSaveCallback;
-          },
-          options: {
-            outputId: OUTPUTS.SaveCallback
-          }
-        },
-        {
-          title: '删除回调',
-          type: 'switch',
-          value: {
-            get({ data }: EditorResult<Data>) {
-              return data.useDelCallback;
-            },
-            set({ data, output }: EditorResult<Data>, val: boolean) {
-              data.useDelCallback = !!val;
-              const hasEvent = output.get(OUTPUTS.DelCallback);
-              if (val && !hasEvent) {
-                const schema = {
-                  type: 'object',
-                  properties: {
-                    index: {
-                      type: 'number',
-                      title: '行索引'
-                    },
-                    ...getColumnsDataSchema(data.columns, data.rowKey)
-                  }
-                };
-                output.add(OUTPUTS.DelCallback, '删除回调', schema);
-              }
-              if (!val && hasEvent) {
-                output.remove(OUTPUTS.DelCallback);
-              }
-            }
-          }
-        },
-        {
-          title: '删除回调事件',
-          type: '_Event',
-          ifVisible({ data }: EditorResult<Data>) {
-            return !!data.useDelCallback;
-          },
-          options: {
-            outputId: OUTPUTS.DelCallback
+          if (!val && hasEvent) {
+            output.remove(OUTPUTS.SaveCallback);
           }
         }
-      ]
+      }
+    },
+    {
+      title: '保存回调事件',
+      type: '_Event',
+      ifVisible({ data }: EditorResult<Data>) {
+        return !!data.useSaveCallback;
+      },
+      options: {
+        outputId: OUTPUTS.SaveCallback
+      }
+    },
+    {
+      title: '删除回调',
+      type: 'switch',
+      value: {
+        get({ data }: EditorResult<Data>) {
+          return data.useDelCallback;
+        },
+        set({ data, output }: EditorResult<Data>, val: boolean) {
+          data.useDelCallback = !!val;
+          const hasEvent = output.get(OUTPUTS.DelCallback);
+          if (val && !hasEvent) {
+            const schema = {
+              type: 'object',
+              properties: {
+                index: {
+                  type: 'number',
+                  title: '行索引'
+                },
+                ...getColumnsDataSchema(data.columns, data.rowKey)
+              }
+            };
+            output.add(OUTPUTS.DelCallback, '删除回调', schema);
+          }
+          if (!val && hasEvent) {
+            output.remove(OUTPUTS.DelCallback);
+          }
+        }
+      }
+    },
+    {
+      title: '删除回调事件',
+      type: '_Event',
+      ifVisible({ data }: EditorResult<Data>) {
+        return !!data.useDelCallback;
+      },
+      options: {
+        outputId: OUTPUTS.DelCallback
+      }
     }
   ]
 });
