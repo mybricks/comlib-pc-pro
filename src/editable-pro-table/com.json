@@ -3,7 +3,7 @@
   "namespace": "mybricks.pro-pc.editable-pro-table",
   "author": "MyBricks",
   "author_name": "MyBricks",
-  "version": "1.0.76",
+  "version": "1.0.77",
   "description": "",
   "icon": "./icon.svg",
   "data": "./data.json",
@@ -14,7 +14,9 @@
     {
       "id": "value",
       "title": "输入数据",
-      "rels": ["value"],
+      "rels": [
+        "value"
+      ],
       "schema": {
         "type": "array",
         "items": {
@@ -36,7 +38,9 @@
     {
       "id": "colsCfg",
       "title": "修改列配置",
-      "rels": ["colsCfg"],
+      "rels": [
+        "colsCfg"
+      ],
       "schema": {
         "type": "any"
       }
@@ -44,7 +48,9 @@
     {
       "id": "colValue",
       "title": "修改列值",
-      "rels": ["colValue"],
+      "rels": [
+        "colValue"
+      ],
       "schema": {
         "type": "object",
         "properties": {
@@ -66,7 +72,9 @@
     {
       "id": "submit",
       "title": "提交数据",
-      "rels": ["submit"],
+      "rels": [
+        "submit"
+      ],
       "schema": {
         "type": "any"
       }
@@ -74,7 +82,10 @@
     {
       "id": "submitWithCheck",
       "title": "提交数据(校验)",
-      "rels": ["submitWithCheckSuccess", "submitWithCheckError"],
+      "rels": [
+        "submitWithCheckSuccess",
+        "submitWithCheckError"
+      ],
       "schema": {
         "type": "any"
       }
@@ -82,7 +93,9 @@
     {
       "id": "addRow",
       "title": "新增一行",
-      "rels": ["addRow"],
+      "rels": [
+        "addRow"
+      ],
       "schema": {
         "type": "any"
       }
@@ -90,7 +103,9 @@
     {
       "id": "cancelRow",
       "title": "取消当前编辑行",
-      "rels": ["cancelRow"],
+      "rels": [
+        "cancelRow"
+      ],
       "schema": {
         "type": "any"
       }
@@ -98,7 +113,9 @@
     {
       "id": "editableRows",
       "title": "设置正在编辑的行(key)",
-      "rels": ["editableRows"],
+      "rels": [
+        "editableRows"
+      ],
       "schema": {
         "type": "array",
         "items": {
