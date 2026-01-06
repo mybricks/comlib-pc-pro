@@ -202,6 +202,7 @@ const getAddColumnEditor = ({ data, output, input, slot, env }: EditorResult<Dat
             // @ts-ignore
             const cols: ColumnItem[] = val.map((item) => ({
               ...item,
+              width: Number(item.width) || 140,
               isRowKey: data?.rowKey && item?.dataIndex === data?.rowKey
             }));
 
